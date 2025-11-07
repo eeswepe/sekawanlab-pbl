@@ -1,10 +1,10 @@
 <?php
 
 use App\Router;
-use App\Controllers\DummyController;
+use App\Models\UserModel;
 
 $router = new Router();
 
-$router->get("/", DummyController::class, "index");
+$router->get("/", UserModel::class, "getAllUser");
 
 $router->dispatch();
