@@ -1,0 +1,15 @@
+{
+  "name": "eeswepe/sekawanlab-pbl",
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Singgih Wahyu Permana",
+      "email": "singgihwahyupermana@gmail.com"
+    }
+  ],
+  "require": {}
+}
