@@ -26,6 +26,7 @@
         <!-- Custom CSS -->
         <link rel="stylesheet" href="/css/header.css" />
         <link rel="stylesheet" href="/css/<?php echo $page_css; ?>" />
+        <link rel="stylesheet" href="/css/profil/tentang-kami.css" />
         <link rel="stylesheet" href="/css/footer.css" />
 
         <style></style>
@@ -34,7 +35,7 @@
         <!-- Navbar -->
         <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
             <div class="container">
-                <a class="navbar-brand" href="#">
+                <a class="navbar-brand" href="/">
                     <div class="logo-icon">SE</div>
                     <span>SE Laboratory</span>
                 </a>
@@ -63,34 +64,23 @@
                                 class="dropdown-menu"
                                 aria-labelledby="profileDropdown"
                             >
-                                <li>
-                                    <a class="dropdown-item" href="#"
-                                        ><i class="bi bi-info-circle"></i>
-                                        Tentang Kami</a
-                                    >
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="#"
-                                        ><i class="bi bi-bullseye"></i> Visi &
-                                        Misi</a
-                                    >
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="#"
-                                        ><i class="bi bi-trophy"></i>
-                                        Prestasi</a
-                                    >
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="#"
-                                        ><i class="bi bi-diagram-3"></i>
-                                        Roadmap</a
-                                    >
-                                </li>
+                                <?php foreach (
+                                    $data["list-profil"]
+                                    as $profil
+                                ) {
+                                    echo '<li><a class="dropdown-item" href="/profil/' .
+                                        htmlspecialchars($profil["slug"]) .
+                                        '">' .
+                                        '<i class="bi bi-person-circle"></i>' .
+                                        htmlspecialchars(
+                                            $profil["page_title"],
+                                        ) .
+                                        "</a></li>";
+                                } ?>
                             </ul>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="personil.html"
+                            <a class="nav-link" href="/personil"
                                 >Personil</a
                             >
                         </li>
