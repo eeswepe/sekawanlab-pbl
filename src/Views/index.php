@@ -1,7 +1,7 @@
 <?php
 $page_css = "index.css";
 $page_js = "index.js";
-include_once "layouts/header.php";
+include_once __DIR__ . "/layouts/header.php";
 ?>
 
 <!-- Hero Section -->

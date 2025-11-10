@@ -25,7 +25,7 @@ CREATE TABLE personil(
     skillks JSONB,
     foto_url VARCHAR(500),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- project table
@@ -35,7 +35,7 @@ CREATE TABLE project(
     title VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- kategori table
@@ -48,8 +48,8 @@ CREATE TABLE kategori (
 -- blog table
 CREATE TABLE blog_post(
     id SERIAL PRIMARY KEY,
-    penulis_id INTEGER REFERENCES personil(id) ON DELETE SET NULL,
-    kategori_id INTEGER REFERENCES kategori(id) ON DELETE SET NULL,
+    penulis_id INTEGER REFERENCES personil(id) ,
+    kategori_id INTEGER REFERENCES kategori(id) ,
     slug VARCHAR(255) NOT NULL,
     judul VARCHAR(255) NOT NULL,
     cuplikan TEXT;
@@ -61,7 +61,7 @@ CREATE TABLE blog_post(
     status VARCHAR(20) DEFAULT 'draft' CHECK (status IN ('draft', 'published')),
     reading_time INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- profil page table

@@ -8,8 +8,10 @@ class Router
 
     private function addRoute($route, $controller, $action, $method)
     {
-
-        $this->routes[$method][$route] = ['controller' => $controller, 'action' => $action];
+        $this->routes[$method][$route] = [
+            "controller" => $controller,
+            "action" => $action,
+        ];
     }
 
     public function get($route, $controller, $action)
@@ -24,17 +26,35 @@ class Router
 
     public function dispatch()
     {
-        $uri = strtok($_SERVER['REQUEST_URI'], '?');
-        $method =  $_SERVER['REQUEST_METHOD'];
+        $uri = strtok($_SERVER["REQUEST_URI"], "?");
+        $method = $_SERVER["REQUEST_METHOD"];
 
-        if (array_key_exists($uri, $this->routes[$method])) {
-            $controller = $this->routes[$method][$uri]['controller'];
-            $action = $this->routes[$method][$uri]['action'];
+        $routes = $this->routes[$method] ?? [];
 
-            $controller = new $controller();
-            $controller->$action();
-        } else {
-            throw new \Exception("No route found for URI: $uri");
+        foreach ($routes as $routePattern => $routeInfo) {
+            // Convert route pattern to a regex
+            $pattern = preg_replace(
+                "/\{([a-zA-Z0-9_]+)\}/",
+                '(?P<$1>[^/]+)',
+                $routePattern,
+            );
+            $pattern = "#^$pattern$#";
+
+            if (preg_match($pattern, $uri, $matches)) {
+                $controller = $routeInfo["controller"];
+                $action = $routeInfo["action"];
+
+                // Extract named parameters
+                $params = array_filter(
+                    $matches,
+                    "is_string",
+                    ARRAY_FILTER_USE_KEY,
+                );
+
+                $controllerInstance = new $controller();
+                call_user_func_array([$controllerInstance, $action], $params);
+                return;
+            }
         }
     }
 }
