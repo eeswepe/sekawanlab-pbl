@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Software Engineering Laboratory - Universitas</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --gold: #d4af37;
+      --dark-gold: #b8941f;
+      --black: #1a1a1a;
+      --white: #ffffff;
+      --gray: #f8f9fa;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--white);
+      color: var(--black);
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    /* Navbar */
+    .navbar-custom {
+      background: var(--white);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
+      padding: 1rem 0;
+    }
+
+    .navbar-custom.scrolled {
+      padding: 0.6rem 0;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .navbar-brand {
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--black) !important;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--gold), var(--dark-gold));
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--white);
+      font-weight: bold;
+    }
+
+    .nav-link {
+      color: var(--black) !important;
+      margin: 0 0.5rem;
+      font-weight: 500;
+      position: relative;
+    }
+
+    .nav-link::after {
+      content: "";
+      width: 0%;
+      height: 2px;
+      background: var(--gold);
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      transition: width 0.3s ease;
+    }
+
+    .nav-link:hover::after, .nav-link.active::after {
+      width: 60%;
+    }
+
+    .btn-join {
+      background: linear-gradient(135deg, var(--gold), var(--dark-gold));
+      color: var(--white) !important;
+      border-radius: 25px;
+      padding: 0.5rem 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .btn-join:hover {
+      background: var(--white);
+      color: var(--gold) !important;
+      border: 2px solid var(--gold);
+      box-shadow: 0 5px 15px rgba(212,175,55,0.2);
+    }
+
+    /* Hero */
+    .hero {
+      height: 100vh;
+      background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+        url('https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=2070&q=80');
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      color: var(--white);
+      text-align: left;
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    .hero .gold-text { color: var(--gold); }
+
+    .hero p {
+      max-width: 550px;
+      font-size: 1.1rem;
+      margin: 1rem 0 2rem;
+    }
+
+    /* Section Base */
+    section {
+      padding: 100px 0;
+    }
+
+    .section-subtitle {
+      color: var(--gold);
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+    }
+
+    .section-title {
+      font-weight: 700;
+      margin-bottom: 1rem;
+      font-size: 2rem;
+      position: relative;
+    }
+
+    .section-title::after {
+      content: "";
+      position: absolute;
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+      left: 0;
+      bottom: -10px;
+    }
+
+    /* About */
+    .about p {
+      color: #6c757d;
+      line-height: 1.8;
+    }
+
+    /* Stats */
+    .stats {
+      background: linear-gradient(135deg, var(--black), var(--dark-gold));
+      color: var(--white);
+      text-align: center;
+    }
+
+    .stat-item {
+      padding: 1.5rem;
+    }
+
+    .stat-number {
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    /* Features */
+    .feature-card {
+      background: var(--white);
+      border: 1px solid #eee;
+      border-radius: 15px;
+      text-align: center;
+      padding: 2rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 10px 25px rgba(212,175,55,0.2);
+    }
+
+    .feature-icon {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), var(--dark-gold));
+      color: var(--white);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.8rem;
+      margin: 0 auto 1rem;
+    }
+
+    /* Research */
+    .research-card {
+      background: var(--gray);
+      border-left: 4px solid var(--gold);
+      border-radius: 10px;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .research-card:hover {
+      transform: translateX(5px);
+      background: #fff;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    /* CTA */
+    .cta {
+      background: linear-gradient(135deg, var(--gold), var(--dark-gold));
+      color: var(--white);
+      text-align: center;
+    }
+
+    .btn-cta {
+      background: var(--white);
+      color: var(--gold);
+      border-radius: 30px;
+      padding: 0.8rem 2rem;
+      font-weight: 600;
+      border: none;
+    }
+
+    .btn-cta:hover {
+      background: transparent;
+      color: var(--white);
+      border: 2px solid var(--white);
+      transform: translateY(-3px);
+    }
+
+    /* Footer */
+    .footer {
+      background: var(--black);
+      color: var(--white);
+      padding: 60px 0 30px;
+    }
+
+    .footer h5 {
+      color: var(--gold);
+      margin-bottom: 1.2rem;
+    }
+
+    .footer a {
+      color: #adb5bd;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .footer a:hover {
+      color: var(--gold);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      text-align: center;
+      color: #aaa;
+      padding-top: 1rem;
+      margin-top: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 2.3rem; }
+      .section-title { font-size: 1.6rem; }
+      section { padding: 70px 0; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="#">
+        <div class="logo-icon">SE</div>
+        SE Laboratory
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto align-items-center">
+          <li class="nav-item"><a class="nav-link active" href="#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="#features">Services</a></li>
+          <li class="nav-item"><a class="nav-link" href="#research">Research</a></li>
+          <li class="nav-item"><a class="nav-link btn-join" href="join.html">Join Us</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <div class="col-lg-8">
+        <h1>Software Engineering <span class="gold-text">Laboratory</span></h1>
+        <p>Mengembangkan inovasi teknologi dan membangun solusi perangkat lunak berkualitas tinggi untuk masa depan yang lebih baik.</p>
+        <a href="#about" class="btn btn-light me-2">Explore More</a>
+        <a href="join.html" class="btn btn-outline-light">Join Our Team</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about" class="about">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6 mb-4">
+          <div class="section-subtitle">About Us</div>
+          <h2 class="section-title">Laboratorium Software Engineering</h2>
+          <p>Software Engineering Laboratory adalah pusat keunggulan dalam penelitian dan pengembangan perangkat lunak modern. Kami melatih mahasiswa agar siap menjadi software engineer profesional yang kompeten dan inovatif.</p>
+        </div>
+        <div class="col-lg-6">
+          <div class="row g-3">
+            <div class="col-6"><div class="feature-card"><div class="feature-icon"><i class="bi bi-code-slash"></i></div><h5>Modern Tech</h5></div></div>
+            <div class="col-6"><div class="feature-card"><div class="feature-icon"><i class="bi bi-people"></i></div><h5>Expert Team</h5></div></div>
+            <div class="col-6"><div class="feature-card"><div class="feature-icon"><i class="bi bi-lightbulb"></i></div><h5>Innovation</h5></div></div>
+            <div class="col-6"><div class="feature-card"><div class="feature-icon"><i class="bi bi-award"></i></div><h5>Excellence</h5></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="stats">
+    <div class="container">
+      <div class="row">
+        <div class="col-6 col-md-3"><div class="stat-item"><div class="stat-number" data-target="500">0</div><p>Students</p></div></div>
+        <div class="col-6 col-md-3"><div class="stat-item"><div class="stat-number" data-target="50">0</div><p>Projects</p></div></div>
+        <div class="col-6 col-md-3"><div class="stat-item"><div class="stat-number" data-target="25">0</div><p>Researchers</p></div></div>
+        <div class="col-6 col-md-3"><div class="stat-item"><div class="stat-number" data-target="100">0</div><p>Publications</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features">
+    <div class="container text-center">
+      <div class="section-subtitle">Our Services</div>
+      <h2 class="section-title mb-5">Apa yang Kami Tawarkan</h2>
+      <div class="row g-4">
+        <div class="col-md-4"><div class="feature-card"><div class="feature-icon"><i class="bi bi-laptop"></i></div><h5>Training</h5><p>Pelatihan intensif teknologi terkini bagi mahasiswa.</p></div></div>
+        <div class="col-md-4"><div class="feature-card"><div class="feature-icon"><i class="bi bi-search"></i></div><h5>Research</h5><p>Riset software engineering dengan fokus inovasi.</p></div></div>
+        <div class="col-md-4"><div class="feature-card"><div class="feature-icon"><i class="bi bi-gear"></i></div><h5>Consulting</h5><p>Layanan konsultasi pengembangan perangkat lunak.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Research -->
+  <section id="research">
+    <div class="container">
+      <div class="text-center mb-5">
+        <div class="section-subtitle">Research Focus</div>
+        <h2 class="section-title">Area Penelitian Kami</h2>
+      </div>
+      <div class="row g-3">
+        <div class="col-lg-6"><div class="research-card"><h5><i class="bi bi-cpu me-2" style="color:var(--gold);"></i>Artificial Intelligence</h5><p>Pengembangan sistem cerdas berbasis machine learning.</p></div></div>
+        <div class="col-lg-6"><div class="research-card"><h5><i class="bi bi-cloud me-2" style="color:var(--gold);"></i>Cloud & DevOps</h5><p>Riset arsitektur cloud dan praktik DevOps modern.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="container">
+      <h2 class="mb-3">Bergabunglah dengan Kami</h2>
+      <p class="mb-4">Jadilah bagian dari komunitas software engineering yang inovatif dan berkembang.</p>
+      <a href="join.html" class="btn btn-cta">Apply Now</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer bg-dark text-light py-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4 mb-4 mb-lg-0">
+        <h5 class="text-gold">Jurusan Teknologi Informasi</h5>
+        <p class="text-muted">
+          Pusat keunggulan dalam penelitian dan pengembangan teknologi informasi serta rekayasa perangkat lunak di Indonesia.
+        </p>
+      </div>
+
+      <div class="col-lg-4 mb-4 mb-lg-0">
+        <h5 class="text-gold">Links</h5>
+        <ul class="list-unstyled">
+          <li><a href="profile_tentang.html" class="text-decoration-none text-light">Tentang</a></li>
+          <li><a href="index.html#services" class="text-decoration-none text-light">Layanan</a></li>
+          <li><a href="blog.html" class="text-decoration-none text-light">Riset</a></li>
+        </ul>
+      </div>
+
+      <div class="col-lg-4">
+        <h5 class="text-gold">Contact</h5>
+        <ul class="list-unstyled">
+          <li>
+            <i class="bi bi-geo-alt me-2 text-gold"></i> Politeknik Negeri Malang
+          </li>
+          <li>
+            <i class="bi bi-envelope me-2 text-gold"></i> jti@polinema.ac.id
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <hr class="border-secondary my-4" />
+
+    <div class="text-center text-muted">
+      &copy; 2025 Jurusan Teknologi Informasi - Politeknik Negeri Malang. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+
+  <!-- JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Navbar shrink on scroll
+    window.addEventListener('scroll', () => {
+      const navbar = document.querySelector('.navbar-custom');
+      navbar.classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    // Counter animation
+    const counters = document.querySelectorAll('.stat-number');
+    const animateCounters = () => {
+      counters.forEach(counter => {
+        const target = +counter.dataset.target;
+        let count = 0;
+        const increment = target / 100;
+        const update = () => {
+          count += increment;
+          counter.textContent = Math.floor(count) + '+';
+          if (count < target) requestAnimationFrame(update);
+          else counter.textContent = target + '+';
+        };
+        update();
+      });
+    };
+    const statsSection = document.querySelector('.stats');
+    let started = false;
+    window.addEventListener('scroll', () => {
+      const rect = statsSection.getBoundingClientRect();
+      if (!started && rect.top < window.innerHeight) {
+        started = true;
+        animateCounters();
+      }
+    });
+  </script>
+</body>
+</html>
