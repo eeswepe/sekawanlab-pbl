@@ -1,0 +1,355 @@
+/* CSS Variabel dari dashboard.html */
+:root {
+    --gold: #D4AF37;
+    --dark-gold: #B8941F;
+    --black: #1a1a1a;
+    --white: #ffffff;
+    --light-gray: #f8f9fa;
+}
+
+/* Styling Global */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    color: var(--black);
+    background-color: var(--light-gray);
+    font-size: 0.95rem;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+}
+
+a {
+    text-decoration: none;
+    color: var(--gold);
+}
+a:hover {
+    color: var(--dark-gold);
+}
+
+/* Card Styling */
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    margin-bottom: 1.5rem;
+    background: var(--white);
+}
+
+.card-header {
+    background-color: var(--white);
+    border-bottom: 1px solid #f0f0f0;
+    padding: 1.25rem 1.5rem;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.card-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--black);
+}
+
+/* Layout Structure */
+.wrapper {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+}
+
+#sidebar {
+    width: 260px;
+    min-height: 100vh;
+    background: var(--black);
+    color: #adb5bd;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+#sidebar.toggled {
+    margin-left: -260px;
+}
+
+#main-content {
+    width: 100%;
+    padding-left: 260px;
+    transition: all 0.3s ease;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+#main-content.toggled {
+    padding-left: 0;
+}
+
+/* Sidebar Styling */
+.sidebar-header {
+    padding: 1.25rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar-brand {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: var(--white) !important;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+
+.logo-icon {
+    width: 38px;
+    height: 38px;
+    background: linear-gradient(135deg, var(--gold), var(--dark-gold));
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-weight: bold;
+    flex-shrink: 0;
+    font-size: 0.95rem;
+}
+
+.sidebar-nav {
+    list-style: none;
+    padding: 1rem 0;
+    margin: 0;
+}
+
+.sidebar-nav-item {
+    padding: 0 1rem;
+    margin-bottom: 0.25rem;
+}
+
+.sidebar-nav-link {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    color: #adb5bd;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.sidebar-nav-link i {
+    margin-right: 0.75rem;
+    font-size: 1.1rem;
+    width: 20px;
+    text-align: center;
+}
+
+.sidebar-nav-link:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--white);
+}
+
+.sidebar-nav-link.active {
+    background: linear-gradient(135deg, var(--gold), var(--dark-gold));
+    color: var(--white);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+/* Topbar Styling */
+#topbar {
+    background: var(--white);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+    padding: 0.75rem 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 999;
+}
+
+.profile-dropdown-toggle img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 8px;
+    object-fit: cover;
+}
+
+.sidebar-toggle {
+    font-size: 1.5rem;
+    color: var(--black);
+    background: none;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+}
+
+.content-fluid {
+    padding: 2rem 1.5rem;
+    flex: 1;
+}
+
+.page-header {
+    margin-bottom: 2rem;
+}
+
+.page-header h1 {
+    font-size: 1.75rem;
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+}
+
+/* Form Styling (Custom) */
+.form-control,
+.form-select,
+.input-group-text {
+    border-radius: 8px;
+    font-size: 0.9rem;
+    padding: 0.6rem 1rem;
+    border: 1px solid #dee2e6;
+}
+
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25); /* Gold alpha shadow */
+}
+
+.form-label {
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Featured Image Styling */
+#image-preview-container {
+    width: 100%;
+    max-width: 300px;
+    height: 180px;
+    background-color: #f0f0f0;
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    margin-top: 10px;
+    transition: all 0.3s;
+}
+
+#image-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+}
+
+.preview-placeholder {
+    color: #999;
+    font-size: 0.9rem;
+}
+
+/* Rich Text Editor Placeholder (using textarea) */
+#blogContent {
+    min-height: 300px;
+    resize: vertical;
+}
+
+/* Custom Button Styling */
+.btn-primary-custom {
+    background: linear-gradient(135deg, var(--gold), var(--dark-gold));
+    border: none;
+    color: var(--white);
+    padding: 0.65rem 1.25rem;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-primary-custom:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+    color: var(--white);
+}
+
+.btn-save-draft {
+    background-color: #6c757d;
+    border: none;
+    color: var(--white);
+    padding: 0.65rem 1.25rem;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.btn-save-draft:hover {
+    background-color: #5a6268;
+    color: var(--white);
+}
+
+.btn-secondary {
+    /* Menambahkan styling untuk tombol Cancel agar seragam */
+    padding: 0.65rem 1.25rem;
+    font-weight: 600;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+/* Footer Styling */
+.footer {
+    background-color: var(--white);
+    border-top: 1px solid #e9ecef;
+    padding: 1.25rem 0;
+    margin-top: auto;
+}
+
+.footer .text-muted {
+    font-size: 0.85rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+    #sidebar {
+        margin-left: -260px;
+    }
+    #sidebar.toggled {
+        margin-left: 0;
+    }
+    #main-content {
+        padding-left: 0;
+    }
+
+    .content-fluid {
+        padding: 1.5rem 1rem;
+    }
+    .page-header h1 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (min-width: 992px) {
+    .sidebar-toggle-mobile {
+        display: none;
+    }
+}
