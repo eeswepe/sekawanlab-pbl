@@ -14,7 +14,7 @@ class BlogModel
         $this->db = Database::getConnection();
     }
 
-    public function getAllBlogPosts()
+    public function getAllBlogPosts(): array
     {
         $query = "SELECT * FROM blog_post";
         $stmt = $this->db->prepare($query);
