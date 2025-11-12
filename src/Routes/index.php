@@ -5,6 +5,7 @@ use App\Controllers\HomeController;
 use App\Controllers\ProfilPageController;
 use App\Controllers\PersonilController;
 use App\Controllers\BlogController;
+use App\Controllers\JoinApplicationController;
 
 $router = new Router();
 
@@ -12,5 +13,8 @@ $router->get("/", HomeController::class, "index");
 $router->get("/profil/{slug}", ProfilPageController::class, "show");
 $router->get("/personil", PersonilController::class, "index");
 $router->get("/blog", BlogController::class, "index");
+$router->get("/join", JoinApplicationController::class, "index");
+
+$router->post("/join", JoinApplicationController::class, "submitApplication");
 
 $router->dispatch();
