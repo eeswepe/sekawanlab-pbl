@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - SE Laboratory</title>
+    <title>Register - SE Laboratory</title>
 
     <!-- Bootstrap & Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -25,34 +25,47 @@
             <span class="logo-text">SE Laboratory</span>
         </div>
 
-        <h5 class="mb-4 fw-semibold">Masuk ke Akun Anda</h5>
+        <h5 class="mb-4 fw-semibold">Daftar Akun Baru</h5>
 
-        <form id="loginForm" action="/login" method="POST">
+        <?php 
+            use App\Helpers\SessionHelper;
+            $error = SessionHelper::getFlash("error");
+            if ($error): 
+        ?>
+            <div class="alert alert-danger" role="alert">
+                <?= $error ?>
+            </div>
+        <?php endif; ?>
+
+        <form id="registerForm" action="/register" method="POST">
             <div class="mb-3 text-start">
                 <label for="username" class="form-label">Email atau Username</label>
                 <input type="text" class="form-control" id="username" name="username" required>
             </div>
 
-            <div class="mb-2 text-start">
+            <div class="mb-3 text-start">
                 <label for="password" class="form-label">Kata Sandi</label>
                 <input type="password" class="form-control" id="password" name="password" required>
             </div>
 
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="rememberMe">
-                    <label class="form-check-label" for="rememberMe">Ingat saya</label>
-                </div>
+            <div class="mb-4 text-start">
+                <label for="confirm_password" class="form-label">Konfirmasi Kata Sandi</label>
+                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
             </div>
 
-            <button type="submit" class="btn btn-login">Masuk</button>
+            <button type="submit" class="btn btn-login">Daftar</button>
         </form>
+
+        <div class="mt-3">
+            Sudah punya akun? <a href="/login" class="text-decoration-none">Masuk di sini</a>
+        </div>
 
         <footer>&copy; 2025 Software Engineering Laboratory. All rights reserved.</footer>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../../public/js/login.js"></script>
+    <!-- Assuming login.js is for login-specific logic, we might need a register.js or just rely on form submission -->
+    <!-- <script src="/js/login.js"></script> -->
 </body>
 
 </html>

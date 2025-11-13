@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="../../public/css/admin_dashboard.css">
+  <link rel="stylesheet" href="/css/admin_dashboard.css">
 </head>
 
 <body>
@@ -166,6 +166,6 @@
 
   <!-- Bootstrap & Custom JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="../../public/js/admin_dashboard.js"></script>
+  <script src="/js/admin_dashboard.js"></script>
 </body>
 </html>
