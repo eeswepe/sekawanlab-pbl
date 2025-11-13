@@ -199,3 +199,30 @@ Dalam implementasi ini, kita menggunakan Python dan framework Flask yang ringan 
                                 <button type="submit" class="btn btn-primary-custom">
                                     <i class="bi bi-save-fill me-2"></i> Update Post
                                 </button>
+                                <button type="button" class="btn btn-danger" id="deleteButton" onclick="confirmDelete()">
+                                    <i class="bi bi-trash-fill me-2"></i> Delete Draft
+                                </button>
+                                <a href="blog-list.html" class="btn btn-outline-secondary">
+                                    <i class="bi bi-x-circle-fill me-2"></i> Cancel
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+                </form>
+
+            </main>
+            <footer class="footer">
+                <div class="container-fluid text-center">
+                    <span class="text-muted">&copy; 2025 Software Engineering Laboratory. All rights reserved.</span>
+                </div>
+            </footer>
+            </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="../../assets/js/personil_blog-edit.js"></script>
+
+</body>
+</html>
