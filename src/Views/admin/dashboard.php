@@ -21,13 +21,13 @@
       <div>
         <div class="brand"><span class="logo-icon">SE</span> SE Laboratory</div>
         <ul class="sidebar-menu">
-          <li><a href="#" class="active"><i class="bi bi-grid-fill"></i> Dashboard</a></li>
-          <li><a href="#"><i class="bi bi-pencil-square"></i> Blog Management</a></li>
-          <li><a href="#"><i class="bi bi-people-fill"></i> Personil Management</a></li>
-          <li><a href="#"><i class="bi bi-person-badge"></i> Profile Pages</a></li>
-          <li><a href="#"><i class="bi bi-file-earmark-text"></i> Join Applications</a></li>
-          <li><a href="#"><i class="bi bi-gear-fill"></i> Settings</a></li>
-          <li><a href="#"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
+          <li><a href="/admin" class="active"><i class="bi bi-grid-fill"></i> Dashboard</a></li>
+          <li><a href="/admin/blog-list"><i class="bi bi-pencil-square"></i> Blog Management</a></li>
+          <li><a href="/admin/personil"><i class="bi bi-people-fill"></i> Personil Management</a></li>
+          <li><a href="/admin/profil-pages"><i class="bi bi-person-badge"></i> Profile Pages</a></li>
+          <li><a href="/admin/join-applications"><i class="bi bi-file-earmark-text"></i> Join Applications</a></li>
+          <li><a href="/admin/site-settings"><i class="bi bi-gear-fill"></i> Settings</a></li>
+          <li><a href="/logout"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
         </ul>
       </div>
     </aside>

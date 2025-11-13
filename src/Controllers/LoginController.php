@@ -46,8 +46,8 @@ class LoginController extends Controller
                 "role" => $user["role"]
             ];
             
-            // header("Location: /dashboard");
-            var_dump($_SESSION);
+            header("Location: /dashboard");
+            // var_dump($_SESSION);
             // exit();
         }
 

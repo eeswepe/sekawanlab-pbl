@@ -20,59 +20,20 @@
 
     <div class="wrapper">
         <!-- Sidebar -->
-        <nav id="sidebar">
-            <div class="sidebar-header">
-                <a class="sidebar-brand" href="dashboard.html">
-                    <div class="logo-icon">SE</div>
-                    <span>SE Laboratory</span>
-                </a>
+        <aside id="sidebar">
+            <div>
+                <div class="brand"><span class="logo-icon">SE</span> SE Laboratory</div>
+                <ul class="sidebar-menu">
+                    <li><a href="/admin"><i class="bi bi-grid-fill"></i> Dashboard</a></li>
+                    <li><a href="/admin/blog-list" class="active"><i class="bi bi-pencil-square"></i> Blog Management</a></li>
+                    <li><a href="/admin/personil"><i class="bi bi-people-fill"></i> Personil Management</a></li>
+                    <li><a href="/admin/profil-pages"><i class="bi bi-person-badge"></i> Profile Pages</a></li>
+                    <li><a href="/admin/join-applications"><i class="bi bi-file-earmark-text"></i> Join Applications</a></li>
+                    <li><a href="/admin/site-settings"><i class="bi bi-gear-fill"></i> Settings</a></li>
+                    <li><a href="/logout"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
+                </ul>
             </div>
-
-            <ul class="sidebar-nav">
-                <li class="sidebar-nav-item">
-                    <a href="dashboard.html" class="sidebar-nav-link">
-                        <i class="bi bi-grid-fill"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
-                <li class="sidebar-nav-item">
-                    <!-- Link aktif ke halaman Blog List -->
-                    <a href="blog_list.html" class="sidebar-nav-link active">
-                        <i class="bi bi-pencil-square"></i>
-                        <span>Blog Management</span>
-                    </a>
-                </li>
-                <li class="sidebar-nav-item">
-                    <a href="#" class="sidebar-nav-link">
-                        <i class="bi bi-people-fill"></i>
-                        <span>Personil Management</span>
-                    </a>
-                </li>
-                <li class="sidebar-nav-item">
-                    <a href="#" class="sidebar-nav-link">
-                        <i class="bi bi-file-person"></i>
-                        <span>Profile Pages</span>
-                    </a>
-                </li>
-                <li class="sidebar-nav-item">
-                    <a href="#" class="sidebar-nav-link">
-                        <i class="bi bi-file-earmark-text"></i>
-                        <span>Join Applications</span>
-                    </a>
-                </li>
-                <li class="sidebar-nav-item">
-                    <a href="#" class="sidebar-nav-link">
-                        <i class="bi bi-gear-fill"></i>
-                        <span>Settings</span>
-                    </a>
-                </li>
-                <li class="sidebar-nav-item">
-                    <a href="#" class="sidebar-nav-link">
-                        <i class="bi bi-box-arrow-left"></i>
-                        <span>Logout</span>
-                    </a>
-                </li>
-            </ul>
+        </aside>
         </nav>
 
         <!-- Main Content -->

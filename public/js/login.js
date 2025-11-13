@@ -8,13 +8,4 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
     alert('Silakan isi semua kolom.');
     return;
   }
-
-  // Simulasi autentikasi sederhana (frontend only)
-  if (username === 'admin' && password === 'admin123') {
-    window.location.href = '/src/Views/admin/dashboard.html';
-  } else if (username === 'personil' && password === 'personil123') {
-    window.location.href = '/src/Views/personil/dashboard.html';
-  } else {
-    alert('Username atau password salah.');
-  }
 });

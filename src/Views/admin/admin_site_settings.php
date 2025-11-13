@@ -11,21 +11,25 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="../../public/css/admin_settings.css">
+  <link rel="stylesheet" href="/css/admin_settings.css">
 </head>
 
 <body>
   <div class="wrapper">
     <!-- Sidebar -->
     <aside id="sidebar">
-      <div class="brand">
-        <span class="logo-icon">SE</span> SE Laboratory
+      <div>
+        <div class="brand"><span class="logo-icon">SE</span> SE Laboratory</div>
+        <ul class="sidebar-menu">
+          <li><a href="/admin"><i class="bi bi-grid-fill"></i> Dashboard</a></li>
+          <li><a href="/admin/blog-list"><i class="bi bi-pencil-square"></i> Blog Management</a></li>
+          <li><a href="/admin/personil"><i class="bi bi-people-fill"></i> Personil Management</a></li>
+          <li><a href="/admin/profil-pages"><i class="bi bi-person-badge"></i> Profile Pages</a></li>
+          <li><a href="/admin/join-applications"><i class="bi bi-file-earmark-text"></i> Join Applications</a></li>
+          <li><a href="/admin/site-settings" class="active"><i class="bi bi-gear-fill"></i> Settings</a></li>
+          <li><a href="/logout"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
+        </ul>
       </div>
-      <ul class="sidebar-menu">
-        <li><a href="/admin/dashboard"><i class="bi bi-grid-fill"></i> Dashboard</a></li>
-        <li><a href="/admin/settings" class="active"><i class="bi bi-gear-fill"></i> Settings</a></li>
-        <li><a href="#"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
-      </ul>
     </aside>
 
     <!-- Main Content -->
