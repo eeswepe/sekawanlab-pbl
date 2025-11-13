@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Personil - SE Laboratory</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+
+</head>
+<body>
+
+    <div class="wrapper">
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <a class="sidebar-brand" href="dashboard.html">
+                    <div class="logo-icon">SE</div>
+                    <span>SE Laboratory</span>
+                </a>
+            </div>
+
+            <ul class="sidebar-nav">
+                <li class="sidebar-nav-item">
+                    <a href="dashboard.html" class="sidebar-nav-link">
+                        <i class="bi bi-grid-fill"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="blog-list.html" class="sidebar-nav-link">
+                        <i class="bi bi-pencil-square"></i>
+                        <span>Blog Management</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="personil-list.html" class="sidebar-nav-link active">
+                        <i class="bi bi-people-fill"></i>
+                        <span>Personil Management</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="#" class="sidebar-nav-link">
+                        <i class="bi bi-file-person"></i>
+                        <span>Profile Pages</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="#" class="sidebar-nav-link">
+                        <i class="bi bi-file-earmark-text"></i>
+                        <span>Join Applications</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="#" class="sidebar-nav-link">
+                        <i class="bi bi-gear-fill"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="../login.html" class="sidebar-nav-link">
+                        <i class="bi bi-box-arrow-left"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div id="main-content">
+            <nav id="topbar" class="navbar navbar-expand-lg">
+                <div class="container-fluid d-flex justify-content-between align-items-center">
+
+                    <div class="d-flex align-items-center">
+                        <button class="btn sidebar-toggle sidebar-toggle-mobile" id="sidebarToggleMobile">
+                            <i class="bi bi-list"></i>
+                        </button>
+
+                        <form class="d-none d-md-inline-block ms-2">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Search...">
+                                <button class="btn" style="background-color: var(--gold); color: white;" type="button">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <ul class="navbar-nav topbar-nav ms-auto">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link position-relative" href="#" id="alertsDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-bell-fill"></i>
+                                <span class="notification-badge">3</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="alertsDropdown">
+                                <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-text"></i> New Application</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="bi bi-chat-dots"></i> New Comment</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#">Show All Alerts</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle profile-dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown">
+                                <img src="https://via.placeholder.com/150" alt="Profile Picture">
+                                <span class="d-none d-md-inline">Admin User</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                                <li><a class="dropdown-item" href="#"><i class="bi bi-person-fill"></i> My Profile</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="bi bi-gear-fill"></i> Settings</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="../login.html"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                </div>
+            </nav>
+
+            <main class="content-fluid">
+                <div class="page-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1>Edit Data Personil</h1>
+                        <p>Perbarui informasi untuk **Budi Santoso (Talent/Geek)**.</p>
+                    </div>
+                </div>
+
+                <form id="personilEditForm" action="/admin/personil/update/123" method="POST">
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title">1. Data Pribadi</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-3 text-center mb-4">
+                                    <label class="form-label">Foto Profil Saat Ini</label>
+                                    <div class="d-flex flex-column align-items-center">
+                                        <img id="photo-preview" src="https://via.placeholder.com/120/D4AF37/FFFFFF?text=BU" alt="Foto Profil">
+                                        <input class="form-control mt-3" type="file" id="photo" accept="image/*">
+                                    </div>
+                                </div>
+                                <div class="col-lg-9">
+                                    <div class="mb-3">
+                                        <label for="namaLengkap" class="form-label">Nama Lengkap</label>
+                                        <input type="text" class="form-control" id="namaLengkap" value="Budi Santoso" required>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Tipe Personil</label>
+                                            <div class="d-flex gap-4">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="tipePersonil" id="tipeDosen" value="Dosen">
+                                                    <label class="form-check-label" for="tipeDosen">Dosen Pembimbing</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="tipePersonil" id="tipeTalent" value="Talent" checked>
+                                                    <label class="form-check-label" for="tipeTalent">Talent/Geeks</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="role" class="form-label">Role/Posisi</label>
+                                            <input type="text" class="form-control" id="role" value="Mobile Developer" required>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="spesialisasi" class="form-label">Spesialisasi</label>
+                                        <input type="text" class="form-control" id="spesialisasi" value="Android Development, Kotlin">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title">2. Kontak & Bio</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" value="budi.s@geek.id" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="phone" class="form-label">Phone</label>
+                                    <input type="tel" class="form-control" id="phone" value="+62 812 3456 7890">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="location" class="form-label">Location</label>
+                                    <input type="text" class="form-control" id="location" value="Bandung, Indonesia">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="tanggalBergabung" class="form-label">Tanggal Bergabung</label>
+                                    <input type="date" class="form-control" id="tanggalBergabung" value="2023-01-15" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="bio" class="form-label">Tentang (Bio)</label>
+                                <textarea class="form-control" id="bio" rows="4">Seorang Mobile Developer dengan fokus pada pengembangan aplikasi Android native. Memiliki pengalaman 2 tahun di SE Laboratory.</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title">3. Skills</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted">Tambahkan daftar skill atau kemampuan teknis yang dimiliki.</p>
+                            <div id="skills-container">
+                                <div class="input-group mb-2 dynamic-item">
+                                    <input type="text" class="form-control" value="Kotlin">
+                                    <button class="btn btn-danger" type="button" onclick="removeDynamicItem(this)"><i class="bi bi-x-lg"></i></button>
+                                </div>
+                                <div class="input-group mb-2 dynamic-item">
+                                    <input type="text" class="form-control" value="Android Studio">
+                                    <button class="btn btn-danger" type="button" onclick="removeDynamicItem(this)"><i class="bi bi-x-lg"></i></button>
+                                </div>
+                            </div>
+                            <button class="btn btn-outline-secondary btn-sm" type="button" onclick="addSkillInput()">
+                                <i class="bi bi-plus-circle me-2"></i> Tambah Skill
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title">4. Social Media</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="linkedin" class="form-label">LinkedIn URL</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-linkedin"></i></span>
+                                    <input type="url" class="form-control" id="linkedin" value="https://linkedin.com/in/budisantoso">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="github" class="form-label">GitHub URL</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-github"></i></span>
+                                    <input type="url" class="form-control" id="github" value="https://github.com/budigeeek">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="website" class="form-label">Website URL</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-globe"></i></span>
+                                    <input type="url" class="form-control" id="website" value="">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title">5. Projects</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted">Daftar proyek yang pernah dikerjakan personil.</p>
+                            <div id="projects-container">
+                                <div class="dynamic-item" data-index="1">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h6 class="mb-0">Project #1</h6>
+                                        <button class="btn btn-sm btn-danger" type="button" onclick="removeDynamicItem(this.closest('.dynamic-item'))">Hapus</button>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Judul Proyek</label>
+                                        <input type="text" class="form-control" value="SE Lab Attendance App">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Deskripsi</label>
+                                        <textarea class="form-control" rows="2">Aplikasi mobile untuk mencatat kehadiran personil menggunakan geofencing dan QR code.</textarea>
+                                    </div>
+                                    <div class="mb-1 tag-input-group">
+                                        <label class="form-label">Tech Stack (Tags)</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control project-tech-stack-input" placeholder="Masukkan teknologi (contoh: PHP, Vue.js)">
+                                            <button class="btn btn-secondary" type="button" onclick="addProjectTag(this)">Tambah</button>
+                                        </div>
+                                    </div>
+                                    <div class="tag-list mt-2">
+                                        <span class="badge bg-info text-dark">Kotlin <button type="button" class="btn-close" aria-label="Remove tag" onclick="removeTag(this)"></button></span>
+                                        <span class="badge bg-info text-dark">Android SDK <button type="button" class="btn-close" aria-label="Remove tag" onclick="removeTag(this)"></button></span>
+                                        <span class="badge bg-info text-dark">Retrofit <button type="button" class="btn-close" aria-label="Remove tag" onclick="removeTag(this)"></button></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-outline-secondary btn-sm" type="button" id="addProjectBtn">
+                                <i class="bi bi-plus-circle me-2"></i> Tambah Project
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title">6. Account Management</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-6 mb-3 mb-md-0">
+                                    <p class="mb-0"><strong>Username:</strong> budi.santoso</p>
+                                    <p class="mb-0 text-muted">Aksi ini akan mengirimkan link reset password ke email personil.</p>
+                                </div>
+                                <div class="col-md-6 text-md-end">
+                                    <button type="button" class="btn btn-danger-outline">
+                                        <i class="bi bi-key me-2"></i> Reset Password
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between gap-3 mb-5">
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal">
+                            <i class="bi bi-trash me-2"></i> Delete Personil
+                        </button>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-outline-secondary" onclick="window.history.back()">
+                                <i class="bi bi-x-lg me-2"></i> Cancel
+                            </button>
+                            <button type="submit" class="btn btn-primary-custom">
+                                <i class="bi bi-arrow-clockwise me-2"></i> Update Data
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+            </main>
+
+            <footer class="footer">
+                <div class="container-fluid text-center">
+                    <span class="text-muted">&copy; 2025 Software Engineering Laboratory. All rights reserved.</span>
+                </div>
+            </footer>
+
+        </div>
+    </div>
+    
+    <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deleteConfirmationModalLabel">Konfirmasi Penghapusan</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Apakah Anda yakin ingin menghapus data personil **Budi Santoso**? Aksi ini tidak dapat dibatalkan.
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+            <button type="button" class="btn btn-danger"><i class="bi bi-trash me-2"></i> Hapus Permanen</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+</body>
+</html>
