@@ -2,18 +2,32 @@
 
 namespace App\Middlewares;
 
+use App\Helpers\SessionHelper;
+
 class PersonilMiddleware implements Middleware
 {
     public function handle(): bool
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
+        // Start session jika belum
+        SessionHelper::start();
+
+        // Check if user is logged in
+        if (!SessionHelper::isLoggedIn()) {
+            SessionHelper::setFlash('error', 'Silakan login terlebih dahulu.');
+            header("Location: /login");
+            exit();
         }
 
-        // Cek apakah user memiliki role personil atau admin
-        if (!isset($_SESSION["user"]["role"]) || 
-            ($_SESSION["user"]["role"] !== "personil" && $_SESSION["user"]["role"] !== "admin")) {
-            header("Location: /");
+        // Check if user has personil role
+        if (!SessionHelper::isPersonil()) {
+            SessionHelper::setFlash('error', 'Anda tidak memiliki akses ke halaman ini.');
+            
+            // Redirect admin to admin dashboard
+            if (SessionHelper::isAdmin()) {
+                header("Location: /admin");
+            } else {
+                header("Location: /login");
+            }
             exit();
         }
 

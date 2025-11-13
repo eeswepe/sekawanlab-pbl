@@ -41,12 +41,12 @@ class PersonilController extends Controller
             "blog_id" => $id,
         ];
 
-        $this->render("personil/personil_blog_edit", $data);
+        $this->render("personil/personil_blog-edit", $data);
     }
 
     public function renderProfile()
     {
-        $this->render("personil/personil_profile-view");
+        $this->render("personil/personil_profil-view");
     }
 
     public function renderProfileEdit()

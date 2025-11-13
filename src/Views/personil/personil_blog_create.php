@@ -22,21 +22,19 @@
 
     <div class="wrapper">
         <!-- Sidebar -->
-        <nav id="sidebar">
-            <div class="sidebar-header">
-                <a class="sidebar-brand" href="#">
-                    <div class="logo-icon">SE</div>
-                    <span>SE Laboratory</span>
-                </a>
+        <aside id="sidebar">
+            <div>
+                <div class="brand">
+                    <span class="logo-icon">SE</span> SE Laboratory
+                </div>
+                <ul class="sidebar-menu">
+                    <li><a href="/personil"><i class="bi bi-grid-fill"></i> Dashboard</a></li>
+                    <li><a href="/personil/profile"><i class="bi bi-person-circle"></i> My Profile</a></li>
+                    <li><a href="/personil/blog" class="active"><i class="bi bi-journal-text"></i> My Blog Posts</a></li>
+                    <li><a href="/logout"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
+                </ul>
             </div>
-
-            <ul class="sidebar-nav">
-                <li><a href="#"><i class="bi bi-grid-fill"></i> Dashboard</a></li>
-                <li><a href="#"><i class="bi bi-person-circle"></i> My Profile</a></li>
-                <li><a href="#" class="active"><i class="bi bi-journal-text"></i> My Blog Posts</a></li>
-                <li><a href="#"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
-            </ul>
-        </nav>
+        </aside>
 
         <!-- Main Content -->
         <div id="main-content">

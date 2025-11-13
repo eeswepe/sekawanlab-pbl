@@ -14,53 +14,19 @@
 <body>
 
     <div class="wrapper">
-        <nav id="sidebar">
-            <div class="sidebar-header">
-                <a class="sidebar-brand" href="../dashboard.html">
-                    <div class="logo-icon">SE</div>
-                    <span>SE Laboratory</span>
-                </a>
+        <aside id="sidebar">
+            <div>
+                <div class="brand">
+                    <span class="logo-icon">SE</span> SE Laboratory
+                </div>
+                <ul class="sidebar-menu">
+                    <li><a href="/personil"><i class="bi bi-grid-fill"></i> Dashboard</a></li>
+                    <li><a href="/personil/profile"><i class="bi bi-person-circle"></i> My Profile</a></li>
+                    <li><a href="/personil/blog" class="active"><i class="bi bi-journal-text"></i> My Blog Posts</a></li>
+                    <li><a href="/logout"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
+                </ul>
             </div>
-
-            <ul class="sidebar-nav">
-                <li class="sidebar-nav-item">
-                    <a href="../dashboard.html" class="sidebar-nav-link">
-                        <i class="bi bi-grid-fill"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
-                <li class="sidebar-nav-item">
-                    <a href="blog-list.html" class="sidebar-nav-link active">
-                        <i class="bi bi-pencil-square"></i>
-                        <span>Blog Management</span>
-                    </a>
-                </li>
-                <li class="sidebar-nav-item">
-                    <a href="profile-view.html" class="sidebar-nav-link">
-                        <i class="bi bi-person-circle"></i>
-                        <span>My Profile</span>
-                    </a>
-                </li>
-                <li class="sidebar-nav-item">
-                    <a href="#" class="sidebar-nav-link">
-                        <i class="bi bi-file-person"></i>
-                        <span>Profile Pages</span>
-                    </a>
-                </li>
-                <li class="sidebar-nav-item">
-                    <a href="#" class="sidebar-nav-link">
-                        <i class="bi bi-gear-fill"></i>
-                        <span>Settings</span>
-                    </a>
-                </li>
-                <li class="sidebar-nav-item">
-                    <a href="../../login.html" class="sidebar-nav-link">
-                        <i class="bi bi-box-arrow-left"></i>
-                        <span>Logout</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
+        </aside>
         <div id="main-content">
             <nav id="topbar" class="navbar navbar-expand-lg">
                 <div class="container-fluid d-flex justify-content-between align-items-center">

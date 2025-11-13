@@ -103,8 +103,8 @@
         <div class="card mb-4">
           <div class="card-header fw-semibold">Aksi Cepat</div>
           <div class="card-body d-flex flex-wrap gap-3">
-            <button class="btn btn-primary-custom"><i class="bi bi-pencil-square me-2"></i> Tulis Blog Baru</button>
-            <button class="btn btn-outline-secondary"><i class="bi bi-person-lines-fill me-2"></i> Edit Profil</button>
+            <button class="btn btn-primary-custom" onclick="window.location.href='/personil/blog/create'"><i class="bi bi-pencil-square me-2"></i> Tulis Blog Baru</button>
+            <button class="btn btn-outline-secondary" onclick="window.location.href='/personil/profile/edit'"><i class="bi bi-person-lines-fill me-2"></i> Edit Profil</button>
           </div>
         </div>
 

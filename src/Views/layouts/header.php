@@ -79,7 +79,7 @@
                             </ul>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/personil"
+                            <a class="nav-link" href="/personil-list"
                                 >Personil</a
                             >
                         </li>

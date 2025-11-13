@@ -27,6 +27,38 @@
 
         <h5 class="mb-4 fw-semibold">Masuk ke Akun Anda</h5>
 
+        <?php
+        // Import SessionHelper for flash messages
+        use App\Helpers\SessionHelper;
+        
+        // Display error flash message
+        $errorMsg = SessionHelper::getFlash('error');
+        if ($errorMsg): ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i><?= htmlspecialchars($errorMsg) ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php endif; ?>
+        
+        <?php
+        // Display success flash message
+        $successMsg = SessionHelper::getFlash('success');
+        if ($successMsg): ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i><?= htmlspecialchars($successMsg) ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php endif; ?>
+        
+        <?php
+        // Display error from URL parameter (legacy support)
+        if (isset($_GET['error']) && $_GET['error'] === 'invalid_credentials'): ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>Username atau password salah!
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php endif; ?>
+
         <form id="loginForm" action="/login" method="POST">
             <div class="mb-3 text-start">
                 <label for="username" class="form-label">Email atau Username</label>

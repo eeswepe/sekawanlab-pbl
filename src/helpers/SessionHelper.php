@@ -54,6 +54,12 @@ class SessionHelper
         return $_SESSION["user"] ?? null;
     }
 
+    public static function getPersonilId(): ?int
+    {
+        self::start();
+        return $_SESSION["personil"]["id"] ?? null;
+    }
+
     /**
      * Cek apakah user sudah login
      * @return bool
@@ -84,7 +90,7 @@ class SessionHelper
 
     /**
      * Set data user ke session
-     * @param array $user Data user (id, username, role)
+     * @param array $user Data user (id, username, role, personil_id)
      */
     public static function setUser(array $user): void
     {
@@ -93,7 +99,8 @@ class SessionHelper
         $_SESSION["user"] = [
             "id" => $user["id"],
             "username" => $user["username"],
-            "role" => $user["role"]
+            "role" => $user["role"],
+            "personil_id" => $user["personil_id"] ?? null
         ];
     }
 
