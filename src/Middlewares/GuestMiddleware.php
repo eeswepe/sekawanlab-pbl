@@ -16,9 +16,9 @@ class GuestMiddleware implements Middleware
             $role = $_SESSION["user"]["role"] ?? "user";
 
             if ($role === "admin") {
-                header("Location: /admin/dashboard");
+                header("Location: /admin");
             } elseif ($role === "personil") {
-                header("Location: /personil/dashboard");
+                header("Location: /personil");
             } else {
                 header("Location: /");
             }

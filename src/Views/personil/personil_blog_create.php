@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,53 +14,27 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
     <!-- Custom CSS File -->
-    <link rel="stylesheet" href="/public/css/personil_blog_create.css"> 
+    <link rel="stylesheet" href="/css/personil_blog_create.css">
 
 </head>
+
 <body>
 
     <div class="wrapper">
         <!-- Sidebar -->
         <nav id="sidebar">
             <div class="sidebar-header">
-                <a class="sidebar-brand" href="dashboard.html">
+                <a class="sidebar-brand" href="#">
                     <div class="logo-icon">SE</div>
                     <span>SE Laboratory</span>
                 </a>
             </div>
 
             <ul class="sidebar-nav">
-                <li class="sidebar-nav-item">
-                    <a href="dashboard.html" class="sidebar-nav-link">
-                        <i class="bi bi-grid-fill"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
-                <li class="sidebar-nav-item">
-                    <!-- Link aktif ke halaman Blog Saya -->
-                    <a href="personil-blog-list.html" class="sidebar-nav-link active">
-                        <i class="bi bi-book-half"></i>
-                        <span>Blog Saya</span>
-                    </a>
-                </li>
-                <li class="sidebar-nav-item">
-                    <a href="#" class="sidebar-nav-link">
-                        <i class="bi bi-person-fill"></i>
-                        <span>Profile Saya</span>
-                    </a>
-                </li>
-                <li class="sidebar-nav-item">
-                    <a href="#" class="sidebar-nav-link">
-                        <i class="bi bi-gear-fill"></i>
-                        <span>Settings</span>
-                    </a>
-                </li>
-                <li class="sidebar-nav-item">
-                    <a href="#" class="sidebar-nav-link">
-                        <i class="bi bi-box-arrow-left"></i>
-                        <span>Logout</span>
-                    </a>
-                </li>
+                <li><a href="#"><i class="bi bi-grid-fill"></i> Dashboard</a></li>
+                <li><a href="#"><i class="bi bi-person-circle"></i> My Profile</a></li>
+                <li><a href="#" class="active"><i class="bi bi-journal-text"></i> My Blog Posts</a></li>
+                <li><a href="#"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
             </ul>
         </nav>
 
@@ -94,7 +69,9 @@
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
                                 <li><a class="dropdown-item" href="#"><i class="bi bi-person-fill"></i> My Profile</a></li>
                                 <li><a class="dropdown-item" href="#"><i class="bi bi-gear-fill"></i> Settings</a></li>
-                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
                                 <li><a class="dropdown-item" href="#"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
                             </ul>
                         </li>
@@ -123,7 +100,7 @@
                                         <label for="postTitle" class="form-label">Judul Artikel</label>
                                         <input type="text" class="form-control" id="postTitle" placeholder="Masukkan judul artikel..." required>
                                     </div>
-                                    
+
                                     <!-- Konten Artikel (Rich Text Editor Placeholder) -->
                                     <div class="mb-4">
                                         <label for="blogContent" class="form-label">Konten</label>
@@ -225,7 +202,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- Custom JS File -->
-    <script src="/public/js/personil_blog_create.js"></script>
+    <script src="/js/personil_blog_create.js"></script>
 
 </body>
+
 </html>
