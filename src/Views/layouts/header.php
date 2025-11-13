@@ -26,7 +26,6 @@
         <!-- Custom CSS -->
         <link rel="stylesheet" href="/css/header.css" />
         <link rel="stylesheet" href="/css/<?php echo $page_css; ?>" />
-        <link rel="stylesheet" href="/css/profil/tentang-kami.css" />
         <link rel="stylesheet" href="/css/footer.css" />
 
         <style></style>
@@ -85,10 +84,12 @@
                             >
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="blog.html">Blog</a>
+                            <a class="nav-link" href="/blog"
+                                >Blog</a
+                            >
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link btn-join" href="join.html"
+                            <a class="nav-link btn-join" href="/join"
                                 >Join Us</a
                             >
                         </li>
