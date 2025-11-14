@@ -38,10 +38,10 @@
                             <i class="bi bi-list"></i>
                         </button>
 
-                        <form class="d-none d-md-inline-block ms-2">
+                        <form class="d-none d-md-inline-block ms-2" method="GET" action="/admin/join-applications">
                             <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Search applications...">
-                                <button class="btn" style="background-color: var(--gold); color: white;" type="button">
+                                <input type="text" class="form-control" name="search" placeholder="Search applications..." value="<?= htmlspecialchars($filters['search'] ?? '') ?>">
+                                <button class="btn" style="background-color: var(--gold); color: white;" type="submit">
                                     <i class="bi bi-search"></i>
                                 </button>
                             </div>
@@ -88,7 +88,7 @@
                     <div class="col-lg-3 col-md-6">
                         <div class="stat-card">
                             <div class="stat-info">
-                                <h3>210</h3>
+                                <h3><?= $stats['total'] ?></h3>
                                 <p>Total Applications</p>
                             </div>
                             <div class="stat-icon bg-primary">
@@ -99,7 +99,7 @@
                     <div class="col-lg-3 col-md-6">
                         <div class="stat-card">
                             <div class="stat-info">
-                                <h3>15</h3>
+                                <h3><?= $stats['pending'] ?></h3>
                                 <p>Pending</p>
                             </div>
                             <div class="stat-icon bg-warning">
@@ -110,7 +110,7 @@
                     <div class="col-lg-3 col-md-6">
                         <div class="stat-card">
                             <div class="stat-info">
-                                <h3>180</h3>
+                                <h3><?= $stats['accepted'] ?></h3>
                                 <p>Accepted</p>
                             </div>
                             <div class="stat-icon bg-success">
@@ -121,7 +121,7 @@
                     <div class="col-lg-3 col-md-6">
                         <div class="stat-card">
                             <div class="stat-info">
-                                <h3>15</h3>
+                                <h3><?= $stats['rejected'] ?></h3>
                                 <p>Rejected</p>
                             </div>
                             <div class="stat-icon bg-danger">
@@ -133,52 +133,31 @@
                 <div class="card">
                     <div class="card-header d-flex flex-wrap justify-content-between align-items-center">
                         <h5 class="card-title mb-0">Application Data</h5>
-                        <div class="d-flex align-items-center mt-2 mt-sm-0">
-                            <div class="dropdown me-2">
-                                <button class="btn btn-outline-secondary dropdown-toggle btn-action-sm" type="button" id="bulkActionsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="bi bi-lightning-fill me-1"></i> Bulk Actions
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bulkActionsDropdown">
-                                    <li><a class="dropdown-item text-success" href="#" id="bulkAccept"><i class="bi bi-check-circle me-2"></i> Accept Selected</a></li>
-                                    <li><a class="dropdown-item text-danger" href="#" id="bulkReject"><i class="bi bi-x-circle me-2"></i> Reject Selected</a></li>
-                                </ul>
-                            </div>
-                             <a href="#" class="btn btn-primary-custom btn-action-sm">
-                                <i class="bi bi-upload me-1"></i> Export Data
-                            </a>
-                        </div>
+                        <form method="GET" action="/admin/join-applications" id="filterForm" class="d-flex gap-2">
+                            <?php if (!empty($filters['search'])): ?>
+                                <input type="hidden" name="search" value="<?= htmlspecialchars($filters['search']) ?>">
+                            <?php endif; ?>
+                            <select class="form-select form-select-sm" name="status" id="filterStatus" style="width: auto;">
+                                <option value="all" <?= empty($filters['status']) ? 'selected' : '' ?>>All Status</option>
+                                <option value="pending" <?= (isset($filters['status']) && $filters['status'] === 'pending') ? 'selected' : '' ?>>Pending</option>
+                                <option value="reviewed" <?= (isset($filters['status']) && $filters['status'] === 'reviewed') ? 'selected' : '' ?>>Reviewed</option>
+                                <option value="accepted" <?= (isset($filters['status']) && $filters['status'] === 'accepted') ? 'selected' : '' ?>>Accepted</option>
+                                <option value="rejected" <?= (isset($filters['status']) && $filters['status'] === 'rejected') ? 'selected' : '' ?>>Rejected</option>
+                            </select>
+                            <select class="form-select form-select-sm" name="prodi" id="filterProdi" style="width: auto;">
+                                <option value="all" <?= empty($filters['prodi']) ? 'selected' : '' ?>>All Prodi</option>
+                                <option value="TI" <?= (isset($filters['prodi']) && $filters['prodi'] === 'TI') ? 'selected' : '' ?>>TI</option>
+                                <option value="SIB" <?= (isset($filters['prodi']) && $filters['prodi'] === 'SIB') ? 'selected' : '' ?>>SIB</option>
+                                <option value="PPLS" <?= (isset($filters['prodi']) && $filters['prodi'] === 'PPLS') ? 'selected' : '' ?>>PPLS</option>
+                            </select>
+                        </form>
                     </div>
                     <div class="card-body">
-                        <div class="row g-3 mb-4 filter-controls">
-                            <div class="col-md-3 col-sm-6">
-                                <select class="form-select" aria-label="Filter by Prodi" id="filterProdi">
-                                    <option selected>Filter by Prodi</option>
-                                    <option value="SE">Software Engineering</option>
-                                    <option value="CS">Computer Science</option>
-                                    <option value="IS">Information Systems</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3 col-sm-6">
-                                <select class="form-select" aria-label="Filter by Status" id="filterStatus">
-                                    <option selected>Filter by Status</option>
-                                    <option value="pending">Pending</option>
-                                    <option value="reviewed">Reviewed</option>
-                                    <option value="accepted">Accepted</option>
-                                    <option value="rejected">Rejected</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3 col-sm-6">
-                                <input type="date" class="form-control" id="filterDateFrom" placeholder="From Date">
-                            </div>
-                            <div class="col-md-3 col-sm-6">
-                                <input type="date" class="form-control" id="filterDateTo" placeholder="To Date">
-                            </div>
-                        </div>
                         <div class="table-responsive">
                             <table class="table table-hover align-middle" id="applicationsTable">
                                 <thead>
                                     <tr>
-                                        <th><input class="form-check-input" type="checkbox" id="selectAll"></th>
+                                        <th>#</th>
                                         <th>Nama</th>
                                         <th>NIM</th>
                                         <th>Prodi</th>
@@ -189,71 +168,78 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td><input class="form-check-input row-checkbox" type="checkbox" data-id="1"></td>
-                                        <td>Joko Susilo</td>
-                                        <td>18021234</td>
-                                        <td>Software Engineering</td>
-                                        <td>5</td>
-                                        <td>2025-11-10</td>
-                                        <td><span class="badge bg-warning bg-pending">Pending</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-action-sm btn-primary-custom view-detail" data-id="1"><i class="bi bi-eye"></i> View</button>
-                                            <button class="btn btn-sm btn-action-sm btn-outline-secondary update-status" data-id="1"><i class="bi bi-arrow-repeat"></i> Update</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><input class="form-check-input row-checkbox" type="checkbox" data-id="2"></td>
-                                        <td>Citra Lestari</td>
-                                        <td>19035678</td>
-                                        <td>Computer Science</td>
-                                        <td>7</td>
-                                        <td>2025-10-28</td>
-                                        <td><span class="badge bg-success">Accepted</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-action-sm btn-primary-custom view-detail" data-id="2"><i class="bi bi-eye"></i> View</button>
-                                            <button class="btn btn-sm btn-action-sm btn-outline-secondary update-status" data-id="2"><i class="bi bi-arrow-repeat"></i> Update</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><input class="form-check-input row-checkbox" type="checkbox" data-id="3"></td>
-                                        <td>Ahmad Yani</td>
-                                        <td>18019012</td>
-                                        <td>Information Systems</td>
-                                        <td>5</td>
-                                        <td>2025-11-05</td>
-                                        <td><span class="badge bg-danger">Rejected</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-action-sm btn-primary-custom view-detail" data-id="3"><i class="bi bi-eye"></i> View</button>
-                                            <button class="btn btn-sm btn-action-sm btn-outline-secondary update-status" data-id="3"><i class="bi bi-arrow-repeat"></i> Update</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><input class="form-check-input row-checkbox" type="checkbox" data-id="4"></td>
-                                        <td>Budi Santoso</td>
-                                        <td>20040045</td>
-                                        <td>Software Engineering</td>
-                                        <td>3</td>
-                                        <td>2025-11-01</td>
-                                        <td><span class="badge bg-info text-dark">Reviewed</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-action-sm btn-primary-custom view-detail" data-id="4"><i class="bi bi-eye"></i> View</button>
-                                            <button class="btn btn-sm btn-action-sm btn-outline-secondary update-status" data-id="4"><i class="bi bi-arrow-repeat"></i> Update</button>
-                                        </td>
-                                    </tr>
-                                    </tbody>
+                                    <?php if (empty($applications)): ?>
+                                        <tr>
+                                            <td colspan="8" class="text-center text-muted py-4">Tidak ada application ditemukan</td>
+                                        </tr>
+                                    <?php else: ?>
+                                        <?php foreach ($applications as $index => $app): ?>
+                                            <tr>
+                                                <td><?= $offset + $index + 1 ?></td>
+                                                <td><?= htmlspecialchars($app['nama_lengkap']) ?></td>
+                                                <td><?= htmlspecialchars($app['nim']) ?></td>
+                                                <td><?= htmlspecialchars($app['prodi']) ?></td>
+                                                <td><?= $app['semester'] ?></td>
+                                                <td><?= date('Y-m-d', strtotime($app['tanggal_apply'])) ?></td>
+                                                <td>
+                                                    <?php
+                                                    $badgeClass = [
+                                                        'pending' => 'bg-warning',
+                                                        'reviewed' => 'bg-info text-dark',
+                                                        'accepted' => 'bg-success',
+                                                        'rejected' => 'bg-danger'
+                                                    ][$app['status']] ?? 'bg-secondary';
+                                                    ?>
+                                                    <span class="badge <?= $badgeClass ?>"><?= ucfirst($app['status']) ?></span>
+                                                </td>
+                                                <td>
+                                                    <a href="/admin/join-application/<?= $app['id'] ?>" class="btn btn-sm btn-action-sm btn-primary-custom view-detail"><i class="bi bi-eye"></i> View</a>
+                                                    <button class="btn btn-sm btn-action-sm btn-danger delete-application" data-id="<?= $app['id'] ?>" title="Delete"><i class="bi bi-trash"></i></button>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </tbody>
                             </table>
                         </div>
                         
                         <div class="d-flex justify-content-between align-items-center mt-3">
-                            <span class="text-muted small">Showing 1 to 10 of 210 entries</span>
+                            <span class="text-muted small">Showing <?= $offset + 1 ?> to <?= min($offset + count($applications), $totalApplications) ?> of <?= $totalApplications ?> entries</span>
                             <nav>
                                 <ul class="pagination pagination-sm mb-0">
-                                    <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
-                                    <li class="page-item active" aria-current="page"><a class="page-link" href="#" style="background-color: var(--gold); border-color: var(--gold); color: var(--white);">1</a></li>
-                                    <li class="page-item"><a class="page-link text-black" href="#">2</a></li>
-                                    <li class="page-item"><a class="page-link text-black" href="#">3</a></li>
-                                    <li class="page-item"><a class="page-link text-black" href="#">Next</a></li>
+                                    <?php if ($currentPage > 1): ?>
+                                        <li class="page-item">
+                                            <a class="page-link text-black" href="?page=<?= $currentPage - 1 ?><?= !empty($filters['search']) ? '&search='.urlencode($filters['search']) : '' ?><?= !empty($filters['status']) ? '&status='.$filters['status'] : '' ?><?= !empty($filters['prodi']) ? '&prodi='.$filters['prodi'] : '' ?>">Previous</a>
+                                        </li>
+                                    <?php else: ?>
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#">Previous</a>
+                                        </li>
+                                    <?php endif; ?>
+                                    
+                                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                                        <?php if ($i == $currentPage): ?>
+                                            <li class="page-item active" aria-current="page">
+                                                <a class="page-link" href="#" style="background-color: var(--gold); border-color: var(--gold); color: var(--white);"><?= $i ?></a>
+                                            </li>
+                                        <?php elseif ($i == 1 || $i == $totalPages || ($i >= $currentPage - 1 && $i <= $currentPage + 1)): ?>
+                                            <li class="page-item">
+                                                <a class="page-link text-black" href="?page=<?= $i ?><?= !empty($filters['search']) ? '&search='.urlencode($filters['search']) : '' ?><?= !empty($filters['status']) ? '&status='.$filters['status'] : '' ?><?= !empty($filters['prodi']) ? '&prodi='.$filters['prodi'] : '' ?>"><?= $i ?></a>
+                                            </li>
+                                        <?php elseif ($i == $currentPage - 2 || $i == $currentPage + 2): ?>
+                                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                                        <?php endif; ?>
+                                    <?php endfor; ?>
+                                    
+                                    <?php if ($currentPage < $totalPages): ?>
+                                        <li class="page-item">
+                                            <a class="page-link text-black" href="?page=<?= $currentPage + 1 ?><?= !empty($filters['search']) ? '&search='.urlencode($filters['search']) : '' ?><?= !empty($filters['status']) ? '&status='.$filters['status'] : '' ?><?= !empty($filters['prodi']) ? '&prodi='.$filters['prodi'] : '' ?>">Next</a>
+                                        </li>
+                                    <?php else: ?>
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#">Next</a>
+                                        </li>
+                                    <?php endif; ?>
                                 </ul>
                             </nav>
                         </div>
@@ -269,7 +255,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/admin_applications-list.js"></script>
+    <script src="/js/admin_applications-list.js"></script>
 
 </body>
 </html>

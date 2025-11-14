@@ -578,7 +578,71 @@ class AdminController extends Controller
     
     public function renderApplicationsList()
     {
-        $this->render("admin/admin_applications-list");
+        $applicationModel = new \App\Models\JoinApplicationModel();
+        
+        // Get filters from query params
+        $filters = [];
+        if (!empty($_GET['search'])) {
+            $filters['search'] = $_GET['search'];
+        }
+        if (!empty($_GET['status']) && $_GET['status'] !== 'all') {
+            $filters['status'] = $_GET['status'];
+        }
+        if (!empty($_GET['prodi']) && $_GET['prodi'] !== 'all') {
+            $filters['prodi'] = $_GET['prodi'];
+        }
+        
+        // Pagination
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $limit = 10;
+        $offset = ($page - 1) * $limit;
+        
+        // Get applications and stats
+        $applications = $applicationModel->getApplicationsForAdmin($filters, $limit, $offset);
+        $totalApplications = $applicationModel->countApplicationsForAdmin($filters);
+        $totalPages = ceil($totalApplications / $limit);
+        $stats = $applicationModel->getApplicationStats();
+        
+        $data = [
+            'applications' => $applications,
+            'currentPage' => $page,
+            'totalPages' => $totalPages,
+            'totalApplications' => $totalApplications,
+            'stats' => $stats,
+            'filters' => $filters,
+            'offset' => $offset
+        ];
+        
+        $this->render("admin/admin_applications-list", $data);
+    }
+    
+    public function deleteApplication($id)
+    {
+        header('Content-Type: application/json');
+        
+        $applicationModel = new \App\Models\JoinApplicationModel();
+        
+        // Check if application exists
+        $application = $applicationModel->getApplicationById($id);
+        if (!$application) {
+            echo json_encode(['success' => false, 'message' => 'Application tidak ditemukan']);
+            return;
+        }
+        
+        // Delete CV file if exists
+        if (!empty($application['cv_file_path'])) {
+            $cvPath = __DIR__ . '/../../public' . $application['cv_file_path'];
+            if (file_exists($cvPath)) {
+                unlink($cvPath);
+            }
+        }
+        
+        // Delete application
+        if ($applicationModel->deleteApplication($id)) {
+            echo json_encode(['success' => true, 'message' => 'Application berhasil dihapus']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Gagal menghapus application']);
+        }
     }
 
     public function renderApplicationView($id)

@@ -54,6 +54,7 @@ $router->post("/admin/personil/create", AdminController::class, "createPersonil"
 $router->delete("/admin/personil/delete/{id}", AdminController::class, "deletePersonil")->middleware(AdminMiddleware::class);
 $router->get("/admin/join-applications", AdminController::class, "renderApplicationsList")->middleware(AdminMiddleware::class);
 $router->get("/admin/join-application/{id}", AdminController::class, "renderApplicationView")->middleware(AdminMiddleware::class);
+$router->delete("/admin/join-application/delete/{id}", AdminController::class, "deleteApplication")->middleware(AdminMiddleware::class);
 $router->get("/admin/site-settings", AdminController::class, "renderSiteSettings")->middleware(AdminMiddleware::class);
 
 
