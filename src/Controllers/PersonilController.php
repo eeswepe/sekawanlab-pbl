@@ -127,11 +127,30 @@ class PersonilController extends Controller
 
     public function renderBlogEdit($id)
     {
+        $personil_id = SessionHelper::getPersonilId();
+        
+        if (!$personil_id) {
+            header('Location: /login');
+            exit;
+        }
+        
+        $blog = $this->blogModel->getBlogById($id);
+        
+        if (!$blog || $blog['penulis_id'] != $personil_id) {
+            header('Location: /personil/blog');
+            exit;
+        }
+        
+        $personil = $this->model->getPersonilById($personil_id);
+        $categories = $this->kategoriModel->getAllKategori();
+        
         $data = [
-            "blog_id" => $id,
+            'blog' => $blog,
+            'personil' => $personil,
+            'categories' => $categories
         ];
 
-        $this->render("personil/personil_blog_edit", $data);
+        $this->render("personil/personil_blog-edit", $data);
     }
 
     public function renderProfile()
@@ -304,6 +323,80 @@ class PersonilController extends Controller
             ]);
         } else {
             echo json_encode(['success' => false, 'message' => 'Gagal membuat blog']);
+        }
+        exit;
+    }
+
+    /**
+     * API: Update blog post
+     */
+    public function updateBlog($id)
+    {
+        header('Content-Type: application/json');
+        
+        $personil_id = SessionHelper::getPersonilId();
+        
+        if (!$personil_id) {
+            echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+            exit;
+        }
+        
+        $blog = $this->blogModel->getBlogById($id);
+        
+        if (!$blog || $blog['penulis_id'] != $personil_id) {
+            echo json_encode(['success' => false, 'message' => 'Blog not found or unauthorized']);
+            exit;
+        }
+        
+        $judul = $_POST['judul'] ?? '';
+        $konten = $_POST['konten'] ?? '';
+        $kategori_id = $_POST['kategori_id'] ?? '';
+        $status = $_POST['status'] ?? 'draft';
+        $cuplikan = $_POST['cuplikan'] ?? '';
+        
+        if (empty($judul) || empty($konten) || empty($kategori_id)) {
+            echo json_encode(['success' => false, 'message' => 'Judul, konten, dan kategori harus diisi']);
+            exit;
+        }
+        
+        $slug = $this->generateSlug($judul);
+        $wordCount = str_word_count(strip_tags($konten));
+        $reading_time = max(1, ceil($wordCount / 200));
+        
+        if (empty($cuplikan)) {
+            $cuplikan = $this->generateExcerpt($konten);
+        }
+        
+        $featured_image_url = $blog['featured_image_url'];
+        if (isset($_FILES['featured_image']) && $_FILES['featured_image']['error'] === UPLOAD_ERR_OK) {
+            $uploaded_url = $this->handleImageUpload($_FILES['featured_image']);
+            if ($uploaded_url !== false) {
+                $featured_image_url = $uploaded_url;
+            }
+        }
+        
+        $blogData = [
+            'kategori_id' => $kategori_id,
+            'slug' => $slug,
+            'judul' => $judul,
+            'cuplikan' => $cuplikan,
+            'konten' => $konten,
+            'tanggal_publish' => $status === 'published' ? date('Y-m-d H:i:s') : $blog['tanggal_publish'],
+            'featured_image_url' => $featured_image_url,
+            'status' => $status,
+            'reading_time' => $reading_time
+        ];
+        
+        $result = $this->blogModel->updateBlog($id, $blogData);
+        
+        if ($result) {
+            echo json_encode([
+                'success' => true, 
+                'message' => 'Blog berhasil diupdate',
+                'redirect' => '/personil/blog'
+            ]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Gagal mengupdate blog']);
         }
         exit;
     }

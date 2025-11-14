@@ -1,4 +1,4 @@
-// Logika Sidebar Toggle (Diambil dari dashboard.html)
+// Sidebar Toggle
 document.addEventListener('DOMContentLoaded', function() {
     const sidebar = document.getElementById('sidebar');
     const mainContent = document.getElementById('main-content');
@@ -13,13 +13,11 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleButton.addEventListener('click', toggleSidebar);
     }
 
-    // Set default toggle state for mobile
     if (window.innerWidth < 992) {
         sidebar.classList.add('toggled');
         mainContent.classList.add('toggled');
     }
     
-    // Resize listener untuk menyesuaikan tampilan desktop/mobile
     window.addEventListener('resize', function() {
         if (window.innerWidth >= 992) {
             sidebar.classList.remove('toggled');
@@ -31,10 +29,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Fungsi Image Preview (Dibuat global agar bisa dipanggil dari HTML onchange)
-function previewImage(event) {
+// Image Preview
+document.getElementById('featuredImage')?.addEventListener('change', function(e) {
     const preview = document.getElementById('imagePreview');
-    const file = event.target.files[0];
+    const file = e.target.files[0];
 
     if (file) {
         const reader = new FileReader();
@@ -43,26 +41,39 @@ function previewImage(event) {
         }
         reader.readAsDataURL(file);
     }
-}
+});
 
-// Fungsi Konfirmasi Hapus Draft (Dibuat global agar bisa dipanggil dari HTML onclick)
-function confirmDelete() {
-    // Di sini Anda bisa menambahkan logika pengecekan status post (draft/review) 
-    // sebelum menampilkan konfirmasi.
+// Form Submission
+document.getElementById('editBlogPostForm')?.addEventListener('submit', function(e) {
+    e.preventDefault();
     
-    // Contoh: Asumsi hanya boleh dihapus jika status bukan 'published'
-    const postStatus = document.getElementById('postStatus').value;
+    const blogId = document.querySelector('input[name="blog_id"]').value;
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
     
-    if (postStatus === 'published') {
-        alert('Artikel berstatus "Published" hanya dapat dihapus oleh Administrator.');
-        return;
-    }
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Updating...';
     
-    if (confirm('Apakah Anda yakin ingin menghapus Draf ini? Tindakan ini tidak dapat dibatalkan.')) {
-        // Logika untuk mengirim permintaan DELETE ke backend (simulasi)
-        alert(`Draf ID #123 (Status: ${postStatus}) berhasil dihapus (Simulasi)`);
-        
-        // Arahkan kembali ke daftar blog
-        window.location.href = 'blog-list.html'; 
-    }
-}
+    const formData = new FormData(this);
+    
+    fetch(`/personil/blog/update/${blogId}`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Blog berhasil diupdate!');
+            window.location.href = data.redirect;
+        } else {
+            alert('Error: ' + data.message);
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        }
+    })
+    .catch(error => {
+        alert('Error: ' + error.message);
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+    });
+});

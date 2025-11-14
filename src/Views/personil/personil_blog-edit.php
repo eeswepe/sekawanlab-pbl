@@ -64,14 +64,14 @@
 
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle profile-dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown">
-                                <img src="https://via.placeholder.com/150/1a1a1a/FFFFFF?text=P" alt="Profile Picture">
-                                <span class="d-none d-md-inline">Personil Name</span>
+                                <img src="<?= htmlspecialchars($personil['foto_url'] ?? 'https://via.placeholder.com/150/1a1a1a/FFFFFF?text=P') ?>" alt="Profile Picture">
+                                <span class="d-none d-md-inline"><?= htmlspecialchars($personil['nama_lengkap']) ?></span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                                <li><a class="dropdown-item" href="profile-view.html"><i class="bi bi-person-fill"></i> My Profile</a></li>
+                                <li><a class="dropdown-item" href="/personil/profile"><i class="bi bi-person-fill"></i> My Profile</a></li>
                                 <li><a class="dropdown-item" href="#"><i class="bi bi-gear-fill"></i> Settings</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="../../login.html"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
+                                <li><a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -82,11 +82,12 @@
                 <div class="page-header d-flex justify-content-between align-items-center">
                     <div>
                         <h1>Edit Blog Post</h1>
-                        <p>Perbarui draf artikel Anda. (ID: #123)</p>
+                        <p>Perbarui artikel Anda. (ID: #<?= $blog['id'] ?>)</p>
                     </div>
                 </div>
 
-                <form id="editBlogPostForm">
+                <form id="editBlogPostForm" enctype="multipart/form-data">
+                    <input type="hidden" name="blog_id" value="<?= $blog['id'] ?>">
                     <div class="row g-4">
                         <div class="col-lg-8">
                             <div class="card">
@@ -96,55 +97,49 @@
                                 <div class="card-body">
                                     <div class="mb-3">
                                         <label for="postTitle" class="form-label">Judul Post</label>
-                                        <input type="text" class="form-control" id="postTitle" value="Implementasi Microservices dengan Python dan Flask">
+                                        <input type="text" class="form-control" id="postTitle" name="judul" value="<?= htmlspecialchars($blog['judul']) ?>" required>
                                     </div>
 
                                     <div class="mb-3">
                                         <label for="postContent" class="form-label">Konten Artikel</label>
-                                        <textarea class="form-control" id="postContent" rows="15">
-Bab 1: Pengenalan Microservices...
-
-Konsep Microservices telah merevolusi pengembangan perangkat lunak modern. Berbeda dengan arsitektur monolitik, Microservices membagi aplikasi menjadi layanan-layanan kecil yang independen dan dapat dideploy secara terpisah.
-
-Dalam implementasi ini, kita menggunakan Python dan framework Flask yang ringan untuk membangun setiap layanan, memastikan skalabilitas dan pemeliharaan yang lebih baik.
-                                        </textarea>
+                                        <textarea class="form-control" id="postContent" name="konten" rows="15" required><?= htmlspecialchars($blog['konten']) ?></textarea>
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="postCategory" class="form-label">Kategori</label>
-                                        <select class="form-select" id="postCategory">
-                                            <option value="Tech" selected>Teknologi</option>
-                                            <option value="Research">Penelitian</option>
-                                            <option value="Event">Event Lab</option>
-                                        </select>
+                                        <label for="postExcerpt" class="form-label">Cuplikan (Opsional)</label>
+                                        <textarea class="form-control" id="postExcerpt" name="cuplikan" rows="3" placeholder="Otomatis dibuat jika kosong"><?= htmlspecialchars($blog['cuplikan'] ?? '') ?></textarea>
                                     </div>
 
                                     <div class="mb-0">
-                                        <label for="tags" class="form-label">Tags (Pisahkan dengan koma)</label>
-                                        <input type="text" class="form-control" id="tags" value="Python, Flask, Microservices, DevOps">
+                                        <label for="postCategory" class="form-label">Kategori</label>
+                                        <select class="form-select" id="postCategory" name="kategori_id" required>
+                                            <?php foreach ($categories as $category): ?>
+                                                <option value="<?= $category['id'] ?>" <?= $category['id'] == $blog['kategori_id'] ? 'selected' : '' ?>>
+                                                    <?= htmlspecialchars($category['name']) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="col-lg-4">
-
                             <div class="card">
                                 <div class="card-header">
-                                    <h5 class="card-title"><i class="bi bi-clock-history me-2" style="color: var(--gold);"></i> Status & Jadwal</h5>
+                                    <h5 class="card-title"><i class="bi bi-clock-history me-2" style="color: var(--gold);"></i> Status & Info</h5>
                                 </div>
                                 <div class="card-body">
                                     <div class="mb-3">
                                         <label for="postStatus" class="form-label">Status Post</label>
-                                        <select class="form-select" id="postStatus">
-                                            <option value="draft" selected>Draft</option>
-                                            <option value="review">Butuh Review</option>
-                                            <option value="published" disabled>Published (Hanya Admin)</option>
+                                        <select class="form-select" id="postStatus" name="status">
+                                            <option value="draft" <?= $blog['status'] == 'draft' ? 'selected' : '' ?>>Draft</option>
+                                            <option value="published" <?= $blog['status'] == 'published' ? 'selected' : '' ?>>Published</option>
                                         </select>
                                     </div>
                                     <div class="mb-0">
-                                        <label for="lastSaved" class="form-label">Tanggal Terakhir Disimpan</label>
-                                        <input type="text" class="form-control" id="lastSaved" value="2025-11-13 08:00 WIB" readonly>
+                                        <label class="form-label">Terakhir Diupdate</label>
+                                        <input type="text" class="form-control" value="<?= date('d M Y H:i', strtotime($blog['updated_at'])) ?> WIB" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -154,12 +149,12 @@ Dalam implementasi ini, kita menggunakan Python dan framework Flask yang ringan 
                                     <h5 class="card-title"><i class="bi bi-image-fill me-2" style="color: var(--gold);"></i> Gambar Unggulan</h5>
                                 </div>
                                 <div class="card-body">
-                                    <img src="https://via.placeholder.com/400x200/444444/FFFFFF?text=Current+Image" alt="Current Featured Image" class="img-fluid rounded mb-3" id="imagePreview">
+                                    <img src="<?= htmlspecialchars($blog['featured_image_url'] ?? 'https://via.placeholder.com/400x200/444444/FFFFFF?text=No+Image') ?>" alt="Featured Image" class="img-fluid rounded mb-3" id="imagePreview">
                                     <div class="mb-3">
                                         <label for="featuredImage" class="form-label">Upload Gambar Baru</label>
-                                        <input class="form-control" type="file" id="featuredImage" accept="image/*" onchange="previewImage(event)">
+                                        <input class="form-control" type="file" id="featuredImage" name="featured_image" accept="image/*">
                                     </div>
-                                    <small class="text-muted">Rekomendasi rasio: 16:9 atau 2:1</small>
+                                    <small class="text-muted">Rekomendasi rasio: 16:9. Max 5MB</small>
                                 </div>
                             </div>
 
@@ -167,14 +162,10 @@ Dalam implementasi ini, kita menggunakan Python dan framework Flask yang ringan 
                                 <button type="submit" class="btn btn-primary-custom">
                                     <i class="bi bi-save-fill me-2"></i> Update Post
                                 </button>
-                                <button type="button" class="btn btn-danger" id="deleteButton" onclick="confirmDelete()">
-                                    <i class="bi bi-trash-fill me-2"></i> Delete Draft
-                                </button>
-                                <a href="blog-list.html" class="btn btn-outline-secondary">
+                                <a href="/personil/blog" class="btn btn-outline-secondary">
                                     <i class="bi bi-x-circle-fill me-2"></i> Cancel
                                 </a>
                             </div>
-
                         </div>
                     </div>
                 </form>
@@ -189,8 +180,6 @@ Dalam implementasi ini, kita menggunakan Python dan framework Flask yang ringan 
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script src="../../assets/js/personil_blog-edit.js"></script>
-
+    <script src="/js/personil_blog-edit.js"></script>
 </body>
 </html>
