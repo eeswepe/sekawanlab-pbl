@@ -99,11 +99,94 @@ class AdminController extends Controller
 
     public function renderBlogEdit($id)
     {
+        $blogModel = new BlogModel();
+        $kategoriModel = new KategoriModel();
+        $personilModel = new PersonilModel();
+        
+        $blog = $blogModel->getBlogById($id);
+        
+        if (!$blog) {
+            header('Location: /admin/blog-list');
+            exit;
+        }
+        
         $data = [
-            "blog_id" => $id,
+            'blog' => $blog,
+            'categories' => $kategoriModel->getAllKategori(),
+            'personils' => $personilModel->getAllPersonils()
         ];
 
         $this->render("admin/admin_blog_edit", $data);
+    }
+    
+    public function updateBlog($id)
+    {
+        header('Content-Type: application/json');
+        
+        $blogModel = new BlogModel();
+        
+        // Check if blog exists
+        $existingBlog = $blogModel->getBlogById($id);
+        if (!$existingBlog) {
+            echo json_encode(['success' => false, 'message' => 'Blog tidak ditemukan']);
+            return;
+        }
+        
+        // Validate input
+        if (empty($_POST['judul']) || empty($_POST['konten']) || empty($_POST['kategori_id'])) {
+            echo json_encode(['success' => false, 'message' => 'Field wajib tidak boleh kosong']);
+            return;
+        }
+        
+        // Calculate reading time
+        $readingTime = $this->calculateReadingTime($_POST['konten']);
+        
+        // Generate excerpt if not provided
+        $cuplikan = !empty($_POST['cuplikan']) ? $_POST['cuplikan'] : $this->generateExcerpt($_POST['konten']);
+        
+        // Handle featured image upload
+        $featuredImageUrl = $existingBlog['featured_image_url'];
+        if (isset($_FILES['featured_image']) && $_FILES['featured_image']['error'] === UPLOAD_ERR_OK) {
+            $uploadedImage = $this->handleImageUpload($_FILES['featured_image']);
+            if ($uploadedImage) {
+                // Delete old image if exists
+                if ($featuredImageUrl && file_exists(__DIR__ . '/../../public' . $featuredImageUrl)) {
+                    unlink(__DIR__ . '/../../public' . $featuredImageUrl);
+                }
+                $featuredImageUrl = $uploadedImage;
+            }
+        }
+        
+        // Set publish date if status changes to published
+        $tanggalPublish = $existingBlog['tanggal_publish'];
+        if ($_POST['status'] === 'published' && !$tanggalPublish) {
+            $tanggalPublish = date('Y-m-d H:i:s');
+        } elseif ($_POST['status'] === 'draft') {
+            $tanggalPublish = null;
+        }
+        
+        // Prepare update data
+        $updateData = [
+            'kategori_id' => $_POST['kategori_id'],
+            'slug' => $existingBlog['slug'], // Keep original slug
+            'judul' => $_POST['judul'],
+            'cuplikan' => $cuplikan,
+            'konten' => $_POST['konten'],
+            'tanggal_publish' => $tanggalPublish,
+            'featured_image_url' => $featuredImageUrl,
+            'status' => $_POST['status'],
+            'reading_time' => $readingTime
+        ];
+        
+        // Update blog post
+        if ($blogModel->updateBlog($id, $updateData)) {
+            echo json_encode([
+                'success' => true, 
+                'message' => 'Blog berhasil diupdate'
+            ]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Gagal mengupdate blog']);
+        }
     }
 
     public function renderBlogCreate()

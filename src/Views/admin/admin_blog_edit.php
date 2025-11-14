@@ -91,16 +91,20 @@
             <!-- Main Content Area: Blog Editing Form -->
             <main class="content-fluid">
                 <div class="page-header d-flex justify-content-between align-items-center">
-                    <h1>Edit Blog Post: #101</h1>
+                    <h1>Edit Blog Post: #<?= htmlspecialchars($blog['id']) ?></h1>
                     <div class="d-flex align-items-center gap-3">
-                        <span class="text-muted d-none d-sm-inline">Status: <span class="badge bg-success">Published</span></span>
-                        <button type="button" class="btn btn-danger" id="deleteBtn">
+                        <span class="text-muted d-none d-sm-inline">Status: 
+                            <span class="badge <?= $blog['status'] === 'published' ? 'bg-success' : 'bg-warning' ?>">
+                                <?= ucfirst(htmlspecialchars($blog['status'])) ?>
+                            </span>
+                        </span>
+                        <button type="button" class="btn btn-danger" id="deleteBtn" data-blog-id="<?= $blog['id'] ?>">
                             <i class="bi bi-trash me-2"></i> Delete Post
                         </button>
                     </div>
                 </div>
 
-                <form id="blogPostForm">
+                <form id="blogPostForm" data-blog-id="<?= $blog['id'] ?>" enctype="multipart/form-data">
                     <div class="row g-4">
                         <!-- Kolom Kiri: Judul, Konten, Gambar -->
                         <div class="col-lg-8">
@@ -109,26 +113,36 @@
                                     <h5 class="card-title">Konten Utama</h5>
                                 </div>
                                 <div class="card-body">
-                                    <!-- Judul Artikel (Pre-filled) -->
+                                    <!-- Judul Artikel -->
                                     <div class="mb-4">
                                         <label for="postTitle" class="form-label">Judul Artikel</label>
-                                        <input type="text" class="form-control" id="postTitle" value="Penerapan Machine Learning dalam Analisis Sentimen" required>
+                                        <input type="text" class="form-control" id="postTitle" name="judul" value="<?= htmlspecialchars($blog['judul']) ?>" required>
                                     </div>
                                     
-                                    <!-- Konten Artikel (Pre-filled) -->
+                                    <!-- Cuplikan Artikel -->
+                                    <div class="mb-4">
+                                        <label for="postExcerpt" class="form-label">Cuplikan/Excerpt <span class="text-muted">(Opsional)</span></label>
+                                        <textarea class="form-control" id="postExcerpt" name="cuplikan" rows="3" placeholder="Ringkasan singkat artikel (akan digenerate otomatis jika kosong)"><?= htmlspecialchars($blog['cuplikan'] ?? '') ?></textarea>
+                                    </div>
+                                    
+                                    <!-- Konten Artikel -->
                                     <div class="mb-4">
                                         <label for="blogContent" class="form-label">Konten</label>
-                                        <textarea class="form-control" id="blogContent" required>Analisis sentimen menggunakan Machine Learning telah menjadi pilar penting dalam memahami opini publik dari data teks yang masif. Model-model seperti Naive Bayes dan Recurrent Neural Networks (RNN) digunakan untuk mengklasifikasikan sentimen sebagai positif, negatif, atau netral. Dalam implementasinya, data harus melalui tahapan preprocessing yang ketat, termasuk tokenisasi, stemming, dan penghapusan stop words. Proyek ini bertujuan mengeksplorasi efektivitas model-model ML terbaru, termasuk transformer-based models, dalam konteks bahasa Indonesia. Hasil awal menunjukkan bahwa model berbasis BERT memberikan akurasi tertinggi dalam kasus multi-class sentiment analysis.</textarea>
+                                        <textarea class="form-control" id="blogContent" name="konten" required><?= htmlspecialchars($blog['konten']) ?></textarea>
                                     </div>
 
                                     <!-- Upload Featured Image -->
                                     <div class="mb-4">
                                         <label for="featuredImage" class="form-label">Update Featured Image</label>
-                                        <input class="form-control" type="file" id="featuredImage" accept="image/*">
+                                        <input class="form-control" type="file" id="featuredImage" name="featured_image" accept="image/*">
                                         <div id="image-preview-container">
-                                            <!-- Simulasi gambar existing -->
-                                            <img id="image-preview" src="https://placehold.co/300x180/D4AF37/1a1a1a?text=ML+Sentiment" alt="Preview Gambar">
-                                            <span class="preview-placeholder" id="placeholder-text">Pratinjau Gambar (300x180)</span>
+                                            <?php if (!empty($blog['featured_image_url'])): ?>
+                                                <img id="image-preview" src="<?= htmlspecialchars($blog['featured_image_url']) ?>" alt="Preview Gambar" style="display: block;">
+                                                <span class="preview-placeholder" id="placeholder-text" style="display: none;">Pratinjau Gambar (300x180)</span>
+                                            <?php else: ?>
+                                                <img id="image-preview" src="" alt="Preview Gambar" style="display: none;">
+                                                <span class="preview-placeholder" id="placeholder-text">Pratinjau Gambar (300x180)</span>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                 </div>
@@ -145,15 +159,15 @@
                                 <div class="card-body">
                                     <div class="meta-info-item">
                                         <span class="label">ID Artikel</span>
-                                        <span class="value">#101</span>
-                                    </div>
-                                    <div class="meta-info-item">
-                                        <span class="label"><i class="bi bi-eye me-2"></i> View Count</span>
-                                        <span class="value">12,450</span>
+                                        <span class="value">#<?= htmlspecialchars($blog['id']) ?></span>
                                     </div>
                                     <div class="meta-info-item">
                                         <span class="label"><i class="bi bi-calendar me-2"></i> Published Date</span>
-                                        <span class="value">2025-11-01 10:30 WIB</span>
+                                        <span class="value"><?= $blog['tanggal_publish'] ? date('Y-m-d H:i', strtotime($blog['tanggal_publish'])) : 'Not published yet' ?></span>
+                                    </div>
+                                    <div class="meta-info-item">
+                                        <span class="label"><i class="bi bi-clock me-2"></i> Last Updated</span>
+                                        <span class="value"><?= date('Y-m-d H:i', strtotime($blog['updated_at'])) ?></span>
                                     </div>
                                 </div>
                             </div>
@@ -164,49 +178,42 @@
                                     <h5 class="card-title">Status & Klasifikasi</h5>
                                 </div>
                                 <div class="card-body">
-                                    <!-- Status (Radio - Pre-filled to Published) -->
+                                    <!-- Status -->
                                     <div class="mb-4">
                                         <label class="form-label d-block">Status Artikel</label>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="postStatus" id="statusDraft" value="Draft">
+                                            <input class="form-check-input" type="radio" name="status" id="statusDraft" value="draft" <?= $blog['status'] === 'draft' ? 'checked' : '' ?>>
                                             <label class="form-check-label" for="statusDraft">Draft</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="postStatus" id="statusPublished" value="Published" checked>
+                                            <input class="form-check-input" type="radio" name="status" id="statusPublished" value="published" <?= $blog['status'] === 'published' ? 'checked' : '' ?>>
                                             <label class="form-check-label" for="statusPublished">Published</label>
                                         </div>
                                     </div>
 
-                                    <!-- Kategori (Dropdown - Pre-filled) -->
+                                    <!-- Kategori -->
                                     <div class="mb-4">
                                         <label for="postCategory" class="form-label">Kategori</label>
-                                        <select class="form-select" id="postCategory" required>
+                                        <select class="form-select" id="postCategory" name="kategori_id" required>
                                             <option value="" disabled>Pilih Kategori</option>
-                                            <option value="Machine Learning" selected>Machine Learning</option>
-                                            <option value="Cloud Computing">Cloud Computing</option>
-                                            <option value="Mobile Development">Mobile Development</option>
-                                            <option value="Security">Security</option>
-                                            <option value="Data Science">Data Science</option>
-                                            <option value="Web Development">Web Development</option>
+                                            <?php foreach ($categories as $category): ?>
+                                                <option value="<?= $category['id'] ?>" <?= $blog['kategori_id'] == $category['id'] ? 'selected' : '' ?>>
+                                                    <?= htmlspecialchars($category['name']) ?>
+                                                </option>
+                                            <?php endforeach; ?>
                                         </select>
                                     </div>
 
-                                    <!-- Penulis (Dropdown - Pre-filled) -->
+                                    <!-- Penulis (Read-only) -->
                                     <div class="mb-4">
                                         <label for="postAuthor" class="form-label">Penulis</label>
-                                        <select class="form-select" id="postAuthor" required>
-                                            <option value="" disabled>Pilih Penulis</option>
-                                            <option value="Admin User">Admin User</option>
-                                            <option value="Dr. Anita" selected>Dr. Anita</option>
-                                            <option value="Prof. Budi">Prof. Budi</option>
-                                            <option value="Mahasiswa A">Mahasiswa A</option>
-                                        </select>
+                                        <input type="text" class="form-control" id="postAuthor" value="<?= htmlspecialchars($blog['penulis_nama']) ?>" readonly>
                                     </div>
 
                                     <!-- Meta Info (Read-only/Auto) -->
                                     <div class="mb-3">
                                         <label class="form-label">Estimasi Waktu Baca</label>
-                                        <input type="text" class="form-control" id="metaReadingTime" value="Otomatis (4 menit)" readonly>
+                                        <input type="text" class="form-control" id="metaReadingTime" value="<?= $blog['reading_time'] ?> menit" readonly>
                                     </div>
                                 </div>
                             </div>

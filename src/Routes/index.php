@@ -41,6 +41,7 @@ $router->post("/register", RegisterController::class, "register");
 $router->get("/admin", AdminController::class, "dashboard")->middleware(AdminMiddleware::class);
 $router->get("/admin/blog-list", AdminController::class, "blogList")->middleware(AdminMiddleware::class);
 $router->get("/admin/blog/edit/{id}", AdminController::class, "renderBlogEdit")->middleware(AdminMiddleware::class);
+$router->post("/admin/blog/update/{id}", AdminController::class, "updateBlog")->middleware(AdminMiddleware::class);
 $router->get("/admin/blog/create", AdminController::class, "renderBlogCreate")->middleware(AdminMiddleware::class);
 $router->post("/admin/blog/create", AdminController::class, "createBlog")->middleware(AdminMiddleware::class);
 $router->delete("/admin/blog/delete/{id}", AdminController::class, "deleteBlog")->middleware(AdminMiddleware::class);
