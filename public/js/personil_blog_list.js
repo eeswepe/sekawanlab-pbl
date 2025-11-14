@@ -22,44 +22,63 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleButton.addEventListener('click', toggleSidebar);
     }
     
-    // --- Logika Simulasi Aksi Tombol ---
+    // --- Delete Blog Functionality ---
     const tableBody = document.getElementById('blogTableBody');
 
     tableBody.addEventListener('click', function(event) {
         const target = event.target;
-        // Cari tombol terdekat yang diklik
-        const button = target.closest('.btn');
+        // Cari tombol delete terdekat yang diklik
+        const deleteButton = target.closest('.delete-btn');
 
-        if (button) {
-            const row = button.closest('tr');
-            const postId = row.dataset.id;
-            const postTitle = row.cells[1].textContent;
+        if (deleteButton) {
+            const blogId = deleteButton.dataset.blogId;
+            const row = deleteButton.closest('tr');
+            const postTitle = row.querySelector('td:nth-child(2) strong').textContent;
             
-            let actionMessage = '';
-
-            if (button.classList.contains('edit-btn')) {
-                actionMessage = `Simulasi: Mengedit artikel #${postId} - "${postTitle}".`;
-                // Di aplikasi nyata: window.location.href = \`/personil/blog/edit/${postId}\`;
-            } else if (button.classList.contains('view-btn')) {
-                actionMessage = `Simulasi: Melihat artikel #${postId} - "${postTitle}".`;
-                // Di aplikasi nyata: window.open(\`/blog/${postId}\`, '_blank');
-            } else if (button.classList.contains('delete-btn')) {
-                actionMessage = `Simulasi: Menghapus draft artikel #${postId} - "${postTitle}".`;
-            }
-
-            if (actionMessage) {
-                console.log(actionMessage);
-                alert(actionMessage);
+            // Konfirmasi delete
+            if (confirm(`Apakah Anda yakin ingin menghapus artikel "${postTitle}"?`)) {
+                // Kirim request delete
+                fetch(`/api/personil/blog/delete/${blogId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Hapus row dari tabel
+                        row.remove();
+                        
+                        // Update statistics
+                        const totalPosts = document.getElementById('totalPosts');
+                        const draftPosts = document.getElementById('draftPosts');
+                        
+                        if (totalPosts) {
+                            totalPosts.textContent = parseInt(totalPosts.textContent) - 1;
+                        }
+                        if (draftPosts) {
+                            draftPosts.textContent = parseInt(draftPosts.textContent) - 1;
+                        }
+                        
+                        // Show success message
+                        alert('Artikel berhasil dihapus!');
+                        
+                        // Reload page jika tidak ada blog lagi
+                        const remainingRows = tableBody.querySelectorAll('tr').length;
+                        if (remainingRows === 0) {
+                            window.location.reload();
+                        }
+                    } else {
+                        alert('Gagal menghapus artikel: ' + (data.message || 'Unknown error'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan saat menghapus artikel.');
+                });
             }
         }
-    });
-
-    // --- Logika Tombol Tulis Blog Baru (Simulasi) ---
-    const tulisBlogBaruBtn = document.getElementById('tulisBlogBaruBtn');
-    tulisBlogBaruBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        console.log("Simulasi: Navigasi ke halaman buat blog baru.");
-        alert("Simulasi: Navigasi ke halaman buat blog baru.");
     });
     
     console.log("Halaman Personil Blog List script siap.");

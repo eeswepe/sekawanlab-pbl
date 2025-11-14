@@ -29,6 +29,18 @@ class Router
         return $this;
     }
 
+    public function delete($route, $controller, $action)
+    {
+        $this->addRoute($route, $controller, $action, "DELETE");
+        return $this;
+    }
+
+    public function put($route, $controller, $action)
+    {
+        $this->addRoute($route, $controller, $action, "PUT");
+        return $this;
+    }
+
     public function middleware($middlewareClass)
     {
         if ($this->lastRoute !== null) {

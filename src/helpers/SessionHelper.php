@@ -54,12 +54,6 @@ class SessionHelper
         return $_SESSION["user"] ?? null;
     }
 
-    public static function getPersonilId(): ?int
-    {
-        self::start();
-        return $_SESSION["personil"]["id"] ?? null;
-    }
-
     /**
      * Cek apakah user sudah login
      * @return bool
@@ -86,6 +80,16 @@ class SessionHelper
     public static function isPersonil(): bool
     {
         return self::getRole() === "personil";
+    }
+
+    /**
+     * Mendapatkan personil_id dari user yang sedang login
+     * @return int|null
+     */
+    public static function getPersonilId(): ?int
+    {
+        self::start();
+        return $_SESSION["user"]["personil_id"] ?? null;
     }
 
     /**

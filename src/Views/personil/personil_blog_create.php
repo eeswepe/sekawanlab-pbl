@@ -22,23 +22,25 @@
 
     <div class="wrapper">
         <!-- Sidebar -->
-        <aside id="sidebar">
-            <div>
-                <div class="brand">
-                    <span class="logo-icon">SE</span> SE Laboratory
-                </div>
-                <ul class="sidebar-menu">
-                    <li><a href="/personil"><i class="bi bi-grid-fill"></i> Dashboard</a></li>
-                    <li><a href="/personil/profile"><i class="bi bi-person-circle"></i> My Profile</a></li>
-                    <li><a href="/personil/blog" class="active"><i class="bi bi-journal-text"></i> My Blog Posts</a></li>
-                    <li><a href="/logout"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
-                </ul>
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <a class="sidebar-brand" href="#">
+                    <div class="logo-icon">SE</div>
+                    <span>SE Laboratory</span>
+                </a>
             </div>
-        </aside>
 
+            <ul class="sidebar-nav">
+                <li><a href="/personil"><i class="bi bi-grid-fill"></i> Dashboard</a></li>
+                <li><a href="/personil/profile"><i class="bi bi-person-circle"></i> My Profile</a></li>
+                <li><a href="/personil/blog" class="active"><i class="bi bi-journal-text"></i> My Blog Posts</a></li>
+                <li><a href="/logout"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
+            </ul>
+        </nav>
+        
         <!-- Main Content -->
         <div id="main-content">
-            <!-- Top Navbar (diambil dari dashboard.html) -->
+            <!-- Top Navbar -->
             <nav id="topbar" class="navbar navbar-expand-lg">
                 <div class="container-fluid d-flex justify-content-between align-items-center">
 
@@ -58,19 +60,15 @@
                     </div>
 
                     <ul class="navbar-nav topbar-nav ms-auto">
-                        <!-- Notification & Profile Dropdown -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle profile-dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown">
-                                <img src="https://placehold.co/150x150/1a1a1a/ffffff?text=P" alt="Profile Picture">
-                                <span class="d-none d-md-inline" id="currentUser">Dr. Anita</span>
+                                <img src="<?= htmlspecialchars($personil['foto_url'] ?? 'https://placehold.co/150x150/1a1a1a/ffffff?text=' . substr($personil['nama_lengkap'], 0, 1)) ?>" alt="Profile Picture">
+                                <span class="d-none d-md-inline" id="currentUser"><?= htmlspecialchars($personil['nama_lengkap'] ?? 'Personil') ?></span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                                <li><a class="dropdown-item" href="#"><i class="bi bi-person-fill"></i> My Profile</a></li>
-                                <li><a class="dropdown-item" href="#"><i class="bi bi-gear-fill"></i> Settings</a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item" href="#"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
+                                <li><a class="dropdown-item" href="/personil/profile"><i class="bi bi-person-fill"></i> My Profile</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -84,7 +82,7 @@
                     <h1>Tulis Blog Post Baru</h1>
                 </div>
 
-                <form id="blogPostForm">
+                <form id="blogPostForm" enctype="multipart/form-data">
                     <div class="row g-4">
                         <!-- Kolom Kiri: Judul, Konten, Gambar -->
                         <div class="col-lg-8">
@@ -95,24 +93,31 @@
                                 <div class="card-body">
                                     <!-- Judul Artikel -->
                                     <div class="mb-4">
-                                        <label for="postTitle" class="form-label">Judul Artikel</label>
-                                        <input type="text" class="form-control" id="postTitle" placeholder="Masukkan judul artikel..." required>
+                                        <label for="postTitle" class="form-label">Judul Artikel <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="postTitle" name="judul" placeholder="Masukkan judul artikel..." required>
                                     </div>
 
-                                    <!-- Konten Artikel (Rich Text Editor Placeholder) -->
+                                    <!-- Konten Artikel -->
                                     <div class="mb-4">
-                                        <label for="blogContent" class="form-label">Konten</label>
-                                        <!-- Ini adalah placeholder untuk Rich Text Editor, menggunakan textarea besar -->
-                                        <textarea class="form-control" id="blogContent" placeholder="Mulai tulis konten artikel Anda di sini..." required></textarea>
+                                        <label for="blogContent" class="form-label">Konten <span class="text-danger">*</span></label>
+                                        <textarea class="form-control" id="blogContent" name="konten" rows="15" placeholder="Mulai tulis konten artikel Anda di sini..." required></textarea>
+                                        <small class="text-muted">Estimasi waktu baca akan dihitung otomatis berdasarkan jumlah kata.</small>
+                                    </div>
+
+                                    <!-- Cuplikan (Optional) -->
+                                    <div class="mb-4">
+                                        <label for="blogExcerpt" class="form-label">Cuplikan (Opsional)</label>
+                                        <textarea class="form-control" id="blogExcerpt" name="cuplikan" rows="3" placeholder="Ringkasan singkat artikel (akan dibuat otomatis jika kosong)"></textarea>
                                     </div>
 
                                     <!-- Upload Featured Image -->
                                     <div class="mb-4">
                                         <label for="featuredImage" class="form-label">Upload Featured Image</label>
-                                        <input class="form-control" type="file" id="featuredImage" accept="image/*">
+                                        <input class="form-control" type="file" id="featuredImage" name="featured_image" accept="image/*">
+                                        <small class="text-muted">Maksimal 5MB. Format: JPG, PNG, GIF, WEBP</small>
                                         <div id="image-preview-container">
                                             <img id="image-preview" src="#" alt="Preview Gambar">
-                                            <span class="preview-placeholder" id="placeholder-text">Pratinjau Gambar (300x180)</span>
+                                            <span class="preview-placeholder" id="placeholder-text">Pratinjau Gambar</span>
                                         </div>
                                     </div>
                                 </div>
@@ -130,21 +135,19 @@
                                     <!-- Penulis (Otomatis) -->
                                     <div class="mb-4">
                                         <label class="form-label">Penulis</label>
-                                        <!-- Nilai diambil dari script/simulasi pengguna login -->
-                                        <input type="text" class="form-control" id="postAuthor" value="Dr. Anita" readonly>
+                                        <input type="text" class="form-control" id="postAuthor" value="<?= htmlspecialchars($personil['nama_lengkap']) ?>" readonly>
                                     </div>
 
                                     <!-- Kategori (Dropdown) -->
                                     <div class="mb-4">
-                                        <label for="postCategory" class="form-label">Kategori</label>
-                                        <select class="form-select" id="postCategory" required>
+                                        <label for="postCategory" class="form-label">Kategori <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="postCategory" name="kategori_id" required>
                                             <option value="" selected disabled>Pilih Kategori</option>
-                                            <option value="Machine Learning">Machine Learning</option>
-                                            <option value="Cloud Computing">Cloud Computing</option>
-                                            <option value="Mobile Development">Mobile Development</option>
-                                            <option value="Security">Security</option>
-                                            <option value="Data Science">Data Science</option>
-                                            <option value="Web Development">Web Development</option>
+                                            <?php foreach ($categories as $category): ?>
+                                                <option value="<?= htmlspecialchars($category['id']) ?>">
+                                                    <?= htmlspecialchars($category['name']) ?>
+                                                </option>
+                                            <?php endforeach; ?>
                                         </select>
                                     </div>
 
@@ -152,12 +155,12 @@
                                     <div class="mb-4">
                                         <label class="form-label d-block">Status Artikel</label>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="postStatus" id="statusDraft" value="Draft" checked>
+                                            <input class="form-check-input" type="radio" name="status" id="statusDraft" value="draft" checked>
                                             <label class="form-check-label" for="statusDraft">Draft</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="postStatus" id="statusReview" value="Review">
-                                            <label class="form-check-label" for="statusReview">Submit for Review</label>
+                                            <input class="form-check-input" type="radio" name="status" id="statusPublished" value="published">
+                                            <label class="form-check-label" for="statusPublished">Publish</label>
                                         </div>
                                     </div>
 
@@ -173,14 +176,11 @@
 
                     <!-- Action Buttons -->
                     <div class="d-flex justify-content-end gap-2 mt-4">
-                        <button type="button" class="btn btn-secondary" id="cancelBtn">
+                        <a href="/personil/blog" class="btn btn-secondary" id="cancelBtn">
                             <i class="bi bi-x-circle me-2"></i> Cancel
-                        </button>
-                        <button type="submit" class="btn btn-save-draft" id="saveDraftBtn">
-                            <i class="bi bi-save me-2"></i> Save as Draft
-                        </button>
-                        <button type="submit" class="btn btn-primary-custom" id="submitReviewBtn">
-                            <i class="bi bi-send-check me-2"></i> Submit for Review
+                        </a>
+                        <button type="submit" class="btn btn-primary-custom" id="submitBlogBtn">
+                            <i class="bi bi-send-check me-2"></i> Simpan Blog
                         </button>
                     </div>
                 </form>

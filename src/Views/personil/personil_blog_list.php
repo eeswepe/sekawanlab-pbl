@@ -20,23 +20,25 @@
 
     <div class="wrapper">
         <!-- Sidebar -->
-        <aside id="sidebar">
-            <div>
-                <div class="brand">
-                    <span class="logo-icon">SE</span> SE Laboratory
-                </div>
-                <ul class="sidebar-menu">
-                    <li><a href="/personil"><i class="bi bi-grid-fill"></i> Dashboard</a></li>
-                    <li><a href="/personil/profile"><i class="bi bi-person-circle"></i> My Profile</a></li>
-                    <li><a href="/personil/blog" class="active"><i class="bi bi-journal-text"></i> My Blog Posts</a></li>
-                    <li><a href="/logout"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
-                </ul>
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <a class="sidebar-brand" href="#">
+                    <div class="logo-icon">SE</div>
+                    <span>SE Laboratory</span>
+                </a>
             </div>
-        </aside>
+
+            <ul class="sidebar-nav">
+                <li><a href="/personil"><i class="bi bi-grid-fill"></i> Dashboard</a></li>
+                <li><a href="/personil/profile"><i class="bi bi-person-circle"></i> My Profile</a></li>
+                <li><a href="/personil/blog" class="active"><i class="bi bi-journal-text"></i> My Blog Posts</a></li>
+                <li><a href="/logout"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
+            </ul>
+        </nav>
 
         <!-- Main Content -->
         <div id="main-content">
-            <!-- Top Navbar (diambil dari dashboard.html) -->
+            <!-- Top Navbar -->
             <nav id="topbar" class="navbar navbar-expand-lg">
                 <div class="container-fluid d-flex justify-content-between align-items-center">
 
@@ -56,17 +58,15 @@
                     </div>
 
                     <ul class="navbar-nav topbar-nav ms-auto">
-                        <!-- Notification & Profile Dropdown (disingkat) -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle profile-dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown">
-                                <img src="https://placehold.co/150x150/1a1a1a/ffffff?text=P" alt="Profile Picture">
-                                <span class="d-none d-md-inline">Personil Name</span>
+                                <img src="<?= htmlspecialchars($personil['foto_url'] ?? 'https://placehold.co/150x150/1a1a1a/ffffff?text=' . substr($personil['nama_lengkap'], 0, 1)) ?>" alt="Profile Picture">
+                                <span class="d-none d-md-inline"><?= htmlspecialchars($personil['nama_lengkap'] ?? 'Personil') ?></span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                                <li><a class="dropdown-item" href="#"><i class="bi bi-person-fill"></i> My Profile</a></li>
-                                <li><a class="dropdown-item" href="#"><i class="bi bi-gear-fill"></i> Settings</a></li>
+                                <li><a class="dropdown-item" href="/personil/profile"><i class="bi bi-person-fill"></i> My Profile</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="#"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
+                                <li><a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -88,7 +88,7 @@
                     <div class="col-lg-3 col-md-6">
                         <div class="stat-card">
                             <div class="stat-info">
-                                <h3 id="totalPosts">6</h3>
+                                <h3 id="totalPosts"><?= $stats['total_posts'] ?? 0 ?></h3>
                                 <p>Total Posts</p>
                             </div>
                             <div class="stat-icon">
@@ -99,11 +99,22 @@
                     <div class="col-lg-3 col-md-6">
                         <div class="stat-card">
                             <div class="stat-info">
-                                <h3 id="totalViews">8,450</h3>
-                                <p>Total Views</p>
+                                <h3 id="publishedPosts"><?= $stats['published_posts'] ?? 0 ?></h3>
+                                <p>Published</p>
                             </div>
                             <div class="stat-icon">
-                                <i class="bi bi-eye-fill"></i>
+                                <i class="bi bi-check-circle-fill"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <h3 id="draftPosts"><?= $stats['draft_posts'] ?? 0 ?></h3>
+                                <p>Draft</p>
+                            </div>
+                            <div class="stat-icon">
+                                <i class="bi bi-file-earmark-text"></i>
                             </div>
                         </div>
                     </div>
@@ -123,69 +134,102 @@
                                         <th>Judul</th>
                                         <th>Kategori</th>
                                         <th>Tanggal</th>
-                                        <th>Views</th>
                                         <th>Status</th>
                                         <th class="text-center">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="blogTableBody">
-                                    <!-- Artikel Published -->
-                                    <tr data-status="Published" data-id="101">
-                                        <td><img src="https://placehold.co/80x50/3498db/ffffff?text=ML" class="post-thumbnail" alt="Thumbnail"></td>
-                                        <td>Penerapan Machine Learning dalam Analisis Sentimen</td>
-                                        <td>Machine Learning</td>
-                                        <td>2025-11-01</td>
-                                        <td>4,200</td>
-                                        <td><span class="badge bg-success">Published</span></td>
-                                        <td class="text-center table-actions">
-                                            <button class="btn btn-sm btn-primary edit-btn"><i class="bi bi-pencil-square"></i> Edit</button>
-                                            <button class="btn btn-sm btn-secondary view-btn"><i class="bi bi-eye"></i> View</button>
-                                            <!-- Delete hanya untuk draft, jadi tidak ditampilkan di published -->
-                                        </td>
-                                    </tr>
-                                    <!-- Artikel Draft -->
-                                    <tr data-status="Draft" data-id="102">
-                                        <td><img src="https://placehold.co/80x50/f39c12/1a1a1a?text=CLOUD" class="post-thumbnail" alt="Thumbnail"></td>
-                                        <td>Panduan Dasar Migrasi ke AWS S3</td>
-                                        <td>Cloud Computing</td>
-                                        <td>2025-11-10</td>
-                                        <td>0</td>
-                                        <td><span class="badge bg-warning text-dark">Draft</span></td>
-                                        <td class="text-center table-actions">
-                                            <button class="btn btn-sm btn-primary edit-btn"><i class="bi bi-pencil-square"></i> Edit</button>
-                                            <button class="btn btn-sm btn-secondary view-btn"><i class="bi bi-eye"></i> View</button>
-                                            <button class="btn btn-sm btn-danger delete-btn"><i class="bi bi-trash"></i> Delete</button>
-                                        </td>
-                                    </tr>
-                                    <!-- Artikel Published -->
-                                    <tr data-status="Published" data-id="103">
-                                        <td><img src="https://placehold.co/80x50/e74c3c/ffffff?text=WEB" class="post-thumbnail" alt="Thumbnail"></td>
-                                        <td>Membangun Component Reusable dengan React Hooks</td>
-                                        <td>Web Development</td>
-                                        <td>2025-10-15</td>
-                                        <td>3,120</td>
-                                        <td><span class="badge bg-success">Published</span></td>
-                                        <td class="text-center table-actions">
-                                            <button class="btn btn-sm btn-primary edit-btn"><i class="bi bi-pencil-square"></i> Edit</button>
-                                            <button class="btn btn-sm btn-secondary view-btn"><i class="bi bi-eye"></i> View</button>
-                                        </td>
-                                    </tr>
+                                    <?php if (empty($blogs)): ?>
+                                        <tr>
+                                            <td colspan="6" class="text-center py-4">
+                                                <p class="text-muted mb-0">Belum ada blog yang dibuat.</p>
+                                                <a href="/personil/blog/create" class="btn btn-primary-custom mt-2">
+                                                    <i class="bi bi-plus-circle me-2"></i> Buat Blog Pertama
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <?php else: ?>
+                                        <?php foreach ($blogs as $blog): ?>
+                                            <tr data-status="<?= htmlspecialchars($blog['status']) ?>" data-id="<?= htmlspecialchars($blog['id']) ?>">
+                                                <td>
+                                                    <img src="<?= htmlspecialchars($blog['featured_image_url'] ?? 'https://placehold.co/80x50/3498db/ffffff?text=Blog') ?>" 
+                                                         class="post-thumbnail" 
+                                                         alt="Thumbnail">
+                                                </td>
+                                                <td>
+                                                    <strong><?= htmlspecialchars($blog['judul']) ?></strong>
+                                                    <?php if ($blog['reading_time']): ?>
+                                                        <br><small class="text-muted"><?= $blog['reading_time'] ?> min read</small>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td><?= htmlspecialchars($blog['kategori_nama'] ?? '-') ?></td>
+                                                <td>
+                                                    <?php if ($blog['tanggal_publish']): ?>
+                                                        <?= date('d M Y', strtotime($blog['tanggal_publish'])) ?>
+                                                    <?php else: ?>
+                                                        <?= date('d M Y', strtotime($blog['created_at'])) ?>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td>
+                                                    <?php if ($blog['status'] === 'published'): ?>
+                                                        <span class="badge bg-success">Published</span>
+                                                    <?php else: ?>
+                                                        <span class="badge bg-warning text-dark">Draft</span>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td class="text-center table-actions">
+                                                    <a href="/personil/blog/edit/<?= $blog['id'] ?>" class="btn btn-sm btn-primary">
+                                                        <i class="bi bi-pencil-square"></i> Edit
+                                                    </a>
+                                                    <a href="/blog/<?= htmlspecialchars($blog['slug']) ?>" target="_blank" class="btn btn-sm btn-secondary">
+                                                        <i class="bi bi-eye"></i> View
+                                                    </a>
+                                                    <?php if ($blog['status'] === 'draft'): ?>
+                                                        <button class="btn btn-sm btn-danger delete-btn" data-blog-id="<?= $blog['id'] ?>">
+                                                            <i class="bi bi-trash"></i> Delete
+                                                        </button>
+                                                    <?php endif; ?>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
                                 </tbody>
                             </table>
                         </div>
                     </div>
+                    <?php if (!empty($blogs)): ?>
                     <div class="card-footer d-flex justify-content-between align-items-center">
-                        <small class="text-muted" id="pagination-info">Menampilkan 3 dari 6 Artikel</small>
+                        <small class="text-muted" id="pagination-info">
+                            Menampilkan <?= count($blogs) ?> dari <?= $totalBlogs ?> Artikel
+                        </small>
                         <!-- Pagination -->
+                        <?php if ($totalPages > 1): ?>
                         <nav>
                             <ul class="pagination pagination-sm my-0">
-                                <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
-                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                                <li class="page-item <?= $currentPage <= 1 ? 'disabled' : '' ?>">
+                                    <a class="page-link" href="?page=<?= $currentPage - 1 ?>">Previous</a>
+                                </li>
+                                
+                                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                                    <?php if ($i == 1 || $i == $totalPages || abs($i - $currentPage) <= 2): ?>
+                                        <li class="page-item <?= $i == $currentPage ? 'active' : '' ?>">
+                                            <a class="page-link" href="?page=<?= $i ?>"><?= $i ?></a>
+                                        </li>
+                                    <?php elseif ($i == 2 || $i == $totalPages - 1): ?>
+                                        <li class="page-item disabled">
+                                            <span class="page-link">...</span>
+                                        </li>
+                                    <?php endif; ?>
+                                <?php endfor; ?>
+                                
+                                <li class="page-item <?= $currentPage >= $totalPages ? 'disabled' : '' ?>">
+                                    <a class="page-link" href="?page=<?= $currentPage + 1 ?>">Next</a>
+                                </li>
                             </ul>
                         </nav>
+                        <?php endif; ?>
                     </div>
+                    <?php endif; ?>
                 </div>
             </main>
 

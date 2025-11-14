@@ -15,7 +15,7 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->userModel = new UserModel();
-        $this->personilModel = new \App\Models\PersonilModel();
+        $this->personilModel = new PersonilModel();
     }
 
     public function index()
@@ -33,9 +33,9 @@ class LoginController extends Controller
     {
         $username = isset($_POST["username"]) ? trim($_POST["username"]) : null;
         $password = isset($_POST["password"]) ? $_POST["password"] : null;
-
+        
         $user = $this->userModel->validateCredentials($username, $password);
-
+        
         if ($user) {
             // Get personil_id if user is personil
             $personil_id = null;
@@ -45,7 +45,7 @@ class LoginController extends Controller
                     $personil_id = $personil["id"];
                 }
             }
-
+            
             // Store user data in session using SessionHelper
             SessionHelper::setUser([
                 "id" => $user["id"],
@@ -53,14 +53,14 @@ class LoginController extends Controller
                 "role" => $user["role"],
                 "personil_id" => $personil_id
             ]);
-
+            
             SessionHelper::setFlash("success", "Login berhasil! Selamat datang, " . $user["username"] . ".");
-
+            
             // Redirect based on role
             if ($user["role"] === "admin") {
                 header("Location: /admin");
             } else {
-                header("Location: /personil");
+                header("Location: /personil/dashboard");
             }
             exit();
         }

@@ -68,49 +68,54 @@ document.addEventListener('DOMContentLoaded', function() {
         readingTimeInput.value = readingTimeEstimate;
     });
 
-    // --- Logika Tombol Cancel ---
-    const cancelBtn = document.getElementById('cancelBtn');
-    cancelBtn.addEventListener('click', function() {
-        console.warn("Aksi Batalkan: Simulasi kembali ke halaman daftar blog.");
-        alert('Aksi Batalkan: Kembali ke halaman daftar blog.'); 
-    });
-
-    // --- Logika Submit Form (Dummy) ---
+    // --- Logika Submit Form ---
     const form = document.getElementById('blogPostForm');
 
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        // Tentukan status berdasarkan tombol yang diklik
-        const submitterId = e.submitter ? e.submitter.id : '';
-        let status;
-
-        if (submitterId === 'submitReviewBtn') {
-            status = 'Review';
-        } else if (submitterId === 'saveDraftBtn') {
-            status = 'Draft';
-        } else {
-            // Default status dari radio button (Draft)
-            status = document.querySelector('input[name="postStatus"]:checked').value;
+        // Validate form
+        const judul = document.getElementById('postTitle').value.trim();
+        const konten = document.getElementById('blogContent').value.trim();
+        const kategori_id = document.getElementById('postCategory').value;
+        
+        if (!judul || !konten || !kategori_id) {
+            alert('Harap lengkapi semua field yang wajib diisi (Judul, Konten, Kategori)');
+            return;
         }
         
-        const title = document.getElementById('postTitle').value;
+        // Disable submit button
+        const submitBtn = document.getElementById('submitBlogBtn');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...';
         
-        console.log("--- Form Submission Data (Personil) ---");
-        console.log(`Judul: ${title}`);
-        console.log(`Status Final: ${status}`);
-        console.log("--------------------------");
-
-        // Menampilkan pesan sukses sebagai simulasi
-        let action;
-        if (status === 'Review') {
-            action = 'disubmit untuk di-review';
-        } else {
-            action = 'disimpan sebagai draft';
-        }
-        const message = `Artikel "${title}" berhasil ${action}! (Simulasi frontend)`;
-
-        console.warn(`[SIMULASI SUKSES]: ${message}`); 
-        alert(message);
+        // Prepare form data
+        const formData = new FormData(form);
+        
+        // Send AJAX request
+        fetch('/personil/blog/create', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Blog berhasil dibuat!');
+                window.location.href = data.redirect || '/personil/blog';
+            } else {
+                alert('Gagal membuat blog: ' + (data.message || 'Unknown error'));
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan saat membuat blog.');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        });
     });
+    
+    console.log("Halaman Personil Blog Create script siap.");
 });
