@@ -160,5 +160,118 @@ class PersonilModel
         
         return false;
     }
+
+    /**
+     * Get personils for admin with filters and pagination
+     * @param array $filters ['search', 'role']
+     * @param int $limit
+     * @param int $offset
+     * @return array
+     */
+    public function getPersonilsForAdmin($filters = [], $limit = 10, $offset = 0)
+    {
+        $sql = "SELECT 
+                    p.*,
+                    u.username
+                FROM personil p
+                LEFT JOIN users u ON p.user_id = u.id
+                WHERE 1=1";
+        
+        $params = [];
+        
+        // Search filter by name
+        if (!empty($filters['search'])) {
+            $sql .= " AND p.nama_lengkap ILIKE :search";
+            $params[':search'] = '%' . $filters['search'] . '%';
+        }
+        
+        // Role filter
+        if (!empty($filters['role'])) {
+            $sql .= " AND p.role = :role";
+            $params[':role'] = $filters['role'];
+        }
+        
+        $sql .= " ORDER BY p.created_at DESC LIMIT :limit OFFSET :offset";
+        
+        $stmt = $this->db->prepare($sql);
+        
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+        
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Count personils with filters
+     * @param array $filters
+     * @return int
+     */
+    public function countPersonilsForAdmin($filters = [])
+    {
+        $sql = "SELECT COUNT(*) as total FROM personil p WHERE 1=1";
+        
+        $params = [];
+        
+        if (!empty($filters['search'])) {
+            $sql .= " AND p.nama_lengkap ILIKE :search";
+            $params[':search'] = '%' . $filters['search'] . '%';
+        }
+        
+        if (!empty($filters['role'])) {
+            $sql .= " AND p.role = :role";
+            $params[':role'] = $filters['role'];
+        }
+        
+        $stmt = $this->db->prepare($sql);
+        
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+        
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        return (int)$result['total'];
+    }
+
+    /**
+     * Get count by role
+     * @param string $role
+     * @return int
+     */
+    public function countByRole($role = null)
+    {
+        if ($role) {
+            $sql = "SELECT COUNT(*) as total FROM personil WHERE role = :role";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':role', $role, PDO::PARAM_STR);
+        } else {
+            $sql = "SELECT COUNT(*) as total FROM personil";
+            $stmt = $this->db->prepare($sql);
+        }
+        
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return (int)$result['total'];
+    }
+
+    /**
+     * Delete personil by ID
+     * @param int $id
+     * @return bool
+     */
+    public function deletePersonil($id)
+    {
+        $sql = "DELETE FROM personil WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        
+        return $stmt->execute();
+    }
 }
 ?>

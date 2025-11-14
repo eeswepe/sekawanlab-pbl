@@ -87,40 +87,42 @@
                         <h1>Personil Management</h1>
                         <p>List dan kelola seluruh personil SE Laboratory.</p>
                     </div>
-                    <a href="#" class="btn btn-primary-custom flex-shrink-0">
+                    <a href="/admin/personil/create" class="btn btn-primary-custom flex-shrink-0">
                         <i class="bi bi-person-plus-fill me-2"></i> Tambah Personil
                     </a>
                 </div>
 
                 <div class="card">
                     <div class="card-body">
-                        <div class="row mb-4 align-items-center">
-                            <div class="col-md-6 col-lg-4 mb-3 mb-md-0">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="Search by name...">
-                                    <button class="btn" style="background-color: var(--gold); color: white;" type="button">
-                                        <i class="bi bi-search"></i>
-                                    </button>
+                        <form method="GET" action="/admin/personil" id="filterForm">
+                            <div class="row mb-4 align-items-center">
+                                <div class="col-md-6 col-lg-4 mb-3 mb-md-0">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="search" id="searchName" placeholder="Search by name..." value="<?= htmlspecialchars($filters['search'] ?? '') ?>">
+                                        <button class="btn" style="background-color: var(--gold); color: white;" type="submit">
+                                            <i class="bi bi-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-lg-4 offset-lg-4">
+                                    <select class="form-select" name="role" id="filterRole" aria-label="Filter by Type">
+                                        <option value="all" <?= empty($filters['role']) ? 'selected' : '' ?>>Filter by Tipe (All)</option>
+                                        <option value="dosen" <?= (isset($filters['role']) && $filters['role'] === 'dosen') ? 'selected' : '' ?>>Dosen Pembimbing</option>
+                                        <option value="talent" <?= (isset($filters['role']) && $filters['role'] === 'talent') ? 'selected' : '' ?>>Talent/Geeks</option>
+                                    </select>
                                 </div>
                             </div>
-                            <div class="col-md-6 col-lg-4 offset-lg-4">
-                                <select class="form-select" aria-label="Filter by Type">
-                                    <option selected>Filter by Tipe (All)</option>
-                                    <option value="dosen">Dosen Pembimbing</option>
-                                    <option value="talent">Talent/Geeks</option>
-                                </select>
-                            </div>
-                        </div>
+                        </form>
                         
                         <ul class="nav nav-tabs mb-3">
                             <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" href="#">All (125)</a>
+                                <a class="nav-link <?= empty($filters['role']) ? 'active' : '' ?>" href="/admin/personil">All (<?= $totalAll ?>)</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">Dosen Pembimbing (15)</a>
+                                <a class="nav-link <?= (isset($filters['role']) && $filters['role'] === 'dosen') ? 'active' : '' ?>" href="/admin/personil?role=dosen">Dosen Pembimbing (<?= $totalDosen ?>)</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">Talent/Geeks (110)</a>
+                                <a class="nav-link <?= (isset($filters['role']) && $filters['role'] === 'talent') ? 'active' : '' ?>" href="/admin/personil?role=talent">Talent/Geeks (<?= $totalTalent ?>)</a>
                             </li>
                         </ul>
 
@@ -128,63 +130,48 @@
                             <table class="table table-hover align-middle">
                                 <thead>
                                     <tr>
+                                        <th>#</th>
                                         <th>Avatar</th>
                                         <th>Nama</th>
-                                        <th>Role</th>
+                                        <th>Spesialisasi</th>
                                         <th>Tipe</th>
                                         <th>Email</th>
                                         <th class="text-center">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td><img src="https://via.placeholder.com/150/505050/FFFFFF?text=DR" alt="Avatar" class="personil-avatar"></td>
-                                        <td>Dr. Anita Sari, S.Kom., M.T.</td>
-                                        <td>Head of Lab</td>
-                                        <td><span class="badge bg-secondary">Dosen Pembimbing</span></td>
-                                        <td>anita.sari@lab.ac.id</td>
-                                        <td class="text-center">
-                                            <button class="btn btn-sm btn-info action-button"><i class="bi bi-eye"></i></button>
-                                            <button class="btn btn-sm btn-warning action-button"><i class="bi bi-pencil"></i></button>
-                                            <button class="btn btn-sm btn-danger action-button"><i class="bi bi-trash"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><img src="https://via.placeholder.com/150/D4AF37/FFFFFF?text=BU" alt="Avatar" class="personil-avatar"></td>
-                                        <td>Budi Santoso</td>
-                                        <td>Mobile Developer</td>
-                                        <td><span class="badge" style="background-color: var(--gold); color: white;">Talent/Geek</span></td>
-                                        <td>budi.s@geek.id</td>
-                                        <td class="text-center">
-                                            <button class="btn btn-sm btn-info action-button"><i class="bi bi-eye"></i></button>
-                                            <button class="btn btn-sm btn-warning action-button"><i class="bi bi-pencil"></i></button>
-                                            <button class="btn btn-sm btn-danger action-button"><i class="bi bi-trash"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><img src="https://via.placeholder.com/150/007bff/FFFFFF?text=CL" alt="Avatar" class="personil-avatar"></td>
-                                        <td>Citra Lestari</td>
-                                        <td>UI/UX Designer</td>
-                                        <td><span class="badge" style="background-color: var(--gold); color: white;">Talent/Geek</span></td>
-                                        <td>citra.l@geek.id</td>
-                                        <td class="text-center">
-                                            <button class="btn btn-sm btn-info action-button"><i class="bi bi-eye"></i></button>
-                                            <button class="btn btn-sm btn-warning action-button"><i class="bi bi-pencil"></i></button>
-                                            <button class="btn btn-sm btn-danger action-button"><i class="bi bi-trash"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><img src="https://via.placeholder.com/150/28a745/FFFFFF?text=PR" alt="Avatar" class="personil-avatar"></td>
-                                        <td>Prof. Dr. Rahmat</td>
-                                        <td>Supervisor</td>
-                                        <td><span class="badge bg-secondary">Dosen Pembimbing</span></td>
-                                        <td>rahmat.p@lab.ac.id</td>
-                                        <td class="text-center">
-                                            <button class="btn btn-sm btn-info action-button"><i class="bi bi-eye"></i></button>
-                                            <button class="btn btn-sm btn-warning action-button"><i class="bi bi-pencil"></i></button>
-                                            <button class="btn btn-sm btn-danger action-button"><i class="bi bi-trash"></i></button>
-                                        </td>
-                                    </tr>
+                                    <?php if (empty($personils)): ?>
+                                        <tr>
+                                            <td colspan="7" class="text-center text-muted py-4">Tidak ada personil ditemukan</td>
+                                        </tr>
+                                    <?php else: ?>
+                                        <?php foreach ($personils as $index => $personil): ?>
+                                            <tr>
+                                                <td><?= $offset + $index + 1 ?></td>
+                                                <td>
+                                                    <?php if (!empty($personil['foto_url'])): ?>
+                                                        <img src="<?= htmlspecialchars($personil['foto_url']) ?>" alt="Avatar" class="personil-avatar">
+                                                    <?php else: ?>
+                                                        <img src="https://via.placeholder.com/150/D4AF37/FFFFFF?text=<?= strtoupper(substr($personil['nama_lengkap'], 0, 2)) ?>" alt="Avatar" class="personil-avatar">
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td><?= htmlspecialchars($personil['nama_lengkap']) ?></td>
+                                                <td><?= htmlspecialchars($personil['spesialisasi'] ?? '-') ?></td>
+                                                <td>
+                                                    <?php if ($personil['role'] === 'dosen'): ?>
+                                                        <span class="badge bg-secondary">Dosen Pembimbing</span>
+                                                    <?php else: ?>
+                                                        <span class="badge" style="background-color: var(--gold); color: white;">Talent/Geek</span>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td><?= htmlspecialchars($personil['email']) ?></td>
+                                                <td class="text-center">
+                                                    <a href="/admin/personil/edit/<?= $personil['id'] ?>" class="btn btn-sm btn-warning action-button" title="Edit"><i class="bi bi-pencil"></i></a>
+                                                    <button class="btn btn-sm btn-danger action-button delete-personil" data-id="<?= $personil['id'] ?>" title="Delete"><i class="bi bi-trash"></i></button>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
                                 </tbody>
                             </table>
                         </div>
@@ -192,11 +179,39 @@
                         <div class="d-flex justify-content-center justify-content-md-end mt-3">
                             <nav aria-label="Personil page navigation">
                                 <ul class="pagination pagination-sm mb-0">
-                                    <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
-                                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                                    <?php if ($currentPage > 1): ?>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page=<?= $currentPage - 1 ?><?= !empty($filters['search']) ? '&search='.urlencode($filters['search']) : '' ?><?= !empty($filters['role']) ? '&role='.$filters['role'] : '' ?>">Previous</a>
+                                        </li>
+                                    <?php else: ?>
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#" tabindex="-1">Previous</a>
+                                        </li>
+                                    <?php endif; ?>
+                                    
+                                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                                        <?php if ($i == $currentPage): ?>
+                                            <li class="page-item active">
+                                                <a class="page-link" href="#" style="background-color: var(--gold); border-color: var(--gold);"><?= $i ?></a>
+                                            </li>
+                                        <?php elseif ($i == 1 || $i == $totalPages || ($i >= $currentPage - 1 && $i <= $currentPage + 1)): ?>
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page=<?= $i ?><?= !empty($filters['search']) ? '&search='.urlencode($filters['search']) : '' ?><?= !empty($filters['role']) ? '&role='.$filters['role'] : '' ?>"><?= $i ?></a>
+                                            </li>
+                                        <?php elseif ($i == $currentPage - 2 || $i == $currentPage + 2): ?>
+                                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                                        <?php endif; ?>
+                                    <?php endfor; ?>
+                                    
+                                    <?php if ($currentPage < $totalPages): ?>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page=<?= $currentPage + 1 ?><?= !empty($filters['search']) ? '&search='.urlencode($filters['search']) : '' ?><?= !empty($filters['role']) ? '&role='.$filters['role'] : '' ?>">Next</a>
+                                        </li>
+                                    <?php else: ?>
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#" tabindex="-1">Next</a>
+                                        </li>
+                                    <?php endif; ?>
                                 </ul>
                             </nav>
                         </div>
@@ -216,6 +231,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/admin_personil_list.js"></script>
 
 </body>
 </html>

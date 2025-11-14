@@ -49,12 +49,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const deleteButtons = document.querySelectorAll('.delete-blog');
     
     deleteButtons.forEach(button => {
-        button.addEventListener('click', async function() {
+        button.addEventListener('click', async function(e) {
+            e.preventDefault();
             const blogId = this.getAttribute('data-id');
+            const blogTitle = this.closest('tr').querySelector('td:nth-child(3)').textContent.trim();
             
-            if (!confirm('Apakah Anda yakin ingin menghapus blog ini?')) {
+            if (!confirm(`Apakah Anda yakin ingin menghapus blog "${blogTitle}"?\n\nTindakan ini tidak dapat dibatalkan.`)) {
                 return;
             }
+            
+            // Disable button to prevent double-click
+            this.disabled = true;
+            const originalHTML = this.innerHTML;
+            this.innerHTML = '<i class="bi bi-hourglass-split"></i>';
             
             try {
                 const response = await fetch(`/admin/blog/delete/${blogId}`, {
@@ -71,51 +78,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     window.location.reload();
                 } else {
                     alert('Error: ' + result.message);
+                    this.disabled = false;
+                    this.innerHTML = originalHTML;
                 }
             } catch (error) {
                 console.error('Error:', error);
                 alert('Terjadi kesalahan saat menghapus blog');
+                this.disabled = false;
+                this.innerHTML = originalHTML;
             }
         });
     });
-});
-
-            const postAuthor = row.cells[4].textContent;
-            // Ambil teks dari badge untuk status
-            const postStatus = row.cells[7].querySelector('.badge').textContent;
-
-            // Logika pencocokan
-            const titleMatch = postTitle.includes(title);
-            const categoryMatch = category === 'Semua' || postCategory === category;
-            const authorMatch = author === 'Semua' || postAuthor === author;
-            const statusMatch = status === 'Semua' || postStatus === status;
-
-            if (titleMatch && categoryMatch && authorMatch && statusMatch) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-    }
-
-    /**
-     * Mereset semua nilai filter ke default 'Semua' atau kosong.
-     */
-    function resetAllFilters() {
-        searchTitle.value = '';
-        filterCategory.value = 'Semua';
-        filterAuthor.value = 'Semua';
-        filterStatus.value = 'Semua';
-        applyFilters(); // Terapkan filter setelah reset
-    }
-
-    // Event Listeners
-    searchTitle.addEventListener('input', applyFilters);
-    filterCategory.addEventListener('change', applyFilters);
-    filterAuthor.addEventListener('change', applyFilters);
-    filterStatus.addEventListener('change', applyFilters);
-    resetFilters.addEventListener('click', resetAllFilters);
-
-    // Initial filter application on load (just to show all data)
-    applyFilters();
 });
