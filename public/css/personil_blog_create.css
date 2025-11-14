@@ -63,42 +63,6 @@ a:hover {
 
 /* Layout Structure */
 .wrapper {
-    display: flex;
-    width: 100%;
-    min-height: 100vh;
-}
-
-#sidebar {
-    width: 260px;
-    min-height: 100vh;
-    background: var(--black);
-    color: #adb5bd;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1000;
-    transition: all 0.3s ease;
-}
-
-#sidebar.toggled {
-    margin-left: -260px;
-}
-
-#main-content {
-    width: 100%;
-    padding-left: 260px;
-    transition: all 0.3s ease;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
-
-#main-content.toggled {
-    padding-left: 0;
-}
-
-/* Wrapper */
-.wrapper {
   display: flex;
   width: 100%;
   min-height: 100vh;
@@ -111,23 +75,30 @@ a:hover {
   color: #adb5bd;
   position: fixed;
   height: 100vh;
-  padding: 1.5rem 0;
-  overflow-y: auto;
+  padding-top: 1.5rem;
 }
 
-#sidebar > div {
-  padding: 0 1rem;
+#main-content {
+    margin-left: 230px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
-.brand {
+.sidebar-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.sidebar-brand {
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
   color: var(--white);
-  font-size: 1.1rem;
-  margin-bottom: 2rem;
-  display: flex;
+  text-decoration: none;
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 10px;
 }
 
 .logo-icon {
@@ -136,51 +107,36 @@ a:hover {
   border-radius: 8px;
   background: linear-gradient(135deg, var(--gold), var(--dark-gold));
   color: var(--white);
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
-  font-size: 0.9rem;
+  font-weight: bold;
 }
 
-.sidebar-menu {
+.sidebar-nav {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.sidebar-menu li {
-  margin-bottom: 0.3rem;
-}
-
-.sidebar-menu a {
+.sidebar-nav li a {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
+  padding: 0.75rem 1.25rem;
   color: #adb5bd;
   text-decoration: none;
-  border-radius: 8px;
   transition: all 0.3s ease;
-  font-size: 0.9rem;
+  border-radius: 8px;
 }
 
-.sidebar-menu a:hover {
-  background: rgba(212, 175, 55, 0.1);
-  color: var(--gold);
-  transform: translateX(2px);
-}
-
-.sidebar-menu a.active {
+.sidebar-nav li a:hover,
+.sidebar-nav li a.active {
   background: linear-gradient(135deg, var(--gold), var(--dark-gold));
   color: var(--white);
-  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
 }
 
-.sidebar-menu a i {
-  font-size: 1.1rem;
-  width: 20px;
-  text-align: center;
+.sidebar-nav i {
+  margin-right: 10px;
 }
 
 

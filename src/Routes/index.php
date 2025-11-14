@@ -23,6 +23,7 @@ $router->get("/personil", PersonilController::class, "index");
 $router->get("/blog", BlogController::class, "index");
 $router->get("/join", JoinApplicationController::class, "index");
 $router->post("/join", JoinApplicationController::class, "submitApplication");
+$router->get("/personil-list", PersonilController::class, "index");
 
 // Authentication
 $router
@@ -53,13 +54,16 @@ $router->get("/admin/site-settings", AdminController::class, "renderSiteSettings
 
 
 // Personil
-$router->get("/personil-list", PersonilController::class, "index");
 $router->get("/personil", PersonilController::class, "dashboard")->middleware(PersonilMiddleware::class);
 $router->get("/personil/blog/create", PersonilController::class, "renderBlogCreate")->middleware(PersonilMiddleware::class);
+$router->post("/personil/blog/create", PersonilController::class, "createBlog")->middleware(PersonilMiddleware::class);
 $router->get("/personil/blog", PersonilController::class, "renderBlogList")->middleware(PersonilMiddleware::class);
 $router->get("/personil/blog/edit/{id}", PersonilController::class, "renderBlogEdit")->middleware(PersonilMiddleware::class);
 $router->get("/personil/profile", PersonilController::class, "renderProfile")->middleware(PersonilMiddleware::class);
 $router->get("/personil/profile/edit", PersonilController::class, "renderProfileEdit")->middleware(PersonilMiddleware::class);
+
+// Personil API
+$router->delete("/api/personil/blog/delete/{id}", PersonilController::class, "deleteBlog")->middleware(PersonilMiddleware::class);
 
 
 $router->dispatch();
