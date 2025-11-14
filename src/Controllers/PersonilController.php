@@ -6,6 +6,7 @@ use App\Controller;
 use App\Models\PersonilModel;
 use App\Models\BlogModel;
 use App\Models\KategoriModel;
+use App\Models\ProjectModel;
 use App\Helpers\SessionHelper;
 
 class PersonilController extends Controller
@@ -13,12 +14,14 @@ class PersonilController extends Controller
     private $model;
     private $blogModel;
     private $kategoriModel;
+    private $projectModel;
 
     public function __construct()
     {
         $this->model = new PersonilModel();
         $this->blogModel = new BlogModel();
         $this->kategoriModel = new KategoriModel();
+        $this->projectModel = new ProjectModel();
     }
 
     public function dashboard()
@@ -183,7 +186,106 @@ class PersonilController extends Controller
 
     public function renderProfileEdit()
     {
-        $this->render("personil/personil_profile-edit");
+        $personil_id = SessionHelper::getPersonilId();
+        
+        if (!$personil_id) {
+            header('Location: /login');
+            exit;
+        }
+        
+        $personil = $this->model->getPersonilById($personil_id);
+        $projects = $this->projectModel->getProjectsByPersonilId($personil_id);
+        
+        if (isset($personil['skillks'])) {
+            $personil['skills'] = json_decode($personil['skillks'], true) ?? [];
+        } else {
+            $personil['skills'] = [];
+        }
+        
+        $data = [
+            'personil' => $personil,
+            'projects' => $projects
+        ];
+        
+        $this->render("personil/personil_profile-edit", $data);
+    }
+
+    public function updateProfile()
+    {
+        header('Content-Type: application/json');
+        
+        $personil_id = SessionHelper::getPersonilId();
+        
+        if (!$personil_id) {
+            echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+            exit;
+        }
+        
+        $bio = $_POST['bio'] ?? '';
+        $email = $_POST['email'] ?? '';
+        $phone = $_POST['phone'] ?? '';
+        $skills = $_POST['skills'] ?? '[]';
+        
+        if (empty($email) || empty($phone)) {
+            echo json_encode(['success' => false, 'message' => 'Email dan phone harus diisi']);
+            exit;
+        }
+        
+        $personil = $this->model->getPersonilById($personil_id);
+        $foto_url = $personil['foto_url'];
+        
+        if (isset($_FILES['foto_url']) && $_FILES['foto_url']['error'] === UPLOAD_ERR_OK) {
+            $uploaded_url = $this->handleProfileImageUpload($_FILES['foto_url']);
+            if ($uploaded_url !== false) {
+                $foto_url = $uploaded_url;
+            }
+        }
+        
+        $profileData = [
+            'bio' => $bio,
+            'email' => $email,
+            'phone' => $phone,
+            'skillks' => $skills,
+            'foto_url' => $foto_url
+        ];
+        
+        $result = $this->model->updatePersonil($personil_id, $profileData);
+        
+        if ($result) {
+            if (isset($_POST['projects'])) {
+                $projects = json_decode($_POST['projects'], true);
+                foreach ($projects as $project) {
+                    if (isset($project['id']) && $project['id'] > 0) {
+                        $this->projectModel->updateProject($project['id'], [
+                            'title' => $project['title'],
+                            'description' => $project['description']
+                        ]);
+                    } else {
+                        $this->projectModel->createProject([
+                            'personil_id' => $personil_id,
+                            'title' => $project['title'],
+                            'description' => $project['description']
+                        ]);
+                    }
+                }
+            }
+            
+            if (isset($_POST['deleted_projects'])) {
+                $deleted = json_decode($_POST['deleted_projects'], true);
+                foreach ($deleted as $project_id) {
+                    $this->projectModel->deleteProject($project_id);
+                }
+            }
+            
+            echo json_encode([
+                'success' => true, 
+                'message' => 'Profile berhasil diupdate',
+                'redirect' => '/personil/profile'
+            ]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Gagal mengupdate profile']);
+        }
+        exit;
     }
 
     /**
@@ -462,6 +564,38 @@ class PersonilController extends Controller
         // Move uploaded file
         if (move_uploaded_file($file['tmp_name'], $filepath)) {
             return '/upload/blog/' . $filename;
+        }
+        
+        return false;
+    }
+
+    /**
+     * Handle profile image upload
+     */
+    private function handleProfileImageUpload($file)
+    {
+        $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        $max_size = 5 * 1024 * 1024; // 5MB
+        
+        if (!in_array($file['type'], $allowed_types)) {
+            return false;
+        }
+        
+        if ($file['size'] > $max_size) {
+            return false;
+        }
+        
+        $upload_dir = __DIR__ . '/../../public/upload/img/foto-profil/';
+        if (!is_dir($upload_dir)) {
+            mkdir($upload_dir, 0777, true);
+        }
+        
+        $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+        $filename = 'profile_' . time() . '_' . uniqid() . '.' . $extension;
+        $filepath = $upload_dir . $filename;
+        
+        if (move_uploaded_file($file['tmp_name'], $filepath)) {
+            return '/upload/img/foto-profil/' . $filename;
         }
         
         return false;

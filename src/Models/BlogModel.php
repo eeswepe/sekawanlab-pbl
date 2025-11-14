@@ -251,5 +251,21 @@ class BlogModel
         
         return $stmt->execute();
     }
+
+    public function getBlogBySlug($slug)
+    {
+        $sql = "SELECT 
+                    bp.*,
+                    k.name as kategori_nama
+                FROM blog_post bp
+                LEFT JOIN kategori k ON bp.kategori_id = k.id
+                WHERE bp.slug = :slug";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':slug', $slug, PDO::PARAM_STR);
+        $stmt->execute();
+        
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }
 

@@ -64,14 +64,14 @@
 
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle profile-dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown">
-                                <img src="https://via.placeholder.com/150/1a1a1a/FFFFFF?text=A" alt="Profile Picture">
-                                <span class="d-none d-md-inline">Rizky Adhi</span>
+                                <img src="<?= htmlspecialchars($personil['foto_url'] ?? 'https://via.placeholder.com/150/1a1a1a/FFFFFF?text=P') ?>" alt="Profile Picture">
+                                <span class="d-none d-md-inline"><?= htmlspecialchars($personil['nama_lengkap']) ?></span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                                <li><a class="dropdown-item" href="profile-view.html"><i class="bi bi-person-fill"></i> My Profile</a></li>
+                                <li><a class="dropdown-item" href="/personil/profile"><i class="bi bi-person-fill"></i> My Profile</a></li>
                                 <li><a class="dropdown-item" href="#"><i class="bi bi-gear-fill"></i> Settings</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="../../login.html"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
+                                <li><a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -86,7 +86,7 @@
                     </div>
                 </div>
 
-                <form id="editProfileForm">
+                <form id="editProfileForm" enctype="multipart/form-data">
                     <div class="row g-4">
                         <div class="col-lg-4">
                             <div class="card text-center">
@@ -94,32 +94,32 @@
                                     <h5 class="card-title mb-0"><i class="bi bi-person-fill me-2" style="color: var(--gold);"></i> Info Akun (Read-only)</h5>
                                 </div>
                                 <div class="card-body">
-                                    <img src="https://via.placeholder.com/150/D4AF37/FFFFFF?text=Rizky" 
+                                    <img src="<?= htmlspecialchars($personil['foto_url'] ?? 'https://via.placeholder.com/150/D4AF37/FFFFFF?text=' . substr($personil['nama_lengkap'], 0, 1)) ?>" 
                                         alt="Current Profile Picture" 
                                         class="avatar-preview mb-3" 
                                         id="avatarPreview">
 
                                     <div class="mb-3">
                                         <label for="profilePhoto" class="form-label text-start w-100">Upload Foto Baru</label>
-                                        <input class="form-control" type="file" id="profilePhoto" accept="image/*" onchange="previewImage(event)">
+                                        <input class="form-control" type="file" id="profilePhoto" name="foto_url" accept="image/*">
                                     </div>
 
                                     <hr>
 
                                     <div class="mb-3 text-start">
                                         <label for="namaLengkap" class="form-label">Nama Lengkap</label>
-                                        <input type="text" class="form-control" id="namaLengkap" value="Rizky Adhi Pramana" readonly>
+                                        <input type="text" class="form-control" id="namaLengkap" value="<?= htmlspecialchars($personil['nama_lengkap']) ?>" readonly>
                                         <small class="text-muted">Nama hanya bisa diubah oleh Administrator.</small>
                                     </div>
                                     
                                     <div class="mb-3 text-start">
                                         <label for="role" class="form-label">Role</label>
-                                        <input type="text" class="form-control" id="role" value="Ketua Laboratorium (Dosen)" readonly>
+                                        <input type="text" class="form-control" id="role" value="<?= htmlspecialchars(ucfirst($personil['role'])) ?>" readonly>
                                     </div>
                                     
                                     <div class="mb-0 text-start">
-                                        <label for="tipe" class="form-label">Tipe Personil</label>
-                                        <input type="text" class="form-control" id="tipe" value="Staf Akademik" readonly>
+                                        <label for="spesialisasi" class="form-label">Spesialisasi</label>
+                                        <input type="text" class="form-control" id="spesialisasi" value="<?= htmlspecialchars($personil['spesialisasi'] ?? '-') ?>" readonly>
                                     </div>
 
                                 </div>
@@ -135,17 +135,17 @@
                                 <div class="card-body">
                                     <div class="mb-4">
                                         <label for="bio" class="form-label">Tentang Anda (Bio)</label>
-                                        <textarea class="form-control" id="bio" rows="5" placeholder="Tuliskan deskripsi singkat mengenai pengalaman dan fokus Anda.">Dosen dan peneliti berpengalaman lebih dari 10 tahun di bidang Rekayasa Perangkat Lunak. Fokus pada pengembangan sistem skala besar dan implementasi praktik Agile/DevOps.</textarea>
+                                        <textarea class="form-control" id="bio" name="bio" rows="5" placeholder="Tuliskan deskripsi singkat mengenai pengalaman dan fokus Anda."><?= htmlspecialchars($personil['bio'] ?? '') ?></textarea>
                                     </div>
                                     
                                     <div class="mb-3">
                                         <label for="email" class="form-label">Email</label>
-                                        <input type="email" class="form-control" id="email" value="rizky.adhi@se.lab.id">
+                                        <input type="email" class="form-control" id="email" name="email" value="<?= htmlspecialchars($personil['email']) ?>" required>
                                     </div>
                                     
                                     <div class="mb-0">
                                         <label for="phone" class="form-label">Nomor Telepon</label>
-                                        <input type="tel" class="form-control" id="phone" value="+6281234567890">
+                                        <input type="tel" class="form-control" id="phone" name="phone" value="<?= htmlspecialchars($personil['phone']) ?>" required>
                                     </div>
                                 </div>
                             </div>
@@ -156,70 +156,53 @@
                                 </div>
                                 <div class="card-body">
                                     <div id="skillsContainer" class="d-flex flex-wrap align-items-center mb-3">
-                                        <span class="skill-tag" data-skill="Python">Python <button type="button" class="btn-close" onclick="removeSkill(this)"></button></span>
-                                        <span class="skill-tag" data-skill="Java">Java <button type="button" class="btn-close" onclick="removeSkill(this)"></button></span>
-                                        <span class="skill-tag" data-skill="React">React <button type="button" class="btn-close" onclick="removeSkill(this)"></button></span>
+                                        <?php if (!empty($personil['skills'])): ?>
+                                            <?php foreach ($personil['skills'] as $skill): ?>
+                                                <span class="skill-tag" data-skill="<?= htmlspecialchars($skill) ?>"><?= htmlspecialchars($skill) ?> <button type="button" class="btn-close"></button></span>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
                                     </div>
                                     <div class="input-group">
                                         <input type="text" class="form-control" id="skillInput" placeholder="Tambahkan skill baru (mis: Docker)">
-                                        <button class="btn btn-primary-custom" type="button" onclick="addSkill()">
+                                        <button class="btn btn-primary-custom" type="button" id="addSkillBtn">
                                             <i class="bi bi-plus me-2"></i> Tambah
                                         </button>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5 class="card-title mb-0"><i class="bi bi-globe me-2" style="color: var(--gold);"></i> Social Media & Website</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="mb-3">
-                                        <label for="linkedin" class="form-label"><i class="bi bi-linkedin me-2"></i> LinkedIn URL</label>
-                                        <input type="url" class="form-control" id="linkedin" value="https://linkedin.com/in/rizky_adhi" placeholder="https://linkedin.com/in/username">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="github" class="form-label"><i class="bi bi-github me-2"></i> GitHub URL</label>
-                                        <input type="url" class="form-control" id="github" value="https://github.com/rizky-adhi-dev" placeholder="https://github.com/username">
-                                    </div>
-                                    <div class="mb-0">
-                                        <label for="website" class="form-label"><i class="bi bi-house-door-fill me-2"></i> Website URL</label>
-                                        <input type="url" class="form-control" id="website" value="https://rizkyadhi.me" placeholder="https://yourwebsite.com">
-                                    </div>
-                                </div>
-                            </div>
+
                             
                             <div class="card">
                                 <div class="card-header d-flex justify-content-between align-items-center">
                                     <h5 class="card-title mb-0"><i class="bi bi-folder-fill me-2" style="color: var(--gold);"></i> Projects</h5>
-                                    <button class="btn btn-primary-custom btn-sm" type="button" onclick="addProject()">
+                                    <button class="btn btn-primary-custom btn-sm" type="button" id="addProjectBtn">
                                         <i class="bi bi-plus-lg me-2"></i> Tambah Proyek
                                     </button>
                                 </div>
                                 <div class="card-body">
                                     <div id="projectsContainer">
-                                        <div class="project-item" id="project-1">
-                                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                                <h6 class="mb-0 text-dark">Proyek #1: Sistem Akademik v2.0</h6>
-                                                <button type="button" class="btn btn-danger btn-sm" onclick="removeProject('project-1')">
-                                                    <i class="bi bi-trash-fill"></i> Hapus
-                                                </button>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label">Judul Proyek</label>
-                                                <input type="text" class="form-control" value="Sistem Informasi Akademik v2.0">
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label">Deskripsi</label>
-                                                <textarea class="form-control" rows="3">Pengembangan ulang sistem informasi akademik dengan arsitektur microservices modern.</textarea>
-                                            </div>
-                                            <div class="mb-0">
-                                                <label class="form-label">Tech Stack</label>
-                                                <input type="text" class="form-control" value="Python, Django, PostgreSQL, Docker">
-                                            </div>
-                                        </div>
+                                        <?php if (!empty($projects)): ?>
+                                            <?php foreach ($projects as $index => $project): ?>
+                                                <div class="project-item" data-project-id="<?= $project['id'] ?>">
+                                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                                        <h6 class="mb-0 text-dark">Proyek #<?= $index + 1 ?></h6>
+                                                        <button type="button" class="btn btn-danger btn-sm btn-remove-project">
+                                                            <i class="bi bi-trash-fill"></i> Hapus
+                                                        </button>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Judul Proyek</label>
+                                                        <input type="text" class="form-control project-title" value="<?= htmlspecialchars($project['title']) ?>" required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Deskripsi</label>
+                                                        <textarea class="form-control project-description" rows="3" required><?= htmlspecialchars($project['description']) ?></textarea>
+                                                    </div>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
                                     </div>
-                                    
                                 </div>
                             </div>
 
@@ -227,7 +210,7 @@
                     </div>
                     
                     <div class="d-flex justify-content-end gap-3 mt-4 mb-5">
-                        <a href="profile-view.html" class="btn btn-outline-secondary">
+                        <a href="/personil/profile" class="btn btn-outline-secondary">
                             <i class="bi bi-x-circle-fill me-2"></i> Cancel
                         </a>
                         <button type="submit" class="btn btn-primary-custom">
@@ -246,8 +229,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <script src="../../assets/js/personil_profile-edit.js"></script>
-
+    <script src="/js/personil_profile-edit.js"></script>
 </body>
 </html>
