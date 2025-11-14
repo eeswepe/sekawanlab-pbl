@@ -13,7 +13,7 @@ class JoinApplicationController extends Controller
     public function __construct()
     {
         $this->model = new JoinApplicationModel();
-        $this->uploadDir = "uploads/cv";
+        $this->uploadDir = "upload/cv";
     }
 
     public function index()
@@ -160,7 +160,7 @@ class JoinApplicationController extends Controller
 
         // Move uploaded file
         if (move_uploaded_file($file["tmp_name"], $destination)) {
-            return "/uploads/cv/" . $uniqueName;
+            return "/upload/cv/" . $uniqueName;
         }
 
         return false;
