@@ -29,7 +29,72 @@ class AdminController extends Controller
 
     public function blogList()
     {
-        $this->render("admin/admin_blog_list");
+        $blogModel = new BlogModel();
+        $kategoriModel = new KategoriModel();
+        $personilModel = new PersonilModel();
+        
+        // Get filters from query params
+        $filters = [];
+        if (!empty($_GET['search'])) {
+            $filters['search'] = $_GET['search'];
+        }
+        if (!empty($_GET['kategori']) && $_GET['kategori'] !== 'all') {
+            $filters['kategori_id'] = $_GET['kategori'];
+        }
+        if (!empty($_GET['penulis']) && $_GET['penulis'] !== 'all') {
+            $filters['penulis_id'] = $_GET['penulis'];
+        }
+        if (!empty($_GET['status']) && $_GET['status'] !== 'all') {
+            $filters['status'] = $_GET['status'];
+        }
+        
+        // Pagination
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $limit = 10;
+        $offset = ($page - 1) * $limit;
+        
+        // Get blogs and total count
+        $blogs = $blogModel->getBlogsForAdmin($filters, $limit, $offset);
+        $totalBlogs = $blogModel->countBlogsForAdmin($filters);
+        $totalPages = ceil($totalBlogs / $limit);
+        
+        // Get categories and personils for filters
+        $categories = $kategoriModel->getAllKategori();
+        $personils = $personilModel->getAllPersonils();
+        
+        $data = [
+            'blogs' => $blogs,
+            'categories' => $categories,
+            'personils' => $personils,
+            'currentPage' => $page,
+            'totalPages' => $totalPages,
+            'totalBlogs' => $totalBlogs,
+            'filters' => $filters,
+            'offset' => $offset
+        ];
+        
+        $this->render("admin/admin_blog_list", $data);
+    }
+    
+    public function deleteBlog($id)
+    {
+        header('Content-Type: application/json');
+        
+        $blogModel = new BlogModel();
+        
+        // Check if blog exists
+        $blog = $blogModel->getBlogById($id);
+        if (!$blog) {
+            echo json_encode(['success' => false, 'message' => 'Blog tidak ditemukan']);
+            return;
+        }
+        
+        // Delete blog
+        if ($blogModel->deleteBlog($id)) {
+            echo json_encode(['success' => true, 'message' => 'Blog berhasil dihapus']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Gagal menghapus blog']);
+        }
     }
 
     public function renderBlogEdit($id)

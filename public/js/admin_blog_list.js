@@ -1,13 +1,9 @@
-// JavaScript untuk Toggle Sidebar dan Logika Filter Frontend
-
 document.addEventListener('DOMContentLoaded', function() {
     const sidebar = document.getElementById('sidebar');
     const mainContent = document.getElementById('main-content');
     const toggleButton = document.getElementById('sidebarToggleMobile');
 
-    // 1. Logika Toggle Sidebar
-    
-    // Set sidebar aktif pada layar desktop saat dimuat
+    // Sidebar Toggle
     if (window.innerWidth >= 992) {
         sidebar.classList.remove('toggled');
         mainContent.classList.remove('toggled');
@@ -25,29 +21,65 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleButton.addEventListener('click', toggleSidebar);
     }
 
-    // 2. Logika Filter Data Table (hanya frontend)
-    const searchTitle = document.getElementById('searchTitle');
+    // Auto-submit form on filter change
     const filterCategory = document.getElementById('filterCategory');
     const filterAuthor = document.getElementById('filterAuthor');
     const filterStatus = document.getElementById('filterStatus');
-    const resetFilters = document.getElementById('resetFilters');
+    const filterForm = document.getElementById('filterForm');
 
-    /**
-     * Menerapkan filter pada tabel berdasarkan nilai input filter.
-     */
-    function applyFilters() {
-        const title = searchTitle.value.toLowerCase();
-        // Menggunakan nilai teks dari option untuk filter kategori/penulis/status
-        const category = filterCategory.options[filterCategory.selectedIndex].textContent;
-        const author = filterAuthor.options[filterAuthor.selectedIndex].textContent;
-        const status = filterStatus.options[filterStatus.selectedIndex].textContent;
-        
-        const rows = document.querySelectorAll('.table tbody tr');
+    if (filterCategory) {
+        filterCategory.addEventListener('change', function() {
+            filterForm.submit();
+        });
+    }
 
-        rows.forEach(row => {
-            // Ambil teks dari sel yang sesuai
-            const postTitle = row.cells[2].textContent.toLowerCase();
-            const postCategory = row.cells[3].textContent;
+    if (filterAuthor) {
+        filterAuthor.addEventListener('change', function() {
+            filterForm.submit();
+        });
+    }
+
+    if (filterStatus) {
+        filterStatus.addEventListener('change', function() {
+            filterForm.submit();
+        });
+    }
+
+    // Delete Blog Confirmation
+    const deleteButtons = document.querySelectorAll('.delete-blog');
+    
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', async function() {
+            const blogId = this.getAttribute('data-id');
+            
+            if (!confirm('Apakah Anda yakin ingin menghapus blog ini?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/admin/blog/delete/${blogId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Blog berhasil dihapus!');
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat menghapus blog');
+            }
+        });
+    });
+});
+
             const postAuthor = row.cells[4].textContent;
             // Ambil teks dari badge untuk status
             const postStatus = row.cells[7].querySelector('.badge').textContent;
