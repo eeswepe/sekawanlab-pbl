@@ -89,6 +89,14 @@ class AdminController extends Controller
             return;
         }
         
+        // Delete featured image if exists
+        if (!empty($blog['featured_image_url'])) {
+            $imagePath = __DIR__ . '/../../public' . $blog['featured_image_url'];
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+        }
+        
         // Delete blog
         if ($blogModel->deleteBlog($id)) {
             echo json_encode(['success' => true, 'message' => 'Blog berhasil dihapus']);
@@ -345,7 +353,74 @@ class AdminController extends Controller
 
     public function renderPersonilList()
     {
-        $this->render("admin/admin_personil_list");
+        $personilModel = new PersonilModel();
+        
+        // Get filters from query params
+        $filters = [];
+        if (!empty($_GET['search'])) {
+            $filters['search'] = $_GET['search'];
+        }
+        if (!empty($_GET['role']) && $_GET['role'] !== 'all') {
+            $filters['role'] = $_GET['role'];
+        }
+        
+        // Pagination
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $limit = 10;
+        $offset = ($page - 1) * $limit;
+        
+        // Get personils and counts
+        $personils = $personilModel->getPersonilsForAdmin($filters, $limit, $offset);
+        $totalPersonils = $personilModel->countPersonilsForAdmin($filters);
+        $totalPages = ceil($totalPersonils / $limit);
+        
+        // Get counts by role for tabs
+        $totalAll = $personilModel->countByRole();
+        $totalDosen = $personilModel->countByRole('dosen');
+        $totalTalent = $personilModel->countByRole('talent');
+        
+        $data = [
+            'personils' => $personils,
+            'currentPage' => $page,
+            'totalPages' => $totalPages,
+            'totalPersonils' => $totalPersonils,
+            'totalAll' => $totalAll,
+            'totalDosen' => $totalDosen,
+            'totalTalent' => $totalTalent,
+            'filters' => $filters,
+            'offset' => $offset
+        ];
+        
+        $this->render("admin/admin_personil_list", $data);
+    }
+    
+    public function deletePersonil($id)
+    {
+        header('Content-Type: application/json');
+        
+        $personilModel = new PersonilModel();
+        
+        // Check if personil exists
+        $personil = $personilModel->getPersonilById($id);
+        if (!$personil) {
+            echo json_encode(['success' => false, 'message' => 'Personil tidak ditemukan']);
+            return;
+        }
+        
+        // Delete foto if exists
+        if (!empty($personil['foto_url'])) {
+            $fotoPath = __DIR__ . '/../../public' . $personil['foto_url'];
+            if (file_exists($fotoPath)) {
+                unlink($fotoPath);
+            }
+        }
+        
+        // Delete personil
+        if ($personilModel->deletePersonil($id)) {
+            echo json_encode(['success' => true, 'message' => 'Personil berhasil dihapus']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Gagal menghapus personil']);
+        }
     }
 
     public function renderPersonilCreate()
