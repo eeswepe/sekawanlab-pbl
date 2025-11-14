@@ -19,4 +19,20 @@ class BlogController extends Controller
         $data["blogs"] = $this->model->getAllBlogPosts();
         $this->render("blog/index", $data);
     }
+
+    public function showBySlug($slug)
+    {
+        $blog = $this->model->getBlogBySlug($slug);
+        
+        if (!$blog) {
+            header('Location: /blog');
+            exit;
+        }
+        
+        $data = [
+            'blog' => $blog
+        ];
+        
+        $this->render("blog/blog-detail", $data);
+    }
 }

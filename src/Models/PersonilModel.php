@@ -100,5 +100,27 @@ class PersonilModel
         
         return $personil;
     }
+
+    public function updatePersonil($id, $data)
+    {
+        $sql = "UPDATE personil SET 
+                    bio = :bio,
+                    email = :email,
+                    phone = :phone,
+                    skillks = :skillks,
+                    foto_url = :foto_url,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE id = :id";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->bindParam(':bio', $data['bio'], PDO::PARAM_STR);
+        $stmt->bindParam(':email', $data['email'], PDO::PARAM_STR);
+        $stmt->bindParam(':phone', $data['phone'], PDO::PARAM_STR);
+        $stmt->bindParam(':skillks', $data['skillks'], PDO::PARAM_STR);
+        $stmt->bindParam(':foto_url', $data['foto_url'], PDO::PARAM_STR);
+        
+        return $stmt->execute();
+    }
 }
 ?>

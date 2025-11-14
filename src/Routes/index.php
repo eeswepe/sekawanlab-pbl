@@ -21,6 +21,7 @@ $router->get("/", HomeController::class, "index");
 $router->get("/profil/{slug}", ProfilPageController::class, "show");
 $router->get("/personil", PersonilController::class, "index");
 $router->get("/blog", BlogController::class, "index");
+$router->get("/blog/{slug}", BlogController::class, "showBySlug");
 $router->get("/join", JoinApplicationController::class, "index");
 $router->post("/join", JoinApplicationController::class, "submitApplication");
 $router->get("/personil-list", PersonilController::class, "index");
@@ -41,6 +42,7 @@ $router->get("/admin", AdminController::class, "dashboard")->middleware(AdminMid
 $router->get("/admin/blog-list", AdminController::class, "blogList")->middleware(AdminMiddleware::class);
 $router->get("/admin/blog/edit/{id}", AdminController::class, "renderBlogEdit")->middleware(AdminMiddleware::class);
 $router->get("/admin/blog/create", AdminController::class, "renderBlogCreate")->middleware(AdminMiddleware::class);
+$router->post("/admin/blog/create", AdminController::class, "createBlog")->middleware(AdminMiddleware::class);
 $router->get("/admin/profil-pages", AdminController::class, "renderProfilePages")->middleware(AdminMiddleware::class);
 $router->get("/admin/profil-page/edit/{id}", AdminController::class, "renderProfilePagesEdit")->middleware(AdminMiddleware::class);
 $router->get("/admin/personil", AdminController::class, "renderPersonilList")->middleware(AdminMiddleware::class);
@@ -49,7 +51,6 @@ $router->get("/admin/personil/create", AdminController::class, "renderPersonilCr
 $router->get("/admin/join-applications", AdminController::class, "renderApplicationsList")->middleware(AdminMiddleware::class);
 $router->get("/admin/join-application/{id}", AdminController::class, "renderApplicationView")->middleware(AdminMiddleware::class);
 $router->get("/admin/site-settings", AdminController::class, "renderSiteSettings")->middleware(AdminMiddleware::class);
-
 
 
 
@@ -62,6 +63,7 @@ $router->get("/personil/blog/edit/{id}", PersonilController::class, "renderBlogE
 $router->post("/personil/blog/update/{id}", PersonilController::class, "updateBlog")->middleware(PersonilMiddleware::class);
 $router->get("/personil/profile", PersonilController::class, "renderProfile")->middleware(PersonilMiddleware::class);
 $router->get("/personil/profile/edit", PersonilController::class, "renderProfileEdit")->middleware(PersonilMiddleware::class);
+$router->post("/personil/profile/update", PersonilController::class, "updateProfile")->middleware(PersonilMiddleware::class);
 
 // Personil API
 $router->delete("/api/personil/blog/delete/{id}", PersonilController::class, "deleteBlog")->middleware(PersonilMiddleware::class);

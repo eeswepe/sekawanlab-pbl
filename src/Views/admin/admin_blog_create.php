@@ -94,7 +94,7 @@
                     <h1>Tambah Blog Post Baru</h1>
                 </div>
 
-                <form id="blogPostForm">
+                <form id="blogPostForm" enctype="multipart/form-data">
                     <div class="row g-4">
                         <!-- Kolom Kiri: Judul, Konten, Gambar -->
                         <div class="col-lg-8">
@@ -106,20 +106,26 @@
                                     <!-- Judul Artikel -->
                                     <div class="mb-4">
                                         <label for="postTitle" class="form-label">Judul Artikel</label>
-                                        <input type="text" class="form-control" id="postTitle" placeholder="Masukkan judul artikel..." required>
+                                        <input type="text" class="form-control" id="postTitle" name="judul" placeholder="Masukkan judul artikel..." required>
+                                    </div>
+                                    
+                                    <!-- Cuplikan -->
+                                    <div class="mb-4">
+                                        <label for="cuplikan" class="form-label">Cuplikan (Opsional)</label>
+                                        <textarea class="form-control" id="cuplikan" name="cuplikan" rows="2" placeholder="Cuplikan artikel (akan digenerate otomatis jika kosong)"></textarea>
                                     </div>
                                     
                                     <!-- Konten Artikel (Rich Text Editor Placeholder) -->
                                     <div class="mb-4">
                                         <label for="blogContent" class="form-label">Konten</label>
                                         <!-- Ini adalah placeholder untuk Rich Text Editor, menggunakan textarea besar -->
-                                        <textarea class="form-control" id="blogContent" placeholder="Mulai tulis konten artikel Anda di sini..." required></textarea>
+                                        <textarea class="form-control" id="blogContent" name="konten" placeholder="Mulai tulis konten artikel Anda di sini..." required></textarea>
                                     </div>
 
                                     <!-- Upload Featured Image -->
                                     <div class="mb-4">
-                                        <label for="featuredImage" class="form-label">Upload Featured Image</label>
-                                        <input class="form-control" type="file" id="featuredImage" accept="image/*">
+                                        <label for="featuredImage" class="form-label">Upload Featured Image (Opsional)</label>
+                                        <input class="form-control" type="file" id="featuredImage" name="featured_image" accept="image/*">
                                         <div id="image-preview-container">
                                             <img id="image-preview" src="#" alt="Preview Gambar">
                                             <span class="preview-placeholder" id="placeholder-text">Pratinjau Gambar (300x180)</span>
@@ -141,11 +147,11 @@
                                     <div class="mb-4">
                                         <label class="form-label d-block">Status Artikel</label>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="postStatus" id="statusDraft" value="Draft" checked>
+                                            <input class="form-check-input" type="radio" name="status" id="statusDraft" value="draft" checked>
                                             <label class="form-check-label" for="statusDraft">Draft</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="postStatus" id="statusPublished" value="Published">
+                                            <input class="form-check-input" type="radio" name="status" id="statusPublished" value="published">
                                             <label class="form-check-label" for="statusPublished">Published</label>
                                         </div>
                                     </div>
@@ -171,26 +177,22 @@
                                     <!-- Kategori (Dropdown) -->
                                     <div class="mb-4">
                                         <label for="postCategory" class="form-label">Kategori</label>
-                                        <select class="form-select" id="postCategory" required>
+                                        <select class="form-select" id="postCategory" name="kategori_id" required>
                                             <option value="" selected disabled>Pilih Kategori</option>
-                                            <option value="Machine Learning">Machine Learning</option>
-                                            <option value="Cloud Computing">Cloud Computing</option>
-                                            <option value="Mobile Development">Mobile Development</option>
-                                            <option value="Security">Security</option>
-                                            <option value="Data Science">Data Science</option>
-                                            <option value="Web Development">Web Development</option>
+                                            <?php foreach ($categories as $category): ?>
+                                                <option value="<?= $category['id'] ?>"><?= htmlspecialchars($category['name']) ?></option>
+                                            <?php endforeach; ?>
                                         </select>
                                     </div>
 
                                     <!-- Penulis (Dropdown) -->
                                     <div class="mb-4">
                                         <label for="postAuthor" class="form-label">Penulis</label>
-                                        <select class="form-select" id="postAuthor" required>
+                                        <select class="form-select" id="postAuthor" name="penulis_id" required>
                                             <option value="" selected disabled>Pilih Penulis</option>
-                                            <option value="Admin User">Admin User</option>
-                                            <option value="Dr. Anita">Dr. Anita</option>
-                                            <option value="Prof. Budi">Prof. Budi</option>
-                                            <option value="Mahasiswa A">Mahasiswa A</option>
+                                            <?php foreach ($personils as $personil): ?>
+                                                <option value="<?= $personil['id'] ?>"><?= htmlspecialchars($personil['nama_lengkap']) ?> (<?= htmlspecialchars($personil['role']) ?>)</option>
+                                            <?php endforeach; ?>
                                         </select>
                                     </div>
                                 </div>

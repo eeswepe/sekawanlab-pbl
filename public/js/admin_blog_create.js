@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const mainContent = document.getElementById('main-content');
     const toggleButton = document.getElementById('sidebarToggleMobile');
 
-    // Handle sidebar state on initial load for responsiveness
     if (window.innerWidth >= 992) {
         sidebar.classList.remove('toggled');
         mainContent.classList.remove('toggled');
@@ -47,14 +46,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // --- Logika Estimasi Waktu Baca (Frontend Dummy) ---
+    // --- Logika Estimasi Waktu Baca ---
     const contentTextarea = document.getElementById('blogContent');
     const readingTimeInput = document.getElementById('metaReadingTime');
-    const wordsPerMinute = 200; // Standar rata-rata
+    const wordsPerMinute = 200;
 
     contentTextarea.addEventListener('input', function() {
         const text = contentTextarea.value.trim();
-        // Menggunakan regex untuk menghitung kata secara lebih akurat
         const wordCount = text.match(/\b\w+\b/g) ? text.match(/\b\w+\b/g).length : 0;
         
         let readingTimeEstimate;
@@ -62,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
             readingTimeEstimate = 'Otomatis (0 menit)';
         } else {
             const minutes = Math.ceil(wordCount / wordsPerMinute);
-            readingTimeEstimate = `${minutes} menit`;
+            readingTimeEstimate = `Otomatis (${minutes} menit)`;
         }
 
         readingTimeInput.value = readingTimeEstimate;
@@ -71,34 +69,46 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- Logika Tombol Cancel ---
     const cancelBtn = document.getElementById('cancelBtn');
     cancelBtn.addEventListener('click', function() {
-        // Mengganti alert() dengan console log sesuai instruksi, dan simulasi navigasi
-        console.warn("Aksi Batalkan: Simulasi kembali ke halaman daftar blog.");
-        // Di aplikasi nyata, Anda akan menggunakan: window.location.href = 'admin-blog-list.html';
-        alert('Aksi Batalkan: Kembali ke halaman daftar blog.'); // Tetap menggunakan alert() untuk keseragaman simulasi frontend
+        if (confirm('Apakah Anda yakin ingin membatalkan? Data yang belum disimpan akan hilang.')) {
+            window.location.href = '/admin/blog-list';
+        }
     });
 
-    // --- Logika Submit Form (Dummy) ---
+    // --- Logika Submit Form ---
     const form = document.getElementById('blogPostForm');
 
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        const submitterId = e.submitter ? e.submitter.id : '';
-        const status = (submitterId === 'saveAndPublishBtn') ? 'Published' : document.querySelector('input[name="postStatus"]:checked').value;
-        const title = document.getElementById('postTitle').value;
+        const formData = new FormData(form);
         
-        console.log("--- Form Submission Data ---");
-        console.log(`Judul: ${title}`);
-        console.log(`Kategori: ${document.getElementById('postCategory').value}`);
-        console.log(`Penulis: ${document.getElementById('postAuthor').value}`);
-        console.log(`Status Final: ${status}`);
-        console.log("--------------------------");
-
-        // Menampilkan pesan sukses sebagai simulasi
-        const action = (status === 'Published') ? 'dipublikasikan' : 'disimpan sebagai draft';
-        const message = `Artikel "${title}" berhasil ${action}! (Simulasi frontend)`;
-
-        console.warn(`[SIMULASI SUKSES]: ${message}`); 
-        alert(message);
+        // Show loading
+        const submitBtn = e.submitter;
+        const originalText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...';
+        
+        try {
+            const response = await fetch('/admin/blog/create', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                alert('Blog berhasil dibuat!');
+                window.location.href = '/admin/blog-list';
+            } else {
+                alert('Error: ' + result.message);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan saat menyimpan blog');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        }
     });
 });
