@@ -122,5 +122,43 @@ class PersonilModel
         
         return $stmt->execute();
     }
+
+    /**
+     * Create new personil
+     * @param array $data
+     * @return int|false - personil ID if success
+     */
+    public function createPersonil($data)
+    {
+        $sql = "INSERT INTO personil (
+                    user_id, nama_lengkap, role, spesialisasi, 
+                    email, phone, location, tanggal_bergabung, 
+                    bio, skillks, foto_url
+                ) VALUES (
+                    :user_id, :nama_lengkap, :role, :spesialisasi,
+                    :email, :phone, :location, :tanggal_bergabung,
+                    :bio, :skillks, :foto_url
+                ) RETURNING id";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':user_id', $data['user_id']);
+        $stmt->bindParam(':nama_lengkap', $data['nama_lengkap'], PDO::PARAM_STR);
+        $stmt->bindParam(':role', $data['role'], PDO::PARAM_STR);
+        $stmt->bindParam(':spesialisasi', $data['spesialisasi'], PDO::PARAM_STR);
+        $stmt->bindParam(':email', $data['email'], PDO::PARAM_STR);
+        $stmt->bindParam(':phone', $data['phone'], PDO::PARAM_STR);
+        $stmt->bindParam(':location', $data['location'], PDO::PARAM_STR);
+        $stmt->bindParam(':tanggal_bergabung', $data['tanggal_bergabung']);
+        $stmt->bindParam(':bio', $data['bio'], PDO::PARAM_STR);
+        $stmt->bindParam(':skillks', $data['skillks'], PDO::PARAM_STR);
+        $stmt->bindParam(':foto_url', $data['foto_url'], PDO::PARAM_STR);
+        
+        if ($stmt->execute()) {
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result['id'];
+        }
+        
+        return false;
+    }
 }
 ?>

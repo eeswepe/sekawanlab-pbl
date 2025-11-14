@@ -7,6 +7,8 @@ use App\Models\AdminStatsModel;
 use App\Models\KategoriModel;
 use App\Models\PersonilModel;
 use App\Models\BlogModel;
+use App\Models\UserModel;
+use App\Models\ProjectModel;
 
 class AdminController extends Controller
 {
@@ -201,6 +203,145 @@ class AdminController extends Controller
     public function renderPersonilCreate()
     {
         $this->render("admin/admin_personil_create");
+    }
+    
+    public function createPersonil()
+    {
+        header('Content-Type: application/json');
+        
+        // Validate required fields
+        if (empty($_POST['nama_lengkap']) || empty($_POST['email']) || empty($_POST['phone']) || empty($_POST['role'])) {
+            echo json_encode(['success' => false, 'message' => 'Field wajib tidak boleh kosong']);
+            return;
+        }
+        
+        $db = \App\Database::getConnection();
+        
+        try {
+            $db->beginTransaction();
+            
+            $userId = null;
+            
+            // Create user account if requested
+            if (!empty($_POST['create_account']) && $_POST['create_account'] === 'true') {
+                if (empty($_POST['username']) || empty($_POST['password'])) {
+                    echo json_encode(['success' => false, 'message' => 'Username dan password wajib diisi untuk membuat akun']);
+                    return;
+                }
+                
+                $userModel = new UserModel();
+                $userId = $userModel->createUser([
+                    'username' => $_POST['username'],
+                    'password' => $_POST['password'],
+                    'role' => 'personil'
+                ]);
+                
+                if (!$userId) {
+                    $db->rollBack();
+                    echo json_encode(['success' => false, 'message' => 'Gagal membuat akun user']);
+                    return;
+                }
+            }
+            
+            // Handle photo upload
+            $fotoUrl = null;
+            if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+                $fotoUrl = $this->handlePhotoUpload($_FILES['photo']);
+                if (!$fotoUrl) {
+                    $db->rollBack();
+                    echo json_encode(['success' => false, 'message' => 'Gagal upload foto']);
+                    return;
+                }
+            }
+            
+            // Parse skills JSON
+            $skills = [];
+            if (!empty($_POST['skills'])) {
+                $skills = json_decode($_POST['skills'], true) ?? [];
+            }
+            
+            // Create personil
+            $personilModel = new PersonilModel();
+            $personilData = [
+                'user_id' => $userId,
+                'nama_lengkap' => $_POST['nama_lengkap'],
+                'role' => $_POST['role'],
+                'spesialisasi' => $_POST['spesialisasi'] ?? null,
+                'email' => $_POST['email'],
+                'phone' => $_POST['phone'],
+                'location' => $_POST['location'] ?? null,
+                'tanggal_bergabung' => $_POST['tanggal_bergabung'] ?? date('Y-m-d'),
+                'bio' => $_POST['bio'] ?? null,
+                'skillks' => json_encode($skills),
+                'foto_url' => $fotoUrl
+            ];
+            
+            $personilId = $personilModel->createPersonil($personilData);
+            
+            if (!$personilId) {
+                $db->rollBack();
+                echo json_encode(['success' => false, 'message' => 'Gagal membuat personil']);
+                return;
+            }
+            
+            // Create projects if any
+            if (!empty($_POST['projects'])) {
+                $projects = json_decode($_POST['projects'], true);
+                if (is_array($projects)) {
+                    $projectModel = new ProjectModel();
+                    foreach ($projects as $project) {
+                        if (!empty($project['title'])) {
+                            $projectModel->createProject([
+                                'personil_id' => $personilId,
+                                'title' => $project['title'],
+                                'description' => $project['description'] ?? ''
+                            ]);
+                        }
+                    }
+                }
+            }
+            
+            $db->commit();
+            
+            echo json_encode([
+                'success' => true,
+                'message' => 'Personil berhasil dibuat',
+                'personil_id' => $personilId
+            ]);
+            
+        } catch (\Exception $e) {
+            $db->rollBack();
+            echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+        }
+    }
+    
+    private function handlePhotoUpload($file)
+    {
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        $maxSize = 5 * 1024 * 1024; // 5MB
+        
+        if (!in_array($file['type'], $allowedTypes)) {
+            return false;
+        }
+        
+        if ($file['size'] > $maxSize) {
+            return false;
+        }
+        
+        $uploadDir = __DIR__ . '/../../public/upload/img/foto-profil/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+        
+        $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+        $filename = 'personil_' . time() . '_' . uniqid() . '.' . $extension;
+        $filepath = $uploadDir . $filename;
+        
+        if (move_uploaded_file($file['tmp_name'], $filepath)) {
+            return '/upload/img/foto-profil/' . $filename;
+        }
+        
+        return false;
     }
 
     public function renderPersonilEdit($id)

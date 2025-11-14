@@ -89,7 +89,7 @@
                     </div>
                 </div>
 
-                <form id="personilForm" action="/admin/personil" method="POST">
+                <form id="personilForm" method="POST" enctype="multipart/form-data">
                     
                     <div class="card">
                         <div class="card-header">
@@ -101,36 +101,32 @@
                                     <label class="form-label">Upload Foto (Optional)</label>
                                     <div class="d-flex flex-column align-items-center">
                                         <img id="photo-preview" src="https://via.placeholder.com/120/f8f9fa/adb5bd?text=No+Photo" alt="Foto Profil">
-                                        <input class="form-control" type="file" id="photo" accept="image/*">
+                                        <input class="form-control" type="file" id="photo" name="photo" accept="image/*">
                                     </div>
                                 </div>
                                 <div class="col-lg-9">
                                     <div class="mb-3">
                                         <label for="namaLengkap" class="form-label">Nama Lengkap</label>
-                                        <input type="text" class="form-control" id="namaLengkap" placeholder="Masukkan nama lengkap personil" required>
+                                        <input type="text" class="form-control" id="namaLengkap" name="nama_lengkap" placeholder="Masukkan nama lengkap personil" required>
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col-md-6">
                                             <label class="form-label">Tipe Personil</label>
                                             <div class="d-flex gap-4">
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="tipePersonil" id="tipeDosen" value="Dosen" checked>
+                                                    <input class="form-check-input" type="radio" name="role" id="tipeDosen" value="dosen" checked>
                                                     <label class="form-check-label" for="tipeDosen">Dosen Pembimbing</label>
                                                 </div>
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="tipePersonil" id="tipeTalent" value="Talent">
+                                                    <input class="form-check-input" type="radio" name="role" id="tipeTalent" value="talent">
                                                     <label class="form-check-label" for="tipeTalent">Talent/Geeks</label>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <label for="role" class="form-label">Role/Posisi</label>
-                                            <input type="text" class="form-control" id="role" placeholder="Contoh: Head of Lab, Mobile Developer" required>
-                                        </div>
                                     </div>
                                     <div class="mb-3">
                                         <label for="spesialisasi" class="form-label">Spesialisasi</label>
-                                        <input type="text" class="form-control" id="spesialisasi" placeholder="Contoh: Machine Learning, UI/UX Design">
+                                        <input type="text" class="form-control" id="spesialisasi" name="spesialisasi" placeholder="Contoh: Machine Learning, UI/UX Design">
                                     </div>
                                 </div>
                             </div>
@@ -145,26 +141,26 @@
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="email" class="form-label">Email</label>
-                                    <input type="email" class="form-control" id="email" placeholder="contoh@lab.ac.id" required>
+                                    <input type="email" class="form-control" id="email" name="email" placeholder="contoh@lab.ac.id" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="phone" class="form-label">Phone</label>
-                                    <input type="tel" class="form-control" id="phone" placeholder="+62 812 XXXX XXXX">
+                                    <input type="tel" class="form-control" id="phone" name="phone" placeholder="+62 812 XXXX XXXX" required>
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="location" class="form-label">Location</label>
-                                    <input type="text" class="form-control" id="location" placeholder="Contoh: Jakarta, Indonesia">
+                                    <input type="text" class="form-control" id="location" name="location" placeholder="Contoh: Jakarta, Indonesia">
                                 </div>
                                 <div class="col-md-6">
                                     <label for="tanggalBergabung" class="form-label">Tanggal Bergabung</label>
-                                    <input type="date" class="form-control" id="tanggalBergabung" required>
+                                    <input type="date" class="form-control" id="tanggalBergabung" name="tanggal_bergabung" required>
                                 </div>
                             </div>
                             <div class="mb-3">
                                 <label for="bio" class="form-label">Tentang (Bio)</label>
-                                <textarea class="form-control" id="bio" rows="4" placeholder="Tuliskan deskripsi singkat mengenai personil"></textarea>
+                                <textarea class="form-control" id="bio" name="bio" rows="4" placeholder="Tuliskan deskripsi singkat mengenai personil"></textarea>
                             </div>
                         </div>
                     </div>
@@ -177,7 +173,7 @@
                             <p class="text-muted">Tambahkan daftar skill atau kemampuan teknis yang dimiliki (Contoh: Python, React, Scrum).</p>
                             <div id="skills-container">
                                 <div class="input-group mb-2 dynamic-item">
-                                    <input type="text" class="form-control" placeholder="Masukkan nama skill">
+                                    <input type="text" class="form-control skill-input" placeholder="Masukkan nama skill">
                                     <button class="btn btn-danger" type="button" onclick="removeDynamicItem(this)"><i class="bi bi-x-lg"></i></button>
                                 </div>
                             </div>
@@ -230,11 +226,11 @@
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Judul Proyek</label>
-                                        <input type="text" class="form-control" placeholder="Nama Proyek">
+                                        <input type="text" class="form-control project-title" placeholder="Nama Proyek">
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Deskripsi</label>
-                                        <textarea class="form-control" rows="2" placeholder="Deskripsi singkat proyek"></textarea>
+                                        <textarea class="form-control project-description" rows="2" placeholder="Deskripsi singkat proyek"></textarea>
                                     </div>
                                     <div class="mb-1 tag-input-group">
                                         <label class="form-label">Tech Stack (Tags)</label>
@@ -268,11 +264,11 @@
                             <div id="account-fields" class="row" style="display: none;">
                                 <div class="col-md-12 mb-3">
                                     <label for="username" class="form-label">Username</label>
-                                    <input type="text" class="form-control" id="username" placeholder="Masukkan username unik">
+                                    <input type="text" class="form-control" id="username" name="username" placeholder="Masukkan username unik">
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="password" class="form-label">Password</label>
-                                    <input type="password" class="form-control" id="password" placeholder="Masukkan password">
+                                    <input type="password" class="form-control" id="password" name="password" placeholder="Masukkan password">
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="confirmPassword" class="form-label">Confirm Password</label>
@@ -304,8 +300,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    
+    <script src="/js/admin_personil_create.js"></script>
 
 </body>
 </html>
