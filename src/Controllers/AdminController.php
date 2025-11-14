@@ -647,11 +647,69 @@ class AdminController extends Controller
 
     public function renderApplicationView($id)
     {
+        $applicationModel = new \App\Models\JoinApplicationModel();
+        
+        $application = $applicationModel->getApplicationById($id);
+        
+        if (!$application) {
+            header('Location: /admin/join-applications');
+            exit;
+        }
+        
         $data = [
-            "application_id" => $id,
+            'application' => $application
         ];
 
-        $this->render("admin/admin_join_application_view", $data);
+        $this->render("admin/admin_application-detail", $data);
+    }
+    
+    public function updateApplicationStatus($id)
+    {
+        header('Content-Type: application/json');
+        
+        $applicationModel = new \App\Models\JoinApplicationModel();
+        
+        // Validate input
+        if (empty($_POST['status'])) {
+            echo json_encode(['success' => false, 'message' => 'Status harus diisi']);
+            return;
+        }
+        
+        // Check if application exists
+        $application = $applicationModel->getApplicationById($id);
+        if (!$application) {
+            echo json_encode(['success' => false, 'message' => 'Application tidak ditemukan']);
+            return;
+        }
+        
+        // Update status
+        if ($applicationModel->updateApplicationStatus($id, $_POST['status'])) {
+            echo json_encode(['success' => true, 'message' => 'Status berhasil diupdate']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Gagal mengupdate status']);
+        }
+    }
+    
+    public function updateAdminNotes($id)
+    {
+        header('Content-Type: application/json');
+        
+        $applicationModel = new \App\Models\JoinApplicationModel();
+        
+        // Check if application exists
+        $application = $applicationModel->getApplicationById($id);
+        if (!$application) {
+            echo json_encode(['success' => false, 'message' => 'Application tidak ditemukan']);
+            return;
+        }
+        
+        // Update notes (allow empty)
+        $notes = $_POST['notes'] ?? '';
+        if ($applicationModel->updateAdminNotes($id, $notes)) {
+            echo json_encode(['success' => true, 'message' => 'Catatan admin berhasil disimpan']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Gagal menyimpan catatan']);
+        }
     }
 
     public function renderSiteSettings()

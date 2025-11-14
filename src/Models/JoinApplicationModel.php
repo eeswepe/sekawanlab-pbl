@@ -173,4 +173,36 @@ class JoinApplicationModel
         
         return $stmt->execute();
     }
+
+    /**
+     * Update application status
+     * @param int $id
+     * @param string $status
+     * @return bool
+     */
+    public function updateApplicationStatus($id, $status)
+    {
+        $sql = "UPDATE join_application SET status = :status WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->bindParam(':status', $status, PDO::PARAM_STR);
+        
+        return $stmt->execute();
+    }
+
+    /**
+     * Update admin notes
+     * @param int $id
+     * @param string $notes
+     * @return bool
+     */
+    public function updateAdminNotes($id, $notes)
+    {
+        $sql = "UPDATE join_application SET catatan_admin = :notes WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->bindParam(':notes', $notes, PDO::PARAM_STR);
+        
+        return $stmt->execute();
+    }
 }
