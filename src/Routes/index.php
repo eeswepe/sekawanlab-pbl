@@ -43,6 +43,7 @@ $router->get("/admin/blog-list", AdminController::class, "blogList")->middleware
 $router->get("/admin/blog/edit/{id}", AdminController::class, "renderBlogEdit")->middleware(AdminMiddleware::class);
 $router->get("/admin/blog/create", AdminController::class, "renderBlogCreate")->middleware(AdminMiddleware::class);
 $router->post("/admin/blog/create", AdminController::class, "createBlog")->middleware(AdminMiddleware::class);
+$router->delete("/admin/blog/delete/{id}", AdminController::class, "deleteBlog")->middleware(AdminMiddleware::class);
 $router->get("/admin/profil-pages", AdminController::class, "renderProfilePages")->middleware(AdminMiddleware::class);
 $router->get("/admin/profil-page/edit/{id}", AdminController::class, "renderProfilePagesEdit")->middleware(AdminMiddleware::class);
 $router->get("/admin/personil", AdminController::class, "renderPersonilList")->middleware(AdminMiddleware::class);

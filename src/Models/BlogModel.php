@@ -267,5 +267,114 @@ class BlogModel
         
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    /**
+     * Get blogs for admin with filters and pagination
+     * @param array $filters ['search', 'kategori_id', 'penulis_id', 'status']
+     * @param int $limit
+     * @param int $offset
+     * @return array
+     */
+    public function getBlogsForAdmin($filters = [], $limit = 10, $offset = 0)
+    {
+        $sql = "SELECT 
+                    bp.id,
+                    bp.judul,
+                    bp.featured_image_url,
+                    bp.tanggal_publish,
+                    bp.status,
+                    bp.created_at,
+                    k.name as kategori_nama,
+                    p.nama_lengkap as penulis_nama
+                FROM blog_post bp
+                LEFT JOIN kategori k ON bp.kategori_id = k.id
+                LEFT JOIN personil p ON bp.penulis_id = p.id
+                WHERE 1=1";
+        
+        $params = [];
+        
+        // Search filter
+        if (!empty($filters['search'])) {
+            $sql .= " AND bp.judul ILIKE :search";
+            $params[':search'] = '%' . $filters['search'] . '%';
+        }
+        
+        // Category filter
+        if (!empty($filters['kategori_id'])) {
+            $sql .= " AND bp.kategori_id = :kategori_id";
+            $params[':kategori_id'] = $filters['kategori_id'];
+        }
+        
+        // Author filter
+        if (!empty($filters['penulis_id'])) {
+            $sql .= " AND bp.penulis_id = :penulis_id";
+            $params[':penulis_id'] = $filters['penulis_id'];
+        }
+        
+        // Status filter
+        if (!empty($filters['status'])) {
+            $sql .= " AND bp.status = :status";
+            $params[':status'] = $filters['status'];
+        }
+        
+        $sql .= " ORDER BY bp.created_at DESC LIMIT :limit OFFSET :offset";
+        
+        $stmt = $this->db->prepare($sql);
+        
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+        
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Count blogs with filters
+     * @param array $filters
+     * @return int
+     */
+    public function countBlogsForAdmin($filters = [])
+    {
+        $sql = "SELECT COUNT(*) as total
+                FROM blog_post bp
+                WHERE 1=1";
+        
+        $params = [];
+        
+        if (!empty($filters['search'])) {
+            $sql .= " AND bp.judul ILIKE :search";
+            $params[':search'] = '%' . $filters['search'] . '%';
+        }
+        
+        if (!empty($filters['kategori_id'])) {
+            $sql .= " AND bp.kategori_id = :kategori_id";
+            $params[':kategori_id'] = $filters['kategori_id'];
+        }
+        
+        if (!empty($filters['penulis_id'])) {
+            $sql .= " AND bp.penulis_id = :penulis_id";
+            $params[':penulis_id'] = $filters['penulis_id'];
+        }
+        
+        if (!empty($filters['status'])) {
+            $sql .= " AND bp.status = :status";
+            $params[':status'] = $filters['status'];
+        }
+        
+        $stmt = $this->db->prepare($sql);
+        
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+        
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        return (int)$result['total'];
+    }
 }
 
