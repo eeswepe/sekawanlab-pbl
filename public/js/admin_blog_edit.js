@@ -75,36 +75,74 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- Logika Tombol Cancel ---
     const cancelBtn = document.getElementById('cancelBtn');
     cancelBtn.addEventListener('click', function() {
-        console.warn("Aksi Batalkan: Simulasi kembali ke halaman daftar blog.");
-        alert('Simulasi: Batalkan perubahan dan kembali ke halaman daftar blog.');
+        if (confirm('Batalkan perubahan dan kembali ke halaman daftar blog?')) {
+            window.location.href = '/admin/blog-list';
+        }
     });
 
     // --- Logika Tombol Delete ---
     const deleteBtn = document.getElementById('deleteBtn');
     deleteBtn.addEventListener('click', function() {
-        console.warn("Aksi Hapus: Simulasi menghapus artikel #101.");
-        alert('Simulasi: Menghapus artikel #101');
+        const blogId = this.getAttribute('data-blog-id');
+        
+        if (confirm('Apakah Anda yakin ingin menghapus artikel ini? Tindakan ini tidak dapat dibatalkan.')) {
+            fetch(`/admin/blog/delete/${blogId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    window.location.href = '/admin/blog-list';
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat menghapus blog');
+            });
+        }
     });
 
-    // --- Logika Submit Form (Dummy Update) ---
+    // --- Logika Submit Form (Update Blog) ---
     const form = document.getElementById('blogPostForm');
 
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        const title = document.getElementById('postTitle').value;
-        const status = document.querySelector('input[name="postStatus"]:checked').value;
+        const blogId = form.getAttribute('data-blog-id');
+        const formData = new FormData(form);
         
-        console.log("--- Form Update Submission Data ---");
-        console.log(`ID Artikel: #101`);
-        console.log(`Judul Baru: ${title}`);
-        console.log(`Status Baru: ${status}`);
-        console.log("----------------------------------");
-
-        // Simulasi pesan sukses
-        const message = `Artikel "${title}" (ID #101) berhasil di-UPDATE! Status: ${status}. (Simulasi frontend)`;
-
-        console.warn(`[SIMULASI SUKSES]: ${message}`); 
-        alert(message); 
+        // Show loading state
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i> Updating...';
+        
+        fetch(`/admin/blog/update/${blogId}`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                window.location.href = '/admin/blog-list';
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan saat mengupdate blog');
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
+        });
     });
 });
