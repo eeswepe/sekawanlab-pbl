@@ -13,43 +13,112 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleButton.addEventListener('click', toggleSidebar);
     }
 
-    // --- 2. Quick Actions Handlers (Placeholder) ---
+    // --- 2. Quick Actions Handlers ---
     
     // Quick Accept
-    document.getElementById('quickAccept')?.addEventListener('click', function() {
-        alert('Aplikasi diterima. (Aksi: Update status menjadi Accepted)');
-        // Implementasi nyata: set nilai select box dan kirim permintaan API
-        document.getElementById('newStatus').value = 'accepted';
+    document.getElementById('quickAccept')?.addEventListener('click', async function() {
+        const id = this.dataset.id;
+        if (!confirm('Terima aplikasi ini?')) return;
+        try {
+            const response = await fetch(`/admin/join-application/update-status/${id}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({status: 'accepted'})
+            });
+            const result = await response.json();
+            if (result.success) {
+                alert('Aplikasi berhasil diterima');
+                location.reload();
+            } else {
+                alert(result.message || 'Gagal memperbarui status');
+            }
+        } catch (error) {
+            alert('Terjadi kesalahan: ' + error.message);
+        }
     });
 
     // Quick Reject
-    document.getElementById('quickReject')?.addEventListener('click', function() {
-        alert('Aplikasi ditolak. (Aksi: Update status menjadi Rejected)');
-        // Implementasi nyata: set nilai select box dan kirim permintaan API
-        document.getElementById('newStatus').value = 'rejected';
+    document.getElementById('quickReject')?.addEventListener('click', async function() {
+        const id = this.dataset.id;
+        if (!confirm('Tolak aplikasi ini?')) return;
+        try {
+            const response = await fetch(`/admin/join-application/update-status/${id}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({status: 'rejected'})
+            });
+            const result = await response.json();
+            if (result.success) {
+                alert('Aplikasi berhasil ditolak');
+                location.reload();
+            } else {
+                alert(result.message || 'Gagal memperbarui status');
+            }
+        } catch (error) {
+            alert('Terjadi kesalahan: ' + error.message);
+        }
     });
 
     // Delete Application
-    document.getElementById('deleteApplication')?.addEventListener('click', function() {
-        if (confirm('APAKAH ANDA YAKIN ingin MENGHAPUS aplikasi ini secara PERMANEN? Tindakan ini tidak dapat dibatalkan.')) {
-            alert('Aplikasi dihapus. (Aksi: Kirim permintaan DELETE)');
-            // Implementasi nyata: Kirim permintaan DELETE ke backend dan redirect ke daftar aplikasi
+    document.getElementById('deleteApplication')?.addEventListener('click', async function() {
+        const id = this.dataset.id;
+        if (!confirm('YAKIN hapus aplikasi ini PERMANEN? Tidak dapat dibatalkan.')) return;
+        try {
+            const response = await fetch(`/admin/join-application/delete/${id}`, {method: 'DELETE'});
+            const result = await response.json();
+            if (result.success) {
+                alert('Aplikasi berhasil dihapus');
+                window.location.href = '/admin/join-applications';
+            } else {
+                alert(result.message || 'Gagal menghapus aplikasi');
+            }
+        } catch (error) {
+            alert('Terjadi kesalahan: ' + error.message);
         }
     });
     
     // Save New Status
-    document.getElementById('updateStatusForm')?.addEventListener('submit', function(e) {
+    document.getElementById('updateStatusForm')?.addEventListener('submit', async function(e) {
         e.preventDefault();
+        const id = document.querySelector('[data-id]').dataset.id;
         const newStatus = document.getElementById('newStatus').value;
-        alert(`Status diperbarui menjadi: ${newStatus}.`);
-        // Implementasi nyata: Kirim permintaan PATCH/PUT ke backend untuk menyimpan status
+        try {
+            const response = await fetch(`/admin/join-application/update-status/${id}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({status: newStatus})
+            });
+            const result = await response.json();
+            if (result.success) {
+                alert('Status berhasil diperbarui');
+                location.reload();
+            } else {
+                alert(result.message || 'Gagal memperbarui status');
+            }
+        } catch (error) {
+            alert('Terjadi kesalahan: ' + error.message);
+        }
     });
     
     // Save Admin Notes
-    document.getElementById('adminNotesForm')?.addEventListener('submit', function(e) {
+    document.getElementById('adminNotesForm')?.addEventListener('submit', async function(e) {
         e.preventDefault();
+        const id = document.querySelector('[data-id]').dataset.id;
         const notes = document.getElementById('adminNotes').value;
-        alert(`Catatan admin disimpan: ${notes.substring(0, 50)}...`);
-        // Implementasi nyata: Kirim permintaan PATCH/PUT ke backend untuk menyimpan catatan
+        try {
+            const response = await fetch(`/admin/join-application/update-notes/${id}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({admin_notes: notes})
+            });
+            const result = await response.json();
+            if (result.success) {
+                alert('Catatan admin berhasil disimpan');
+            } else {
+                alert(result.message || 'Gagal menyimpan catatan');
+            }
+        } catch (error) {
+            alert('Terjadi kesalahan: ' + error.message);
+        }
     });
 });
