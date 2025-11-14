@@ -82,7 +82,6 @@
                     <th>Aktivitas</th>
                     <th>Target</th>
                     <th>Status</th>
-                    <th>Waktu</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -109,23 +108,6 @@
                           }
                           ?>
                           <span class="badge bg-<?= $statusClass ?>"><?= $statusText ?></span>
-                        </td>
-                        <td>
-                          <?php
-                          $waktu = strtotime($activity['waktu']);
-                          $sekarang = time();
-                          $selisih = $sekarang - $waktu;
-                          
-                          if ($selisih < 60) {
-                              echo 'Baru saja';
-                          } elseif ($selisih < 3600) {
-                              echo floor($selisih / 60) . 'm lalu';
-                          } elseif ($selisih < 86400) {
-                              echo floor($selisih / 3600) . 'h lalu';
-                          } else {
-                              echo floor($selisih / 86400) . 'd lalu';
-                          }
-                          ?>
                         </td>
                       </tr>
                     <?php endforeach; ?>
