@@ -59,6 +59,7 @@ $router->get("/personil/blog/create", PersonilController::class, "renderBlogCrea
 $router->post("/personil/blog/create", PersonilController::class, "createBlog")->middleware(PersonilMiddleware::class);
 $router->get("/personil/blog", PersonilController::class, "renderBlogList")->middleware(PersonilMiddleware::class);
 $router->get("/personil/blog/edit/{id}", PersonilController::class, "renderBlogEdit")->middleware(PersonilMiddleware::class);
+$router->post("/personil/blog/update/{id}", PersonilController::class, "updateBlog")->middleware(PersonilMiddleware::class);
 $router->get("/personil/profile", PersonilController::class, "renderProfile")->middleware(PersonilMiddleware::class);
 $router->get("/personil/profile/edit", PersonilController::class, "renderProfileEdit")->middleware(PersonilMiddleware::class);
 
