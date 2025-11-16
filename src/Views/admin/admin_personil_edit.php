@@ -85,11 +85,11 @@
                 <div class="page-header d-flex justify-content-between align-items-center">
                     <div>
                         <h1>Edit Data Personil</h1>
-                        <p>Perbarui informasi untuk **Budi Santoso (Talent/Geek)**.</p>
+                        <p>Perbarui informasi untuk **<?= htmlspecialchars($personil['nama_lengkap']) ?> (<?= htmlspecialchars(ucfirst($personil['role'])) ?>)**.</p>
                     </div>
                 </div>
 
-                <form id="personilEditForm" action="/admin/personil/update/123" method="POST">
+                <form id="personilEditForm" data-personil-id="<?= $personil['id'] ?>">
                     
                     <div class="card">
                         <div class="card-header">
@@ -100,37 +100,33 @@
                                 <div class="col-lg-3 text-center mb-4">
                                     <label class="form-label">Foto Profil Saat Ini</label>
                                     <div class="d-flex flex-column align-items-center">
-                                        <img id="photo-preview" src="https://via.placeholder.com/120/D4AF37/FFFFFF?text=BU" alt="Foto Profil">
+                                        <img id="photo-preview" src="<?= !empty($personil['foto_url']) ? htmlspecialchars($personil['foto_url']) : 'https://via.placeholder.com/120/D4AF37/FFFFFF?text=' . strtoupper(substr($personil['nama_lengkap'], 0, 2)) ?>" alt="Foto Profil">
                                         <input class="form-control mt-3" type="file" id="photo" accept="image/*">
                                     </div>
                                 </div>
                                 <div class="col-lg-9">
                                     <div class="mb-3">
                                         <label for="namaLengkap" class="form-label">Nama Lengkap</label>
-                                        <input type="text" class="form-control" id="namaLengkap" value="Budi Santoso" required>
+                                        <input type="text" class="form-control" id="namaLengkap" value="<?= htmlspecialchars($personil['nama_lengkap']) ?>" required>
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col-md-6">
                                             <label class="form-label">Tipe Personil</label>
                                             <div class="d-flex gap-4">
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="tipePersonil" id="tipeDosen" value="Dosen">
+                                                    <input class="form-check-input" type="radio" name="tipePersonil" id="tipeDosen" value="dosen" <?= $personil['role'] === 'dosen' ? 'checked' : '' ?>>
                                                     <label class="form-check-label" for="tipeDosen">Dosen Pembimbing</label>
                                                 </div>
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="tipePersonil" id="tipeTalent" value="Talent" checked>
+                                                    <input class="form-check-input" type="radio" name="tipePersonil" id="tipeTalent" value="talent" <?= $personil['role'] === 'talent' ? 'checked' : '' ?>>
                                                     <label class="form-check-label" for="tipeTalent">Talent/Geeks</label>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
-                                            <label for="role" class="form-label">Role/Posisi</label>
-                                            <input type="text" class="form-control" id="role" value="Mobile Developer" required>
+                                            <label for="spesialisasi" class="form-label">Spesialisasi</label>
+                                            <input type="text" class="form-control" id="spesialisasi" value="<?= htmlspecialchars($personil['spesialisasi'] ?? '') ?>">
                                         </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="spesialisasi" class="form-label">Spesialisasi</label>
-                                        <input type="text" class="form-control" id="spesialisasi" value="Android Development, Kotlin">
                                     </div>
                                 </div>
                             </div>
@@ -145,26 +141,26 @@
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="email" class="form-label">Email</label>
-                                    <input type="email" class="form-control" id="email" value="budi.s@geek.id" required>
+                                    <input type="email" class="form-control" id="email" value="<?= htmlspecialchars($personil['email']) ?>" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="phone" class="form-label">Phone</label>
-                                    <input type="tel" class="form-control" id="phone" value="+62 812 3456 7890">
+                                    <input type="tel" class="form-control" id="phone" value="<?= htmlspecialchars($personil['phone'] ?? '') ?>">
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="location" class="form-label">Location</label>
-                                    <input type="text" class="form-control" id="location" value="Bandung, Indonesia">
+                                    <input type="text" class="form-control" id="location" value="<?= htmlspecialchars($personil['location'] ?? '') ?>">
                                 </div>
                                 <div class="col-md-6">
                                     <label for="tanggalBergabung" class="form-label">Tanggal Bergabung</label>
-                                    <input type="date" class="form-control" id="tanggalBergabung" value="2023-01-15" required>
+                                    <input type="date" class="form-control" id="tanggalBergabung" value="<?= htmlspecialchars($personil['tanggal_bergabung'] ?? '') ?>" required>
                                 </div>
                             </div>
                             <div class="mb-3">
                                 <label for="bio" class="form-label">Tentang (Bio)</label>
-                                <textarea class="form-control" id="bio" rows="4">Seorang Mobile Developer dengan fokus pada pengembangan aplikasi Android native. Memiliki pengalaman 2 tahun di SE Laboratory.</textarea>
+                                <textarea class="form-control" id="bio" rows="4"><?= htmlspecialchars($personil['bio'] ?? '') ?></textarea>
                             </div>
                         </div>
                     </div>
@@ -176,14 +172,14 @@
                         <div class="card-body">
                             <p class="text-muted">Tambahkan daftar skill atau kemampuan teknis yang dimiliki.</p>
                             <div id="skills-container">
-                                <div class="input-group mb-2 dynamic-item">
-                                    <input type="text" class="form-control" value="Kotlin">
-                                    <button class="btn btn-danger" type="button" onclick="removeDynamicItem(this)"><i class="bi bi-x-lg"></i></button>
-                                </div>
-                                <div class="input-group mb-2 dynamic-item">
-                                    <input type="text" class="form-control" value="Android Studio">
-                                    <button class="btn btn-danger" type="button" onclick="removeDynamicItem(this)"><i class="bi bi-x-lg"></i></button>
-                                </div>
+                                <?php if (!empty($personil['skills'])): ?>
+                                    <?php foreach ($personil['skills'] as $skill): ?>
+                                        <div class="input-group mb-2 dynamic-item">
+                                            <input type="text" class="form-control" value="<?= htmlspecialchars($skill) ?>">
+                                            <button class="btn btn-danger" type="button" onclick="removeDynamicItem(this)"><i class="bi bi-x-lg"></i></button>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
                             </div>
                             <button class="btn btn-outline-secondary btn-sm" type="button" onclick="addSkillInput()">
                                 <i class="bi bi-plus-circle me-2"></i> Tambah Skill
@@ -226,56 +222,29 @@
                         </div>
                         <div class="card-body">
                             <p class="text-muted">Daftar proyek yang pernah dikerjakan personil.</p>
-                            <div id="projects-container">
-                                <div class="dynamic-item" data-index="1">
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <h6 class="mb-0">Project #1</h6>
-                                        <button class="btn btn-sm btn-danger" type="button" onclick="removeDynamicItem(this.closest('.dynamic-item'))">Hapus</button>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Judul Proyek</label>
-                                        <input type="text" class="form-control" value="SE Lab Attendance App">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Deskripsi</label>
-                                        <textarea class="form-control" rows="2">Aplikasi mobile untuk mencatat kehadiran personil menggunakan geofencing dan QR code.</textarea>
-                                    </div>
-                                    <div class="mb-1 tag-input-group">
-                                        <label class="form-label">Tech Stack (Tags)</label>
-                                        <div class="input-group">
-                                            <input type="text" class="form-control project-tech-stack-input" placeholder="Masukkan teknologi (contoh: PHP, Vue.js)">
-                                            <button class="btn btn-secondary" type="button" onclick="addProjectTag(this)">Tambah</button>
+                            <div id="projects-container" data-project-count="<?= count($personil['projects'] ?? []) ?>">
+                                <?php if (!empty($personil['projects'])): ?>
+                                    <?php foreach ($personil['projects'] as $index => $project): ?>
+                                        <div class="dynamic-item" data-index="<?= $index + 1 ?>">
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <h6 class="mb-0">Project #<?= $index + 1 ?></h6>
+                                                <button class="btn btn-sm btn-danger" type="button" onclick="removeDynamicItem(this.closest('.dynamic-item'))">Hapus</button>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Judul Proyek</label>
+                                                <input type="text" class="form-control project-title" value="<?= htmlspecialchars($project['title']) ?>">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Deskripsi</label>
+                                                <textarea class="form-control project-description" rows="2"><?= htmlspecialchars($project['description']) ?></textarea>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="tag-list mt-2">
-                                        <span class="badge bg-info text-dark">Kotlin <button type="button" class="btn-close" aria-label="Remove tag" onclick="removeTag(this)"></button></span>
-                                        <span class="badge bg-info text-dark">Android SDK <button type="button" class="btn-close" aria-label="Remove tag" onclick="removeTag(this)"></button></span>
-                                        <span class="badge bg-info text-dark">Retrofit <button type="button" class="btn-close" aria-label="Remove tag" onclick="removeTag(this)"></button></span>
-                                    </div>
-                                </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
                             </div>
                             <button class="btn btn-outline-secondary btn-sm" type="button" id="addProjectBtn">
                                 <i class="bi bi-plus-circle me-2"></i> Tambah Project
                             </button>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="card-title">6. Account Management</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row align-items-center">
-                                <div class="col-md-6 mb-3 mb-md-0">
-                                    <p class="mb-0"><strong>Username:</strong> budi.santoso</p>
-                                    <p class="mb-0 text-muted">Aksi ini akan mengirimkan link reset password ke email personil.</p>
-                                </div>
-                                <div class="col-md-6 text-md-end">
-                                    <button type="button" class="btn btn-danger-outline">
-                                        <i class="bi bi-key me-2"></i> Reset Password
-                                    </button>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
@@ -313,11 +282,11 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            Apakah Anda yakin ingin menghapus data personil **Budi Santoso**? Aksi ini tidak dapat dibatalkan.
+            Apakah Anda yakin ingin menghapus data personil **<?= htmlspecialchars($personil['nama_lengkap']) ?>**? Aksi ini tidak dapat dibatalkan.
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
-            <button type="button" class="btn btn-danger"><i class="bi bi-trash me-2"></i> Hapus Permanen</button>
+            <button type="button" class="btn btn-danger" id="confirmDeleteBtn"><i class="bi bi-trash me-2"></i> Hapus Permanen</button>
           </div>
         </div>
       </div>
@@ -325,8 +294,7 @@
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-
+    <script src="/js/admin_personil_edit.js"></script>
 
 </body>
 </html>

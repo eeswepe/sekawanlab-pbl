@@ -104,9 +104,14 @@ class PersonilModel
     public function updatePersonil($id, $data)
     {
         $sql = "UPDATE personil SET 
-                    bio = :bio,
+                    nama_lengkap = :nama_lengkap,
+                    role = :role,
+                    spesialisasi = :spesialisasi,
                     email = :email,
                     phone = :phone,
+                    location = :location,
+                    tanggal_bergabung = :tanggal_bergabung,
+                    bio = :bio,
                     skillks = :skillks,
                     foto_url = :foto_url,
                     updated_at = CURRENT_TIMESTAMP
@@ -114,13 +119,30 @@ class PersonilModel
         
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->bindParam(':bio', $data['bio'], PDO::PARAM_STR);
+        $stmt->bindParam(':nama_lengkap', $data['nama_lengkap'], PDO::PARAM_STR);
+        $stmt->bindParam(':role', $data['role'], PDO::PARAM_STR);
+        $stmt->bindParam(':spesialisasi', $data['spesialisasi'], PDO::PARAM_STR);
         $stmt->bindParam(':email', $data['email'], PDO::PARAM_STR);
         $stmt->bindParam(':phone', $data['phone'], PDO::PARAM_STR);
+        $stmt->bindParam(':location', $data['location'], PDO::PARAM_STR);
+        $stmt->bindParam(':tanggal_bergabung', $data['tanggal_bergabung'], PDO::PARAM_STR);
+        $stmt->bindParam(':bio', $data['bio'], PDO::PARAM_STR);
         $stmt->bindParam(':skillks', $data['skillks'], PDO::PARAM_STR);
         $stmt->bindParam(':foto_url', $data['foto_url'], PDO::PARAM_STR);
         
         return $stmt->execute();
+    }
+
+    public function getPersonilWithUser($id)
+    {
+        $sql = "SELECT p.*, u.username, u.role as user_role 
+                FROM personil p 
+                LEFT JOIN users u ON p.user_id = u.id 
+                WHERE p.id = :id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     /**

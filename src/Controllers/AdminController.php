@@ -493,6 +493,7 @@ class AdminController extends Controller
         header('Content-Type: application/json');
         
         $personilModel = new PersonilModel();
+        $projectModel = new \App\Models\ProjectModel();
         
         // Check if personil exists
         $personil = $personilModel->getPersonilById($id);
@@ -508,6 +509,9 @@ class AdminController extends Controller
                 unlink($fotoPath);
             }
         }
+        
+        // Delete projects first
+        $projectModel->deleteProjectsByPersonilId($id);
         
         // Delete personil
         if ($personilModel->deletePersonil($id)) {
@@ -663,11 +667,87 @@ class AdminController extends Controller
 
     public function renderPersonilEdit($id)
     {
+        $personilModel = new \App\Models\PersonilModel();
+        $projectModel = new \App\Models\ProjectModel();
+        
+        $personil = $personilModel->getPersonilWithUser($id);
+        
+        if (!$personil) {
+            header("Location: /admin/personil");
+            exit;
+        }
+        
+        // Parse skills JSON
+        $personil['skills'] = !empty($personil['skillks']) ? json_decode($personil['skillks'], true) : [];
+        
+        // Get projects
+        $personil['projects'] = $projectModel->getProjectsByPersonilId($id);
+        
         $data = [
-            "personil_id" => $id,
+            "personil" => $personil,
         ];
 
         $this->render("admin/admin_personil_edit", $data);
+    }
+
+    public function updatePersonil($id)
+    {
+        header('Content-Type: application/json');
+        
+        $personilModel = new \App\Models\PersonilModel();
+        $projectModel = new \App\Models\ProjectModel();
+        
+        // Read JSON body
+        $rawData = json_decode(file_get_contents('php://input'), true);
+        
+        if (empty($rawData)) {
+            echo json_encode(['success' => false, 'message' => 'Data tidak boleh kosong']);
+            return;
+        }
+        
+        // Check if personil exists
+        $personil = $personilModel->getPersonilById($id);
+        if (!$personil) {
+            echo json_encode(['success' => false, 'message' => 'Personil tidak ditemukan']);
+            return;
+        }
+        
+        // Prepare personil data
+        $data = [
+            'nama_lengkap' => $rawData['nama_lengkap'] ?? '',
+            'role' => $rawData['role'] ?? 'talent',
+            'spesialisasi' => $rawData['spesialisasi'] ?? '',
+            'email' => $rawData['email'] ?? '',
+            'phone' => $rawData['phone'] ?? '',
+            'location' => $rawData['location'] ?? '',
+            'tanggal_bergabung' => $rawData['tanggal_bergabung'] ?? null,
+            'bio' => $rawData['bio'] ?? '',
+            'skillks' => json_encode($rawData['skills'] ?? []),
+            'foto_url' => $personil['foto_url'] // Keep existing photo for now
+        ];
+        
+        // Update personil
+        if (!$personilModel->updatePersonil($id, $data)) {
+            echo json_encode(['success' => false, 'message' => 'Gagal update personil']);
+            return;
+        }
+        
+        // Handle projects - delete old and create new
+        if (isset($rawData['projects'])) {
+            $projectModel->deleteProjectsByPersonilId($id);
+            
+            foreach ($rawData['projects'] as $project) {
+                if (!empty($project['title'])) {
+                    $projectModel->createProject([
+                        'personil_id' => $id,
+                        'title' => $project['title'],
+                        'description' => $project['description'] ?? ''
+                    ]);
+                }
+            }
+        }
+        
+        echo json_encode(['success' => true, 'message' => 'Data personil berhasil diupdate']);
     }
     
     public function renderApplicationsList()

@@ -52,6 +52,7 @@ $router->get("/admin/profil-pages/edit/{id}", AdminController::class, "renderPro
 $router->post("/admin/profil-pages/update/{id}", AdminController::class, "updateProfilePage")->middleware(AdminMiddleware::class);
 $router->get("/admin/personil", AdminController::class, "renderPersonilList")->middleware(AdminMiddleware::class);
 $router->get("/admin/personil/edit/{id}", AdminController::class, "renderPersonilEdit")->middleware(AdminMiddleware::class);
+$router->post("/admin/personil/update/{id}", AdminController::class, "updatePersonil")->middleware(AdminMiddleware::class);
 $router->get("/admin/personil/create", AdminController::class, "renderPersonilCreate")->middleware(AdminMiddleware::class);
 $router->post("/admin/personil/create", AdminController::class, "createPersonil")->middleware(AdminMiddleware::class);
 $router->delete("/admin/personil/delete/{id}", AdminController::class, "deletePersonil")->middleware(AdminMiddleware::class);
