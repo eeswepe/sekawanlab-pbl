@@ -39,7 +39,13 @@
 
         <form id="registerForm" action="/register" method="POST">
             <div class="mb-3 text-start">
-                <label for="username" class="form-label">Email atau Username</label>
+                <label for="secret_key" class="form-label">Secret Key</label>
+                <input type="text" class="form-control" id="secret_key" name="secret_key" placeholder="Masukkan secret key dari admin" required>
+                <small class="text-muted">Secret key diberikan setelah aplikasi Anda diterima</small>
+            </div>
+
+            <div class="mb-3 text-start">
+                <label for="username" class="form-label">Username</label>
                 <input type="text" class="form-control" id="username" name="username" required>
             </div>
 
