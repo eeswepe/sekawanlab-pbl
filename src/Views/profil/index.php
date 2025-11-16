@@ -21,10 +21,9 @@ include_once __DIR__ . "/../layouts/header.php";
   <div class="content-wrapper">
    <div class="content-body">
     <!-- Featured Image -->
-    <div class="image-placeholder">
-     <i class="bi bi-image">
-     </i>
-    </div>
+    <?php if (!empty($data["profil"]["featured_image_url"])): ?>
+    <img src="<?= htmlspecialchars($data["profil"]["featured_image_url"]) ?>" alt="<?= htmlspecialchars($data["profil"]["page_title"]) ?>" class="featured-image" style="width: 100%; height: auto; border-radius: 8px; margin-bottom: 2rem;">
+    <?php endif; ?>
     <!-- Content Title -->
     <h1 class="content-title">
     <?php echo $data["profil"]["content_title"]; ?>

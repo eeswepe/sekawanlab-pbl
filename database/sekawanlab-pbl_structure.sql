@@ -92,10 +92,3 @@ CREATE TABLE join_application (
     status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'reviewed', 'accepted', 'rejected')),
     catatan_admin TEXT
 );
-
--- site setting table
-CREATE TABLE site_setting (
-    key VARCHAR(100) PRIMARY KEY,
-    value TEXT,
-    description VARCHAR(500)
-);

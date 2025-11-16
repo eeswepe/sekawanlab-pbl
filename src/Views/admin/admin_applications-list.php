@@ -24,7 +24,6 @@
                     <li><a href="/admin/personil"><i class="bi bi-people-fill"></i> Personil Management</a></li>
                     <li><a href="/admin/profil-pages"><i class="bi bi-person-badge"></i> Profile Pages</a></li>
                     <li><a href="/admin/join-applications" class="active"><i class="bi bi-file-earmark-text"></i> Join Applications</a></li>
-                    <li><a href="/admin/site-settings"><i class="bi bi-gear-fill"></i> Settings</a></li>
                     <li><a href="/logout"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
                 </ul>
             </div>
@@ -143,12 +142,6 @@
                                 <option value="reviewed" <?= (isset($filters['status']) && $filters['status'] === 'reviewed') ? 'selected' : '' ?>>Reviewed</option>
                                 <option value="accepted" <?= (isset($filters['status']) && $filters['status'] === 'accepted') ? 'selected' : '' ?>>Accepted</option>
                                 <option value="rejected" <?= (isset($filters['status']) && $filters['status'] === 'rejected') ? 'selected' : '' ?>>Rejected</option>
-                            </select>
-                            <select class="form-select form-select-sm" name="prodi" id="filterProdi" style="width: auto;">
-                                <option value="all" <?= empty($filters['prodi']) ? 'selected' : '' ?>>All Prodi</option>
-                                <option value="TI" <?= (isset($filters['prodi']) && $filters['prodi'] === 'TI') ? 'selected' : '' ?>>TI</option>
-                                <option value="SIB" <?= (isset($filters['prodi']) && $filters['prodi'] === 'SIB') ? 'selected' : '' ?>>SIB</option>
-                                <option value="PPLS" <?= (isset($filters['prodi']) && $filters['prodi'] === 'PPLS') ? 'selected' : '' ?>>PPLS</option>
                             </select>
                         </form>
                     </div>

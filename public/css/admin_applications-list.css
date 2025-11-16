@@ -241,6 +241,13 @@ a:hover {
     border-radius: 8px;
 }
 
+.form-select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: none;
+}
+
 .input-group .form-control:focus, .form-select:focus {
     border-color: var(--gold);
     box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25);
