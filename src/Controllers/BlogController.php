@@ -17,7 +17,7 @@ class BlogController extends Controller
     public function index()
     {
         $data["blogs"] = $this->model->getAllBlogPosts();
-        $this->render("blog/index", $data);
+        $this->render("landing/blog/list", $data);
     }
 
     public function showBySlug($slug)
@@ -33,6 +33,6 @@ class BlogController extends Controller
             'blog' => $blog
         ];
         
-        $this->render("blog/blog-detail", $data);
+        $this->render("landing/blog/detail", $data);
     }
 }

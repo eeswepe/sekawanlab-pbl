@@ -17,6 +17,6 @@ class ProfilPageController extends Controller
     public function show($slug)
     {
         $data["profil"] = $this->model->getProfilPage($slug);
-        $this->render("profil/index", $data);
+        $this->render("landing/profil/index", $data);
     }
 }

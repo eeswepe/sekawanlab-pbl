@@ -24,7 +24,7 @@ class AdminController extends Controller
             'recentActivities' => $statsModel->getRecentActivities(5)
         ];
         
-        $this->render("admin/dashboard", $data);
+        $this->render("admin/dashboard/index", $data);
     }
 
     public function blogList()
@@ -73,7 +73,7 @@ class AdminController extends Controller
             'offset' => $offset
         ];
         
-        $this->render("admin/admin_blog_list", $data);
+        $this->render("admin/blog/list", $data);
     }
     
     public function deleteBlog($id)
@@ -124,7 +124,7 @@ class AdminController extends Controller
             'personils' => $personilModel->getAllPersonils()
         ];
 
-        $this->render("admin/admin_blog_edit", $data);
+        $this->render("admin/blog/edit", $data);
     }
     
     public function updateBlog($id)
@@ -207,7 +207,7 @@ class AdminController extends Controller
             'personils' => $personilModel->getAllPersonils()
         ];
         
-        $this->render("admin/admin_blog_create", $data);
+        $this->render("admin/blog/create", $data);
     }
     
     public function createBlog()
@@ -343,7 +343,7 @@ class AdminController extends Controller
         $pages = $profilPageModel->getAllProfilPages();
         
         $data = ['pages' => $pages];
-        $this->render("admin/admin_profile-pages", $data);
+        $this->render("admin/profile-pages/list", $data);
     }
 
     public function renderProfilePagesEdit($id)
@@ -357,7 +357,7 @@ class AdminController extends Controller
         }
         
         $data = ['page' => $page];
-        $this->render("admin/admin_profile-page_edit", $data);
+        $this->render("admin/profile-pages/edit", $data);
     }
 
     public function updateProfilePage($id)
@@ -406,7 +406,7 @@ class AdminController extends Controller
 
     public function renderProfilePageCreate()
     {
-        $this->render("admin/admin_profile-page_create");
+        $this->render("admin/profile-pages/create");
     }
 
     public function createProfilePage()
@@ -485,7 +485,7 @@ class AdminController extends Controller
             'offset' => $offset
         ];
         
-        $this->render("admin/admin_personil_list", $data);
+        $this->render("admin/personil/list", $data);
     }
     
     public function deletePersonil($id)
@@ -523,7 +523,7 @@ class AdminController extends Controller
 
     public function renderPersonilCreate()
     {
-        $this->render("admin/admin_personil_create");
+        $this->render("admin/personil/create");
     }
     
     public function createPersonil()
@@ -687,7 +687,7 @@ class AdminController extends Controller
             "personil" => $personil,
         ];
 
-        $this->render("admin/admin_personil_edit", $data);
+        $this->render("admin/personil/edit", $data);
     }
 
     public function updatePersonil($id)
@@ -787,7 +787,7 @@ class AdminController extends Controller
             'offset' => $offset
         ];
         
-        $this->render("admin/admin_applications-list", $data);
+        $this->render("admin/applications/list", $data);
     }
     
     public function deleteApplication($id)
@@ -834,7 +834,7 @@ class AdminController extends Controller
             'application' => $application
         ];
 
-        $this->render("admin/admin_application-detail", $data);
+        $this->render("admin/applications/detail", $data);
     }
     
     public function updateApplicationStatus($id)

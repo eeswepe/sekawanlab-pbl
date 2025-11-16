@@ -51,13 +51,13 @@ class PersonilController extends Controller
             'recentBlogs' => $recentBlogs
         ];
         
-        $this->render("personil/dashboard", $data);
+        $this->render("personil/dashboard/index", $data);
     }
 
     public function index()
     {
         $data["personils"] = $this->model->getAllPersonils();
-        $this->render("personil/index", $data);
+        $this->render("landing/personil/list", $data);
     }
 
     public function renderBlogCreate()
@@ -82,7 +82,7 @@ class PersonilController extends Controller
             'categories' => $categories
         ];
         
-        $this->render("personil/personil_blog_create", $data);
+        $this->render("personil/blog/create", $data);
     }
 
     public function renderBlogList()
@@ -125,7 +125,7 @@ class PersonilController extends Controller
             'limit' => $limit
         ];
         
-        $this->render("personil/personil_blog_list", $data);
+        $this->render("personil/blog/list", $data);
     }
 
     public function renderBlogEdit($id)
@@ -153,7 +153,7 @@ class PersonilController extends Controller
             'categories' => $categories
         ];
 
-        $this->render("personil/personil_blog-edit", $data);
+        $this->render("personil/blog/edit", $data);
     }
 
     public function renderProfile()
@@ -181,7 +181,7 @@ class PersonilController extends Controller
             'personil' => $personil
         ];
         
-        $this->render("personil/personil_profil-view", $data);
+        $this->render("personil/profile/index", $data);
     }
 
     public function renderProfileEdit()
@@ -207,7 +207,7 @@ class PersonilController extends Controller
             'projects' => $projects
         ];
         
-        $this->render("personil/personil_profile-edit", $data);
+        $this->render("personil/profile/edit", $data);
     }
 
     public function updateProfile()

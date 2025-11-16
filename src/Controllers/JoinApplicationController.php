@@ -18,7 +18,7 @@ class JoinApplicationController extends Controller
 
     public function index()
     {
-        $this->render("join_application/index", []);
+        $this->render("landing/join/application", []);
     }
 
     public function submitApplication()

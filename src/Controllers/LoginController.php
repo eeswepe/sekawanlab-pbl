@@ -26,7 +26,7 @@ class LoginController extends Controller
             "error" => $error,
         ];
 
-        $this->render("login", $data);
+        $this->render("auth/login", $data);
     }
 
     public function authenticate()

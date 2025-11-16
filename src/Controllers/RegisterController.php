@@ -25,7 +25,7 @@ class RegisterController extends Controller
             "success" => $success,
         ];
 
-        $this->render("register", $data);
+        $this->render("auth/register", $data);
     }
 
     public function register()

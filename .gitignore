@@ -2,3 +2,5 @@ vendor/
 req.md
 public/uploads/
 public/upload/
+*.ps1
+.git/
