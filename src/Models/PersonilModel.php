@@ -1,299 +1,208 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Models;
 
+use App\BaseModel;
 use App\Database;
-use \PDO;
+use PDO;
 
-class PersonilModel
+class PersonilModel extends BaseModel
 {
-    private $db;
+    protected string $table = 'personil';
+    protected string $primaryKey = 'id';
+    protected array $fillable = [
+        'user_id',
+        'nama_lengkap',
+        'role',
+        'spesialisasi',
+        'email',
+        'phone',
+        'location',
+        'tanggal_bergabung',
+        'bio',
+        'skillks',
+        'foto_url',
+        'created_at',
+        'updated_at'
+    ];
 
-    public function __construct()
+    public function __construct(?PDO $db = null)
     {
-        $this->db = Database::getConnection();
+        $db = $db ?? Database::getConnection();
+        parent::__construct($db);
     }
 
-    public function getAllPersonils()
+    // Ambil semua personil
+    public function getAllPersonils(): array
     {
-        $stmt = $this->db->prepare("SELECT * FROM personil");
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $this->all();
     }
 
-    /**
-     * Get personil data by user_id
-     * @param int $userId
-     * @return array|false
-     */
-    public function getPersonilByUserId($userId)
+    // Ambil personil berdasarkan user_id
+    public function getPersonilByUserId(int $userId): ?array
     {
-        $stmt = $this->db->prepare("SELECT * FROM personil WHERE user_id = :user_id");
-        $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        return $this->first(['user_id' => $userId]);
     }
 
-    /**
-     * Get personil data by id
-     * @param int $id
-     * @return array|false
-     */
-    public function getPersonilById($id)
+    // Ambil personil berdasarkan id
+    public function getPersonilById(int $id): ?array
     {
-        $stmt = $this->db->prepare("SELECT * FROM personil WHERE id = :id");
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        return $this->find($id) ?: null;
     }
 
-    /**
-     * Get personil statistics (total blogs, projects)
-     * @param int $personil_id
-     * @return array
-     */
-    public function getPersonilStats($personil_id)
+    // Statistik personil (total blogs, projects)
+    public function getPersonilStats(int $personil_id): array
     {
         $sql = "SELECT 
-                    (SELECT COUNT(*) FROM blog_post WHERE penulis_id = :personil_id) as total_blogs,
-                    (SELECT COUNT(*) FROM project WHERE personil_id = :personil_id) as total_projects";
-        
+                    (SELECT COUNT(*) FROM blog_post WHERE penulis_id = :personil_id) AS total_blogs,
+                    (SELECT COUNT(*) FROM project WHERE personil_id = :personil_id) AS total_projects";
         $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':personil_id', $personil_id, PDO::PARAM_INT);
+        $stmt->bindValue(':personil_id', $personil_id, PDO::PARAM_INT);
         $stmt->execute();
-        
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+        $result = $stmt->fetch(PDO::FETCH_ASSOC) ?: ['total_blogs' => 0, 'total_projects' => 0];
+
         return [
-            'total_blogs' => (int) $result['total_blogs'],
-            'total_projects' => (int) $result['total_projects']
+            'total_blogs' => (int) ($result['total_blogs'] ?? 0),
+            'total_projects' => (int) ($result['total_projects'] ?? 0)
         ];
     }
 
-    /**
-     * Get personil with all related data (projects)
-     * @param int $personil_id
-     * @return array|false
-     */
-    public function getPersonilWithProjects($personil_id)
+    // Ambil personil beserta project terkait
+    public function getPersonilWithProjects(int $personil_id): ?array
     {
-        // Get personil data
         $personil = $this->getPersonilById($personil_id);
-        
-        if (!$personil) {
-            return false;
+        if ($personil === null) {
+            return null;
         }
-        
-        // Get projects
+
         $sql = "SELECT * FROM project WHERE personil_id = :personil_id ORDER BY created_at DESC";
         $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':personil_id', $personil_id, PDO::PARAM_INT);
+        $stmt->bindValue(':personil_id', $personil_id, PDO::PARAM_INT);
         $stmt->execute();
-        
         $personil['projects'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        // Parse JSON fields
-        if (isset($personil['skillks'])) {
-            $personil['skills'] = json_decode($personil['skillks'], true) ?? [];
-        } else {
-            $personil['skills'] = [];
+
+        // Parse JSON field 'skillks' ke array 'skills'
+        $personil['skills'] = [];
+        if (!empty($personil['skillks'])) {
+            $decoded = json_decode($personil['skillks'], true);
+            if (is_array($decoded)) {
+                $personil['skills'] = $decoded;
+            }
         }
-        
+
         return $personil;
     }
 
-    public function updatePersonil($id, $data)
+    // Update personil (pakai BaseModel::update)
+    public function updatePersonil(int $id, array $data): bool
     {
-        $sql = "UPDATE personil SET 
-                    nama_lengkap = :nama_lengkap,
-                    role = :role,
-                    spesialisasi = :spesialisasi,
-                    email = :email,
-                    phone = :phone,
-                    location = :location,
-                    tanggal_bergabung = :tanggal_bergabung,
-                    bio = :bio,
-                    skillks = :skillks,
-                    foto_url = :foto_url,
-                    updated_at = CURRENT_TIMESTAMP
-                WHERE id = :id";
-        
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->bindParam(':nama_lengkap', $data['nama_lengkap'], PDO::PARAM_STR);
-        $stmt->bindParam(':role', $data['role'], PDO::PARAM_STR);
-        $stmt->bindParam(':spesialisasi', $data['spesialisasi'], PDO::PARAM_STR);
-        $stmt->bindParam(':email', $data['email'], PDO::PARAM_STR);
-        $stmt->bindParam(':phone', $data['phone'], PDO::PARAM_STR);
-        $stmt->bindParam(':location', $data['location'], PDO::PARAM_STR);
-        $stmt->bindParam(':tanggal_bergabung', $data['tanggal_bergabung'], PDO::PARAM_STR);
-        $stmt->bindParam(':bio', $data['bio'], PDO::PARAM_STR);
-        $stmt->bindParam(':skillks', $data['skillks'], PDO::PARAM_STR);
-        $stmt->bindParam(':foto_url', $data['foto_url'], PDO::PARAM_STR);
-        
-        return $stmt->execute();
-    }
-
-    public function getPersonilWithUser($id)
-    {
-        $sql = "SELECT p.*, u.username, u.role as user_role 
-                FROM personil p 
-                LEFT JOIN users u ON p.user_id = u.id 
-                WHERE p.id = :id";
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    /**
-     * Create new personil
-     * @param array $data
-     * @return int|false - personil ID if success
-     */
-    public function createPersonil($data)
-    {
-        $sql = "INSERT INTO personil (
-                    user_id, nama_lengkap, role, spesialisasi, 
-                    email, phone, location, tanggal_bergabung, 
-                    bio, skillks, foto_url
-                ) VALUES (
-                    :user_id, :nama_lengkap, :role, :spesialisasi,
-                    :email, :phone, :location, :tanggal_bergabung,
-                    :bio, :skillks, :foto_url
-                ) RETURNING id";
-        
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':user_id', $data['user_id']);
-        $stmt->bindParam(':nama_lengkap', $data['nama_lengkap'], PDO::PARAM_STR);
-        $stmt->bindParam(':role', $data['role'], PDO::PARAM_STR);
-        $stmt->bindParam(':spesialisasi', $data['spesialisasi'], PDO::PARAM_STR);
-        $stmt->bindParam(':email', $data['email'], PDO::PARAM_STR);
-        $stmt->bindParam(':phone', $data['phone'], PDO::PARAM_STR);
-        $stmt->bindParam(':location', $data['location'], PDO::PARAM_STR);
-        $stmt->bindParam(':tanggal_bergabung', $data['tanggal_bergabung']);
-        $stmt->bindParam(':bio', $data['bio'], PDO::PARAM_STR);
-        $stmt->bindParam(':skillks', $data['skillks'], PDO::PARAM_STR);
-        $stmt->bindParam(':foto_url', $data['foto_url'], PDO::PARAM_STR);
-        
-        if ($stmt->execute()) {
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            return $result['id'];
+        $data = $this->filterFillable($data);
+        // pastikan skillks tersimpan sebagai JSON string jika diberikan array
+        if (isset($data['skillks']) && is_array($data['skillks'])) {
+            $data['skillks'] = json_encode($data['skillks']);
         }
-        
-        return false;
+        return $this->update($id, $data);
     }
 
-    /**
-     * Get personils for admin with filters and pagination
-     * @param array $filters ['search', 'role']
-     * @param int $limit
-     * @param int $offset
-     * @return array
-     */
-    public function getPersonilsForAdmin($filters = [], $limit = 10, $offset = 0)
+    // Ambil personil dengan info user
+    public function getPersonilWithUser(int $id): ?array
     {
-        $sql = "SELECT 
-                    p.*,
-                    u.username
-                FROM personil p
+        $sql = "SELECT p.*, u.username, u.role AS user_role
+                FROM {$this->table} p
+                LEFT JOIN users u ON p.user_id = u.id
+                WHERE p.id = :id
+                LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        $res = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $res ?: null;
+    }
+
+    // Buat personil baru
+    public function createPersonil(array $data)
+    {
+        $data = $this->filterFillable($data);
+        if (isset($data['skillks']) && is_array($data['skillks'])) {
+            $data['skillks'] = json_encode($data['skillks']);
+        }
+
+        return $this->create($data);
+    }
+
+    // Ambil personils untuk admin dengan filter & pagination
+    public function getPersonilsForAdmin(array $filters = [], int $limit = 10, int $offset = 0): array
+    {
+        $sql = "SELECT p.*, u.username
+                FROM {$this->table} p
                 LEFT JOIN users u ON p.user_id = u.id
                 WHERE 1=1";
-        
-        $params = [];
-        
-        // Search filter by name
-        if (!empty($filters['search'])) {
-            $sql .= " AND p.nama_lengkap ILIKE :search";
-            $params[':search'] = '%' . $filters['search'] . '%';
-        }
-        
-        // Role filter
-        if (!empty($filters['role'])) {
-            $sql .= " AND p.role = :role";
-            $params[':role'] = $filters['role'];
-        }
-        
+
+        [$sql, $params] = $this->applyFiltersToSql($sql, $filters);
+
         $sql .= " ORDER BY p.created_at DESC LIMIT :limit OFFSET :offset";
-        
         $stmt = $this->db->prepare($sql);
-        
-        foreach ($params as $key => $value) {
-            $stmt->bindValue($key, $value);
+
+        foreach ($params as $key => $val) {
+            $stmt->bindValue($key, $val);
         }
-        
+
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
-        
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Count personils with filters
-     * @param array $filters
-     * @return int
-     */
-    public function countPersonilsForAdmin($filters = [])
+    // Hitung personil untuk admin sesuai filter
+    public function countPersonilsForAdmin(array $filters = []): int
     {
-        $sql = "SELECT COUNT(*) as total FROM personil p WHERE 1=1";
-        
+        $sql = "SELECT COUNT(*) AS total FROM {$this->table} p WHERE 1=1";
+        [$sql, $params] = $this->applyFiltersToSql($sql, $filters);
+
+        $stmt = $this->db->prepare($sql);
+        foreach ($params as $key => $val) {
+            $stmt->bindValue($key, $val);
+        }
+        $stmt->execute();
+        $res = $stmt->fetch(PDO::FETCH_ASSOC);
+        return (int) ($res['total'] ?? 0);
+    }
+
+    // Count by role (jika role null → count semua)
+    public function countByRole(?string $role = null): int
+    {
+        if ($role === null) {
+            return $this->count();
+        }
+        return $this->count(['role' => $role]);
+    }
+
+    // Hapus personil
+    public function deletePersonil(int $id): bool
+    {
+        return $this->delete($id);
+    }
+
+    /**
+     * Helper untuk menambahkan kondisi filter ke SQL.
+     * Mengembalikan tuple [$sql, $params]
+     */
+    protected function applyFiltersToSql(string $sql, array $filters): array
+    {
         $params = [];
-        
+
         if (!empty($filters['search'])) {
             $sql .= " AND p.nama_lengkap ILIKE :search";
             $params[':search'] = '%' . $filters['search'] . '%';
         }
-        
+
         if (!empty($filters['role'])) {
             $sql .= " AND p.role = :role";
             $params[':role'] = $filters['role'];
         }
-        
-        $stmt = $this->db->prepare($sql);
-        
-        foreach ($params as $key => $value) {
-            $stmt->bindValue($key, $value);
-        }
-        
-        $stmt->execute();
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        return (int)$result['total'];
-    }
 
-    /**
-     * Get count by role
-     * @param string $role
-     * @return int
-     */
-    public function countByRole($role = null)
-    {
-        if ($role) {
-            $sql = "SELECT COUNT(*) as total FROM personil WHERE role = :role";
-            $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':role', $role, PDO::PARAM_STR);
-        } else {
-            $sql = "SELECT COUNT(*) as total FROM personil";
-            $stmt = $this->db->prepare($sql);
-        }
-        
-        $stmt->execute();
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return (int)$result['total'];
-    }
-
-    /**
-     * Delete personil by ID
-     * @param int $id
-     * @return bool
-     */
-    public function deletePersonil($id)
-    {
-        $sql = "DELETE FROM personil WHERE id = :id";
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        
-        return $stmt->execute();
+        return [$sql, $params];
     }
 }
-?>

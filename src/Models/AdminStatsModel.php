@@ -1,82 +1,103 @@
 <?php
 namespace App\Models;
 
+use App;
+use App\BaseModel;
 use App\Database;
 use PDO;
-
-class AdminStatsModel
+    
+class AdminStatsModel extends BaseModel
 {
-    private $db;
-
-    public function __construct()
+    public function __construct(?PDO $db = null)
     {
-        $this->db = Database::getConnection();
+        $db = $db ?? Database::getConnection();
+        parent::__construct($db);
     }
 
     /**
-     * Get total personil count
+     * Membantu menjalankan query di tabel tertentu secara sementara.
      */
-    public function getTotalPersonil()
+    protected function withTable(string $table, callable $callback)
     {
-        $stmt = $this->db->prepare("SELECT COUNT(*) as total FROM personil");
-        $stmt->execute();
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result['total'];
+        $old = $this->table;
+        $this->table = $table;
+
+        try {
+            return $callback();
+        } finally {
+            $this->table = $old;
+        }
     }
 
     /**
-     * Get total blog posts count
+     * Total data personil.
      */
-    public function getTotalBlogPosts()
+    public function getTotalPersonil(): int
     {
-        $stmt = $this->db->prepare("SELECT COUNT(*) as total FROM blog_post");
-        $stmt->execute();
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result['total'];
+        return (int) $this->withTable('personil', fn() => $this->count());
     }
 
     /**
-     * Get pending applications count
+     * Total postingan blog.
      */
-    public function getPendingApplications()
+    public function getTotalBlogPosts(): int
     {
-        $stmt = $this->db->prepare("SELECT COUNT(*) as total FROM join_application WHERE status = 'pending'");
-        $stmt->execute();
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result['total'];
+        return (int) $this->withTable('blog_post', fn() => $this->count());
     }
 
     /**
-     * Get total views (placeholder - views column not in schema)
+     * Total aplikasi masuk yang statusnya pending.
      */
-    public function getTotalViews()
+    public function getPendingApplications(): int
     {
-        return 0;
+        return (int) $this->withTable('join_application', fn() => $this->count(['status' => 'pending']));
     }
 
     /**
-     * Get recent activities
+     * Total views blog (contoh).
      */
-    public function getRecentActivities($limit = 10)
+    public function getTotalViews(): int
+    {
+        $stmt = $this->db->query("SELECT COALESCE(SUM(views), 0) as total FROM blog_post");
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return (int) ($row['total'] ?? 0);
+    }
+
+    /**
+     * Aktivitas terbaru dari blog & aplikasi join.
+     */
+    public function getRecentActivities(int $limit = 10): array
     {
         $query = "
             SELECT 
-                'blog' as type,
-                p.nama_lengkap as nama,
-                'Menambahkan Blog Baru' as aktivitas,
-                bp.judul as target,
+                'blog' AS type,
+                p.nama_lengkap AS nama,
+                'Menambahkan Blog Baru' AS aktivitas,
+                bp.judul AS target,
                 bp.status,
-                bp.created_at as waktu
+                bp.created_at AS waktu
             FROM blog_post bp
             JOIN personil p ON bp.penulis_id = p.id
-            ORDER BY bp.created_at DESC
+
+            UNION ALL
+
+            SELECT
+                'application' AS type,
+                ja.nama_lengkap AS nama,
+                'Mengajukan Permintaan Bergabung' AS aktivitas,
+                ja.email AS target,
+                ja.status,
+                ja.created_at AS waktu
+            FROM join_application ja
+
+            ORDER BY waktu DESC
             LIMIT :limit
         ";
-        
+
         $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmt->execute();
-        
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

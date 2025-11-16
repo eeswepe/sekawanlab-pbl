@@ -1,74 +1,66 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Models;
 
+use App\BaseModel;
 use App\Database;
 use PDO;
 
-class ProjectModel
+class ProjectModel extends BaseModel
 {
-    private $db;
+    protected string $table = 'project';
+    protected string $primaryKey = 'id';
+    protected array $fillable = [
+        'personil_id',
+        'title',
+        'description',
+        'created_at',
+        'updated_at'
+    ];
 
-    public function __construct()
+    public function __construct(?PDO $db = null)
     {
-        $this->db = Database::getConnection();
+        $db = $db ?? Database::getConnection();
+        parent::__construct($db);
     }
 
-    public function getProjectsByPersonilId($personil_id)
+    // Ambil project berdasarkan personil_id
+    public function getProjectsByPersonilId(int $personil_id): array
     {
-        $sql = "SELECT * FROM project WHERE personil_id = :personil_id ORDER BY created_at DESC";
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':personil_id', $personil_id, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        // gunakan BaseModel::where dengan order
+        return $this->where(['personil_id' => $personil_id], 'created_at DESC');
     }
 
-    public function createProject($data)
+    // Buat project baru, kembalikan id atau false
+    public function createProject(array $data)
     {
-        $sql = "INSERT INTO project (personil_id, title, description) 
-                VALUES (:personil_id, :title, :description) RETURNING id";
-        
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':personil_id', $data['personil_id'], PDO::PARAM_INT);
-        $stmt->bindParam(':title', $data['title'], PDO::PARAM_STR);
-        $stmt->bindParam(':description', $data['description'], PDO::PARAM_STR);
-        
-        if ($stmt->execute()) {
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            return $result['id'];
-        }
-        return false;
+        $data = $this->filterFillable($data);
+        $insertId = $this->create($data);
+
+        // BaseModel::create() bisa mengembalikan string id atau false
+        return $insertId === false || $insertId === '' ? false : (int) $insertId;
     }
 
-    public function updateProject($id, $data)
+    // Update project
+    public function updateProject(int $id, array $data): bool
     {
-        $sql = "UPDATE project SET 
-                    title = :title,
-                    description = :description,
-                    updated_at = CURRENT_TIMESTAMP
-                WHERE id = :id";
-        
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->bindParam(':title', $data['title'], PDO::PARAM_STR);
-        $stmt->bindParam(':description', $data['description'], PDO::PARAM_STR);
-        
-        return $stmt->execute();
+        $data = $this->filterFillable($data);
+        return $this->update($id, $data);
     }
 
-    public function deleteProject($id)
+    // Hapus project by id
+    public function deleteProject(int $id): bool
     {
-        $sql = "DELETE FROM project WHERE id = :id";
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        return $stmt->execute();
+        return $this->delete($id);
     }
 
-    public function deleteProjectsByPersonilId($personil_id)
+    // Hapus semua project milik personil
+    public function deleteProjectsByPersonilId(int $personil_id): bool
     {
-        $sql = "DELETE FROM project WHERE personil_id = :personil_id";
+        $sql = "DELETE FROM {$this->table} WHERE personil_id = :personil_id";
         $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':personil_id', $personil_id, PDO::PARAM_INT);
+        $stmt->bindValue(':personil_id', $personil_id, PDO::PARAM_INT);
         return $stmt->execute();
     }
 }

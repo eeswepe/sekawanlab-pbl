@@ -1,96 +1,113 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Models;
 
+use App\BaseModel;
 use App\Database;
-use \PDO;
+use PDO;
 
-class ProfilPageModel
+class ProfilPageModel extends BaseModel
 {
-    private $db;
+    protected string $table = 'profil_page';
+    protected string $primaryKey = 'id';
+    protected array $fillable = [
+        'slug',
+        'page_title',
+        'page_subtitle',
+        'featured_image_url',
+        'content_title',
+        'content_subtitle',
+        'last_updated',
+        'created_at'
+    ];
 
-    public function __construct()
+    public function __construct(?PDO $db = null)
     {
-        $this->db = Database::getConnection();
+        $db = $db ?? Database::getConnection();
+        parent::__construct($db);
     }
 
+    // Buat halaman profil, kembalikan ID atau false
     public function createProfilPage(
-        $slug,
-        $pageTitle,
-        $pageSubtitle,
-        $featuredImageUrl,
-        $contentTitle,
-        $contentSubtitle,
+        string $slug,
+        string $pageTitle,
+        string $pageSubtitle,
+        ?string $featuredImageUrl,
+        ?string $contentTitle,
+        ?string $contentSubtitle
     ) {
-        $stmt = $this->db->prepare(
-            "INSERT INTO profil_page (slug, page_title, page_subtitle, featured_image_url, content_title, content_subtitle) VALUES (?, ?, ?, ?, ?, ?)",
-        );
-        $stmt->execute([
-            $slug,
-            $pageTitle,
-            $pageSubtitle,
-            $featuredImageUrl,
-            $contentTitle,
-            $contentSubtitle,
-        ]);
-        return $this->db->lastInsertId();
+        $data = [
+            'slug' => $slug,
+            'page_title' => $pageTitle,
+            'page_subtitle' => $pageSubtitle,
+            'featured_image_url' => $featuredImageUrl,
+            'content_title' => $contentTitle,
+            'content_subtitle' => $contentSubtitle
+        ];
+
+        $data = $this->filterFillable($data);
+        $insertId = $this->create($data);
+
+        // BaseModel::create() mengembalikan lastInsertId() (string) atau false
+        return $insertId === false || $insertId === '' ? false : (int) $insertId;
     }
 
-    public function getProfilPage($slug)
+    // Ambil halaman profil berdasarkan slug
+    public function getProfilPage(string $slug): ?array
     {
-        $stmt = $this->db->prepare("SELECT * FROM profil_page WHERE slug = ?");
-        $stmt->execute([$slug]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $rows = $this->where(['slug' => $slug], null, 1);
+        return $rows[0] ?? null;
     }
 
-    public function getProfilTitle()
+    // Ambil daftar slug + title untuk menu
+    public function getProfilTitle(): array
     {
-        $stmt = $this->db->prepare("SELECT slug, page_title FROM profil_page ");
+        $sql = "SELECT slug, page_title FROM {$this->table} ORDER BY id ASC";
+        $stmt = $this->db->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getAllProfilPages()
+    // Ambil semua halaman profil
+    public function getAllProfilPages(): array
     {
-        $stmt = $this->db->prepare("SELECT * FROM profil_page ORDER BY id");
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $this->all();
     }
 
-    public function getProfilPageById($id)
+    // Ambil halaman profil berdasarkan id
+    public function getProfilPageById(int $id): ?array
     {
-        $stmt = $this->db->prepare("SELECT * FROM profil_page WHERE id = ?");
-        $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        return $this->find($id) ?: null;
     }
 
+    // Update halaman profil
     public function updateProfilPage(
-        $id,
-        $slug,
-        $pageTitle,
-        $pageSubtitle,
-        $featuredImageUrl,
-        $contentTitle,
-        $contentSubtitle,
-    ) {
-        $stmt = $this->db->prepare(
-            "UPDATE profil_page SET slug = ?, page_title = ?, page_subtitle = ?, featured_image_url = ?, content_title = ?, content_subtitle = ?, last_updated = CURRENT_TIMESTAMP WHERE id = ?",
-        );
-        $stmt->execute([
-            $slug,
-            $pageTitle,
-            $pageSubtitle,
-            $featuredImageUrl,
-            $contentTitle,
-            $contentSubtitle,
-            $id,
-        ]);
-        return $stmt->rowCount() > 0;
+        int $id,
+        string $slug,
+        string $pageTitle,
+        string $pageSubtitle,
+        ?string $featuredImageUrl,
+        ?string $contentTitle,
+        ?string $contentSubtitle
+    ): bool {
+        $data = [
+            'slug' => $slug,
+            'page_title' => $pageTitle,
+            'page_subtitle' => $pageSubtitle,
+            'featured_image_url' => $featuredImageUrl,
+            'content_title' => $contentTitle,
+            'content_subtitle' => $contentSubtitle
+        ];
+
+        $data = $this->filterFillable($data);
+        $data['last_updated'] = date('Y-m-d H:i:s');
+        return $this->update($id, $data);
     }
 
-    public function deleteProfilPage($id)
+    // Hapus halaman profil
+    public function deleteProfilPage(int $id): bool
     {
-        $stmt = $this->db->prepare("DELETE FROM profil_page WHERE id = ?");
-        $stmt->execute([$id]);
-        return $stmt->rowCount();
+        return $this->delete($id);
     }
 }

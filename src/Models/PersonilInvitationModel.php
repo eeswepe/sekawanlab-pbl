@@ -1,64 +1,89 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Models;
 
+use App\BaseModel;
 use App\Database;
 use PDO;
 
-class PersonilInvitationModel
+class PersonilInvitationModel extends BaseModel
 {
-    private $db;
+    protected string $table = 'personil_invitation';
+    protected string $primaryKey = 'id';
+    protected array $fillable = [
+        'secret_key',
+        'personil_id',
+        'application_id',
+        'is_used',
+        'created_at'
+    ];
 
-    public function __construct()
+    public function __construct(?PDO $db = null)
     {
-        $this->db = Database::getConnection();
+        $db = $db ?? Database::getConnection();
+        parent::__construct($db);
     }
 
-    public function createInvitation($personil_id, $application_id)
+    // Buat invitation dan kembalikan secret_key (Postgres RETURNING)
+    public function createInvitation(int $personil_id, int $application_id)
     {
-        $secret_key = bin2hex(random_bytes(32)); // 64 char hex string
-        
-        $sql = "INSERT INTO personil_invitation (secret_key, personil_id, application_id) 
-                VALUES (:secret_key, :personil_id, :application_id) RETURNING secret_key";
-        
+        $secret_key = bin2hex(random_bytes(32)); // 64-char hex
+
+        $sql = "INSERT INTO {$this->table} (secret_key, personil_id, application_id)
+                VALUES (:secret_key, :personil_id, :application_id)
+                RETURNING secret_key";
+
         $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':secret_key', $secret_key, PDO::PARAM_STR);
-        $stmt->bindParam(':personil_id', $personil_id, PDO::PARAM_INT);
-        $stmt->bindParam(':application_id', $application_id, PDO::PARAM_INT);
-        
+        $stmt->bindValue(':secret_key', $secret_key, PDO::PARAM_STR);
+        $stmt->bindValue(':personil_id', $personil_id, PDO::PARAM_INT);
+        $stmt->bindValue(':application_id', $application_id, PDO::PARAM_INT);
+
         if ($stmt->execute()) {
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            return $result['secret_key'];
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $row['secret_key'] ?? false;
         }
-        
+
         return false;
     }
 
-    public function getInvitationBySecretKey($secret_key)
+    // Ambil invitation berdasarkan secret_key
+    public function getInvitationBySecretKey(string $secret_key): ?array
     {
-        $sql = "SELECT pi.*, p.nama_lengkap, p.email 
-                FROM personil_invitation pi
+        $sql = "SELECT pi.*, p.nama_lengkap, p.email
+                FROM {$this->table} pi
                 JOIN personil p ON pi.personil_id = p.id
-                WHERE pi.secret_key = :secret_key";
-        
+                WHERE pi.secret_key = :secret_key
+                LIMIT 1";
+
         $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':secret_key', $secret_key, PDO::PARAM_STR);
+        $stmt->bindValue(':secret_key', $secret_key, PDO::PARAM_STR);
         $stmt->execute();
-        
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $res = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $res ?: null;
     }
 
-    public function markAsUsed($secret_key)
+    // Ambil invitation berdasarkan application_id
+    public function getInvitationByApplicationId(int $application_id): ?array
     {
-        $sql = "UPDATE personil_invitation SET is_used = TRUE WHERE secret_key = :secret_key";
+        $rows = $this->where(['application_id' => $application_id], null, 1);
+        return $rows[0] ?? null;
+    }
+
+    // Tandai invitation sudah digunakan
+    public function markAsUsed(string $secret_key): bool
+    {
+        $sql = "UPDATE {$this->table} SET is_used = TRUE WHERE secret_key = :secret_key";
         $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':secret_key', $secret_key, PDO::PARAM_STR);
+        $stmt->bindValue(':secret_key', $secret_key, PDO::PARAM_STR);
         return $stmt->execute();
     }
 
-    public function isValidInvitation($secret_key)
+    // Cek validitas invitation (ada dan belum dipakai)
+    public function isValidInvitation(string $secret_key): bool
     {
-        $invitation = $this->getInvitationBySecretKey($secret_key);
-        return $invitation && !$invitation['is_used'];
+        $inv = $this->getInvitationBySecretKey($secret_key);
+        return is_array($inv) && empty($inv['is_used']);
     }
 }

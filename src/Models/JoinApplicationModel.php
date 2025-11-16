@@ -1,135 +1,95 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Models;
 
+use App\BaseModel;
 use App\Database;
 use PDO;
 
-class JoinApplicationModel
+class JoinApplicationModel extends BaseModel
 {
-    private $db;
+    protected string $table = 'join_application';
+    protected string $primaryKey = 'id';
+    protected array $fillable = [
+        'nama_lengkap',
+        'email',
+        'phone',
+        'nim',
+        'prodi',
+        'semester',
+        'alasan_bergabung',
+        'github_url',
+        'cv_file_path',
+        'status',
+        'catatan_admin',
+        'tanggal_apply'
+    ];
 
-    public function __construct()
+    public function __construct(?PDO $db = null)
     {
-        $this->db = Database::getConnection();
+        $db = $db ?? Database::getConnection();
+        parent::__construct($db);
     }
 
-    public function getAllApplications()
+    // Ambil semua aplikasi
+    public function getAllApplications(): array
     {
-        $query = "SELECT * FROM join_application";
-        $result = $this->db->query($query);
-        return $result->fetchAll(PDO::FETCH_ASSOC);
+        return $this->all();
     }
 
+    // Simpan aplikasi baru
     public function sendApplication(array $data): bool
     {
-        $query = "INSERT INTO join_application
-            (nama_lengkap, email, phone, nim, prodi, semester, alasan_bergabung, github_url, cv_file_path)
-            VALUES (:nama_lengkap, :email, :phone, :nim, :prodi, :semester, :alasan_bergabung, :github_url, :cv_file_path)";
+        $data = $this->filterFillable($data);
 
-        $stmt = $this->db->prepare($query);
+        // Pastikan field opsional ada
+        $data['github_url'] = $data['github_url'] ?? null;
+        $data['cv_file_path'] = $data['cv_file_path'] ?? null;
 
-        return $stmt->execute([
-            ":nama_lengkap" => $data["nama_lengkap"],
-            ":email" => $data["email"],
-            ":phone" => $data["phone"],
-            ":nim" => $data["nim"],
-            ":prodi" => $data["prodi"],
-            ":semester" => $data["semester"],
-            ":alasan_bergabung" => $data["alasan_bergabung"],
-            ":github_url" => $data["github_url"] ?? null,
-            ":cv_file_path" => $data["cv_file_path"] ?? null,
-        ]);
+        $result = $this->create($data);
+        return $result !== false && (int)$result > 0;
     }
 
-    /**
-     * Get applications for admin with filters and pagination
-     * @param array $filters ['search', 'status', 'prodi']
-     * @param int $limit
-     * @param int $offset
-     * @return array
-     */
-    public function getApplicationsForAdmin($filters = [], $limit = 10, $offset = 0)
+    // Ambil aplikasi untuk admin dengan filter dan pagination
+    public function getApplicationsForAdmin(array $filters = [], int $limit = 10, int $offset = 0): array
     {
-        $sql = "SELECT * FROM join_application WHERE 1=1";
-        
-        $params = [];
-        
-        // Search filter by name
-        if (!empty($filters['search'])) {
-            $sql .= " AND nama_lengkap ILIKE :search";
-            $params[':search'] = '%' . $filters['search'] . '%';
-        }
-        
-        // Status filter
-        if (!empty($filters['status'])) {
-            $sql .= " AND status = :status";
-            $params[':status'] = $filters['status'];
-        }
-        
-        // Prodi filter
-        if (!empty($filters['prodi'])) {
-            $sql .= " AND prodi = :prodi";
-            $params[':prodi'] = $filters['prodi'];
-        }
-        
+        $sql = "SELECT * FROM {$this->table} WHERE 1=1";
+        [$sql, $params] = $this->applyFiltersToSql($sql, $filters);
+
         $sql .= " ORDER BY tanggal_apply DESC LIMIT :limit OFFSET :offset";
-        
+
         $stmt = $this->db->prepare($sql);
-        
-        foreach ($params as $key => $value) {
-            $stmt->bindValue($key, $value);
+
+        foreach ($params as $key => $val) {
+            $stmt->bindValue($key, $val);
         }
-        
+
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
-        
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Count applications with filters
-     * @param array $filters
-     * @return int
-     */
-    public function countApplicationsForAdmin($filters = [])
+    // Hitung jumlah aplikasi untuk admin sesuai filter
+    public function countApplicationsForAdmin(array $filters = []): int
     {
-        $sql = "SELECT COUNT(*) as total FROM join_application WHERE 1=1";
-        
-        $params = [];
-        
-        if (!empty($filters['search'])) {
-            $sql .= " AND nama_lengkap ILIKE :search";
-            $params[':search'] = '%' . $filters['search'] . '%';
-        }
-        
-        if (!empty($filters['status'])) {
-            $sql .= " AND status = :status";
-            $params[':status'] = $filters['status'];
-        }
-        
-        if (!empty($filters['prodi'])) {
-            $sql .= " AND prodi = :prodi";
-            $params[':prodi'] = $filters['prodi'];
-        }
-        
+        $sql = "SELECT COUNT(*) as total FROM {$this->table} WHERE 1=1";
+        [$sql, $params] = $this->applyFiltersToSql($sql, $filters);
+
         $stmt = $this->db->prepare($sql);
-        
-        foreach ($params as $key => $value) {
-            $stmt->bindValue($key, $value);
+        foreach ($params as $key => $val) {
+            $stmt->bindValue($key, $val);
         }
-        
         $stmt->execute();
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        return (int)$result['total'];
+
+        $res = $stmt->fetch(PDO::FETCH_ASSOC);
+        return (int) ($res['total'] ?? 0);
     }
 
-    /**
-     * Get application statistics
-     * @return array
-     */
-    public function getApplicationStats()
+    // Statistik ringkas aplikasi
+    public function getApplicationStats(): array
     {
         $sql = "SELECT 
                     COUNT(*) as total,
@@ -137,72 +97,63 @@ class JoinApplicationModel
                     COUNT(CASE WHEN status = 'accepted' THEN 1 END) as accepted,
                     COUNT(CASE WHEN status = 'rejected' THEN 1 END) as rejected,
                     COUNT(CASE WHEN status = 'reviewed' THEN 1 END) as reviewed
-                FROM join_application";
-        
+                FROM {$this->table}";
+
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
-        
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: [
+            'total' => 0, 'pending' => 0, 'accepted' => 0, 'rejected' => 0, 'reviewed' => 0
+        ];
+    }
+
+    // Ambil aplikasi berdasarkan ID
+    public function getApplicationById(int $id): ?array
+    {
+        return $this->find($id) ?: null;
+    }
+
+    // Hapus aplikasi
+    public function deleteApplication(int $id): bool
+    {
+        return $this->delete($id);
+    }
+
+    // Update status aplikasi
+    public function updateApplicationStatus(int $id, string $status): bool
+    {
+        return $this->update($id, ['status' => $status]);
+    }
+
+    // Update catatan admin
+    public function updateAdminNotes(int $id, string $notes): bool
+    {
+        return $this->update($id, ['catatan_admin' => $notes]);
     }
 
     /**
-     * Get application by ID
-     * @param int $id
-     * @return array|null
+     * Helper untuk menambahkan kondisi filter ke SQL.
+     * Mengembalikan array [$sql, $params]
      */
-    public function getApplicationById($id)
+    protected function applyFiltersToSql(string $sql, array $filters): array
     {
-        $sql = "SELECT * FROM join_application WHERE id = :id";
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
-        
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
+        $params = [];
 
-    /**
-     * Delete application by ID
-     * @param int $id
-     * @return bool
-     */
-    public function deleteApplication($id)
-    {
-        $sql = "DELETE FROM join_application WHERE id = :id";
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        
-        return $stmt->execute();
-    }
+        if (!empty($filters['search'])) {
+            $sql .= " AND nama_lengkap ILIKE :search";
+            $params[':search'] = '%' . $filters['search'] . '%';
+        }
 
-    /**
-     * Update application status
-     * @param int $id
-     * @param string $status
-     * @return bool
-     */
-    public function updateApplicationStatus($id, $status)
-    {
-        $sql = "UPDATE join_application SET status = :status WHERE id = :id";
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->bindParam(':status', $status, PDO::PARAM_STR);
-        
-        return $stmt->execute();
-    }
+        if (!empty($filters['status'])) {
+            $sql .= " AND status = :status";
+            $params[':status'] = $filters['status'];
+        }
 
-    /**
-     * Update admin notes
-     * @param int $id
-     * @param string $notes
-     * @return bool
-     */
-    public function updateAdminNotes($id, $notes)
-    {
-        $sql = "UPDATE join_application SET catatan_admin = :notes WHERE id = :id";
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->bindParam(':notes', $notes, PDO::PARAM_STR);
-        
-        return $stmt->execute();
+        if (!empty($filters['prodi'])) {
+            $sql .= " AND prodi = :prodi";
+            $params[':prodi'] = $filters['prodi'];
+        }
+
+        return [$sql, $params];
     }
 }

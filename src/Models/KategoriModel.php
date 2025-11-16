@@ -1,106 +1,77 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Models;
 
+use App\BaseModel;
 use App\Database;
 use PDO;
 
-class KategoriModel
+class KategoriModel extends BaseModel
 {
-    private $db;
+    protected string $table = 'kategori';
+    protected string $primaryKey = 'id';
+    protected array $fillable = [
+        'name',
+        'post_count'
+    ];
 
-    public function __construct()
+    public function __construct(?PDO $db = null)
     {
-        $this->db = Database::getConnection();
+        $db = $db ?? Database::getConnection();
+        parent::__construct($db);
     }
 
-    /**
-     * Get all categories
-     * @return array
-     */
-    public function getAllKategori()
+    // Ambil semua kategori
+    public function getAllKategori(): array
     {
-        $sql = "SELECT * FROM kategori ORDER BY name ASC";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute();
-        
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $this->all();
     }
 
-    /**
-     * Get category by ID
-     * @param int $id
-     * @return array|null
-     */
-    public function getKategoriById($id)
+    // Ambil kategori berdasarkan ID
+    public function getKategoriById(int $id): ?array
     {
-        $sql = "SELECT * FROM kategori WHERE id = :id";
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
-        
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        return $this->find($id) ?: null;
     }
 
-    /**
-     * Get category by name
-     * @param string $name
-     * @return array|null
-     */
-    public function getKategoriByName($name)
+    // Ambil kategori berdasarkan nama
+    public function getKategoriByName(string $name): ?array
     {
-        $sql = "SELECT * FROM kategori WHERE name = :name";
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':name', $name, PDO::PARAM_STR);
-        $stmt->execute();
-        
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $rows = $this->where(['name' => $name], null, 1);
+        return $rows[0] ?? null;
     }
 
-    /**
-     * Create new category
-     * @param string $name
-     * @return int|bool - ID of created category or false
-     */
-    public function createKategori($name)
+    // Buat kategori baru, kembalikan id atau false
+    public function createKategori(string $name)
     {
-        $sql = "INSERT INTO kategori (name, post_count) VALUES (:name, 0) RETURNING id";
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':name', $name, PDO::PARAM_STR);
-        
-        if ($stmt->execute()) {
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            return $result['id'];
-        }
-        
-        return false;
+        $data = [
+            'name'      => $name,
+            'post_count'=> 0
+        ];
+
+        $data = $this->filterFillable($data);
+        $insertId = $this->create($data);
+
+        return $insertId === '' || $insertId === false ? false : (int)$insertId;
     }
 
-    /**
-     * Increment post count for a category
-     * @param int $id
-     * @return bool
-     */
-    public function incrementPostCount($id)
+    // Tambah post_count
+    public function incrementPostCount(int $id): bool
     {
-        $sql = "UPDATE kategori SET post_count = post_count + 1 WHERE id = :id";
+        $sql = "UPDATE {$this->table} SET post_count = post_count + 1 WHERE id = :id";
         $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         return $stmt->execute();
     }
 
-    /**
-     * Decrement post count for a category
-     * @param int $id
-     * @return bool
-     */
-    public function decrementPostCount($id)
+    // Kurangi post_count (maksimal 0)
+    public function decrementPostCount(int $id): bool
     {
-        $sql = "UPDATE kategori SET post_count = post_count - 1 WHERE id = :id AND post_count > 0";
+        $sql = "UPDATE {$this->table} 
+                SET post_count = GREATEST(post_count - 1, 0) 
+                WHERE id = :id";
         $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         return $stmt->execute();
     }
 }
