@@ -49,6 +49,20 @@ class ProfilPageModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getAllProfilPages()
+    {
+        $stmt = $this->db->prepare("SELECT * FROM profil_page ORDER BY id");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getProfilPageById($id)
+    {
+        $stmt = $this->db->prepare("SELECT * FROM profil_page WHERE id = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
     public function updateProfilPage(
         $id,
         $slug,
@@ -59,7 +73,7 @@ class ProfilPageModel
         $contentSubtitle,
     ) {
         $stmt = $this->db->prepare(
-            "UPDATE profil_page SET slug = ?, page_title = ?, page_subtitle = ?, featured_image_url = ?, content_title = ?, content_subtitle = ? WHERE id = ?",
+            "UPDATE profil_page SET slug = ?, page_title = ?, page_subtitle = ?, featured_image_url = ?, content_title = ?, content_subtitle = ?, last_updated = CURRENT_TIMESTAMP WHERE id = ?",
         );
         $stmt->execute([
             $slug,
@@ -70,7 +84,7 @@ class ProfilPageModel
             $contentSubtitle,
             $id,
         ]);
-        return $stmt->rowCount();
+        return $stmt->rowCount() > 0;
     }
 
     public function deleteProfilPage($id)

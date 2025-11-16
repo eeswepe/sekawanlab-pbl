@@ -308,7 +308,7 @@ class AdminController extends Controller
         return substr($text, 0, $length) . '...';
     }
     
-    private function handleImageUpload($file)
+    private function handleImageUpload($file, $type = 'blog')
     {
         $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         $maxSize = 5 * 1024 * 1024; // 5MB
@@ -321,17 +321,17 @@ class AdminController extends Controller
             return false;
         }
         
-        $uploadDir = __DIR__ . '/../../public/upload/blog/';
+        $uploadDir = __DIR__ . '/../../public/upload/' . $type . '/';
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0777, true);
         }
         
         $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-        $filename = 'blog_' . time() . '_' . uniqid() . '.' . $extension;
+        $filename = $type . '_' . time() . '_' . uniqid() . '.' . $extension;
         $filepath = $uploadDir . $filename;
         
         if (move_uploaded_file($file['tmp_name'], $filepath)) {
-            return '/upload/blog/' . $filename;
+            return '/upload/' . $type . '/' . $filename;
         }
         
         return false;
@@ -339,16 +339,110 @@ class AdminController extends Controller
 
     public function renderProfilePages()
     {
-        $this->render("admin/admin_profile-pages");
+        $profilPageModel = new \App\Models\ProfilPageModel();
+        $pages = $profilPageModel->getAllProfilPages();
+        
+        $data = ['pages' => $pages];
+        $this->render("admin/admin_profile-pages", $data);
     }
 
     public function renderProfilePagesEdit($id)
     {
-        $data = [
-            "profile_page_id" => $id,
-        ];
-
+        $profilPageModel = new \App\Models\ProfilPageModel();
+        $page = $profilPageModel->getProfilPageById($id);
+        
+        if (!$page) {
+            header('Location: /admin/profil-pages');
+            exit;
+        }
+        
+        $data = ['page' => $page];
         $this->render("admin/admin_profile-page_edit", $data);
+    }
+
+    public function updateProfilePage($id)
+    {
+        header('Content-Type: application/json');
+        
+        $profilPageModel = new \App\Models\ProfilPageModel();
+        
+        // Check if page exists
+        $page = $profilPageModel->getProfilPageById($id);
+        if (!$page) {
+            echo json_encode(['success' => false, 'message' => 'Halaman tidak ditemukan']);
+            return;
+        }
+        
+        // Handle image upload
+        $featuredImageUrl = $page['featured_image_url'];
+        if (isset($_FILES['featured_image']) && $_FILES['featured_image']['error'] === UPLOAD_ERR_OK) {
+            $uploadedImage = $this->handleImageUpload($_FILES['featured_image'], 'profil');
+            if ($uploadedImage) {
+                // Delete old image
+                if (!empty($page['featured_image_url']) && file_exists(__DIR__ . '/../../public' . $page['featured_image_url'])) {
+                    unlink(__DIR__ . '/../../public' . $page['featured_image_url']);
+                }
+                $featuredImageUrl = $uploadedImage;
+            }
+        }
+        
+        // Update page
+        $success = $profilPageModel->updateProfilPage(
+            $id,
+            $_POST['slug'],
+            $_POST['page_title'],
+            $_POST['page_subtitle'],
+            $featuredImageUrl,
+            $_POST['content_title'],
+            $_POST['content_subtitle']
+        );
+        
+        if ($success) {
+            echo json_encode(['success' => true, 'message' => 'Halaman berhasil diupdate']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Gagal mengupdate halaman']);
+        }
+    }
+
+    public function renderProfilePageCreate()
+    {
+        $this->render("admin/admin_profile-page_create");
+    }
+
+    public function createProfilePage()
+    {
+        header('Content-Type: application/json');
+        
+        $profilPageModel = new \App\Models\ProfilPageModel();
+        
+        // Validate required fields
+        if (empty($_POST['slug']) || empty($_POST['page_title']) || empty($_POST['page_subtitle']) 
+            || empty($_POST['content_title']) || empty($_POST['content_subtitle'])) {
+            echo json_encode(['success' => false, 'message' => 'Semua field wajib diisi']);
+            return;
+        }
+        
+        // Handle image upload
+        $featuredImageUrl = null;
+        if (isset($_FILES['featured_image']) && $_FILES['featured_image']['error'] === UPLOAD_ERR_OK) {
+            $featuredImageUrl = $this->handleImageUpload($_FILES['featured_image'], 'profil');
+        }
+        
+        // Create page
+        $pageId = $profilPageModel->createProfilPage(
+            $_POST['slug'],
+            $_POST['page_title'],
+            $_POST['page_subtitle'],
+            $featuredImageUrl,
+            $_POST['content_title'],
+            $_POST['content_subtitle']
+        );
+        
+        if ($pageId) {
+            echo json_encode(['success' => true, 'message' => 'Halaman berhasil dibuat']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Gagal membuat halaman']);
+        }
     }
 
     public function renderPersonilList()
@@ -399,6 +493,7 @@ class AdminController extends Controller
         header('Content-Type: application/json');
         
         $personilModel = new PersonilModel();
+        $projectModel = new \App\Models\ProjectModel();
         
         // Check if personil exists
         $personil = $personilModel->getPersonilById($id);
@@ -414,6 +509,9 @@ class AdminController extends Controller
                 unlink($fotoPath);
             }
         }
+        
+        // Delete projects first
+        $projectModel->deleteProjectsByPersonilId($id);
         
         // Delete personil
         if ($personilModel->deletePersonil($id)) {
@@ -569,11 +667,87 @@ class AdminController extends Controller
 
     public function renderPersonilEdit($id)
     {
+        $personilModel = new \App\Models\PersonilModel();
+        $projectModel = new \App\Models\ProjectModel();
+        
+        $personil = $personilModel->getPersonilWithUser($id);
+        
+        if (!$personil) {
+            header("Location: /admin/personil");
+            exit;
+        }
+        
+        // Parse skills JSON
+        $personil['skills'] = !empty($personil['skillks']) ? json_decode($personil['skillks'], true) : [];
+        
+        // Get projects
+        $personil['projects'] = $projectModel->getProjectsByPersonilId($id);
+        
         $data = [
-            "personil_id" => $id,
+            "personil" => $personil,
         ];
 
         $this->render("admin/admin_personil_edit", $data);
+    }
+
+    public function updatePersonil($id)
+    {
+        header('Content-Type: application/json');
+        
+        $personilModel = new \App\Models\PersonilModel();
+        $projectModel = new \App\Models\ProjectModel();
+        
+        // Read JSON body
+        $rawData = json_decode(file_get_contents('php://input'), true);
+        
+        if (empty($rawData)) {
+            echo json_encode(['success' => false, 'message' => 'Data tidak boleh kosong']);
+            return;
+        }
+        
+        // Check if personil exists
+        $personil = $personilModel->getPersonilById($id);
+        if (!$personil) {
+            echo json_encode(['success' => false, 'message' => 'Personil tidak ditemukan']);
+            return;
+        }
+        
+        // Prepare personil data
+        $data = [
+            'nama_lengkap' => $rawData['nama_lengkap'] ?? '',
+            'role' => $rawData['role'] ?? 'talent',
+            'spesialisasi' => $rawData['spesialisasi'] ?? '',
+            'email' => $rawData['email'] ?? '',
+            'phone' => $rawData['phone'] ?? '',
+            'location' => $rawData['location'] ?? '',
+            'tanggal_bergabung' => $rawData['tanggal_bergabung'] ?? null,
+            'bio' => $rawData['bio'] ?? '',
+            'skillks' => json_encode($rawData['skills'] ?? []),
+            'foto_url' => $personil['foto_url'] // Keep existing photo for now
+        ];
+        
+        // Update personil
+        if (!$personilModel->updatePersonil($id, $data)) {
+            echo json_encode(['success' => false, 'message' => 'Gagal update personil']);
+            return;
+        }
+        
+        // Handle projects - delete old and create new
+        if (isset($rawData['projects'])) {
+            $projectModel->deleteProjectsByPersonilId($id);
+            
+            foreach ($rawData['projects'] as $project) {
+                if (!empty($project['title'])) {
+                    $projectModel->createProject([
+                        'personil_id' => $id,
+                        'title' => $project['title'],
+                        'description' => $project['description'] ?? ''
+                    ]);
+                }
+            }
+        }
+        
+        echo json_encode(['success' => true, 'message' => 'Data personil berhasil diupdate']);
     }
     
     public function renderApplicationsList()
@@ -669,8 +843,11 @@ class AdminController extends Controller
         
         $applicationModel = new \App\Models\JoinApplicationModel();
         
+        // Read JSON body
+        $data = json_decode(file_get_contents('php://input'), true);
+        
         // Validate input
-        if (empty($_POST['status'])) {
+        if (!isset($data['status']) || trim($data['status']) === '') {
             echo json_encode(['success' => false, 'message' => 'Status harus diisi']);
             return;
         }
@@ -683,7 +860,7 @@ class AdminController extends Controller
         }
         
         // Update status
-        if ($applicationModel->updateApplicationStatus($id, $_POST['status'])) {
+        if ($applicationModel->updateApplicationStatus($id, $data['status'])) {
             echo json_encode(['success' => true, 'message' => 'Status berhasil diupdate']);
         } else {
             echo json_encode(['success' => false, 'message' => 'Gagal mengupdate status']);
@@ -696,6 +873,9 @@ class AdminController extends Controller
         
         $applicationModel = new \App\Models\JoinApplicationModel();
         
+        // Read JSON body
+        $data = json_decode(file_get_contents('php://input'), true);
+        
         // Check if application exists
         $application = $applicationModel->getApplicationById($id);
         if (!$application) {
@@ -704,16 +884,11 @@ class AdminController extends Controller
         }
         
         // Update notes (allow empty)
-        $notes = $_POST['notes'] ?? '';
+        $notes = $data['admin_notes'] ?? '';
         if ($applicationModel->updateAdminNotes($id, $notes)) {
             echo json_encode(['success' => true, 'message' => 'Catatan admin berhasil disimpan']);
         } else {
             echo json_encode(['success' => false, 'message' => 'Gagal menyimpan catatan']);
         }
-    }
-
-    public function renderSiteSettings()
-    {
-        $this->render("admin/admin_site_settings");
     }
 }

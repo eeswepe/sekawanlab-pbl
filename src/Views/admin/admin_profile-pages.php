@@ -26,7 +26,6 @@
                     <li><a href="/admin/personil"><i class="bi bi-people-fill"></i> Personil Management</a></li>
                     <li><a href="/admin/profil-pages" class="active"><i class="bi bi-person-badge"></i> Profile Pages</a></li>
                     <li><a href="/admin/join-applications"><i class="bi bi-file-earmark-text"></i> Join Applications</a></li>
-                    <li><a href="/admin/site-settings"><i class="bi bi-gear-fill"></i> Settings</a></li>
                     <li><a href="/logout"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
                 </ul>
             </div>
@@ -89,115 +88,35 @@
                         <h1>Profile Pages Management</h1>
                         <p>Kelola dan perbarui halaman-halaman informasi statis (Tentang Kami, Visi & Misi, dll.).</p>
                     </div>
+                    <a href="/admin/profil-pages/create" class="btn btn-primary-custom">
+                        <i class="bi bi-plus-circle me-2"></i> Tambah Halaman Baru
+                    </a>
                 </div>
 
                 <div class="row g-4">
-                    
-                    <div class="col-lg-4 col-md-6">
-                        <div class="card profile-card-item">
-                            <div class="card-body d-flex flex-column">
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="page-thumbnail me-3">
-                                        <i class="bi bi-info-circle-fill"></i>
+                    <?php if (empty($pages)): ?>
+                        <div class="col-12">
+                            <div class="alert alert-info">Belum ada halaman profil yang dibuat.</div>
+                        </div>
+                    <?php else: ?>
+                        <?php foreach ($pages as $page): ?>
+                            <div class="col-lg-4 col-md-6">
+                                <div class="card profile-card-item">
+                                    <div class="card-body d-flex flex-column">
+                                        <div class="mb-3">
+                                            <h5 class="card-title"><?= htmlspecialchars($page['page_title']) ?></h5>
+                                            <small>Last updated: <?= date('d M Y', strtotime($page['last_updated'])) ?></small>
+                                        </div>
+                                        <div class="d-grid mt-auto">
+                                            <a href="/admin/profil-pages/edit/<?= $page['id'] ?>" class="btn btn-primary-custom btn-sm">
+                                                <i class="bi bi-pencil-square me-2"></i> Edit Halaman
+                                            </a>
+                                        </div>
                                     </div>
-                                    <div class="page-info">
-                                        <h5 class="card-title">Tentang Kami</h5>
-                                        <small>Last updated: 14 Mei 2024</small>
-                                    </div>
-                                </div>
-                                <div class="d-grid mt-auto">
-                                    <a href="profile-pages-edit.html?id=tentang-kami" class="btn btn-primary-custom btn-sm">
-                                        <i class="bi bi-pencil-square me-2"></i> Edit Halaman
-                                    </a>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-lg-4 col-md-6">
-                        <div class="card profile-card-item">
-                            <div class="card-body d-flex flex-column">
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="page-thumbnail me-3" style="background-color: transparent;">
-                                        <i class="bi bi-binoculars-fill" style="background: linear-gradient(135deg, #1e3c72, #2a5298);"></i>
-                                    </div>
-                                    <div class="page-info">
-                                        <h5 class="card-title">Visi & Misi</h5>
-                                        <small>Last updated: 01 Februari 2024</small>
-                                    </div>
-                                </div>
-                                <div class="d-grid mt-auto">
-                                    <a href="profile-pages-edit.html?id=visi-misi" class="btn btn-primary-custom btn-sm">
-                                        <i class="bi bi-pencil-square me-2"></i> Edit Halaman
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-lg-4 col-md-6">
-                        <div class="card profile-card-item">
-                            <div class="card-body d-flex flex-column">
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="page-thumbnail me-3" style="background-color: transparent;">
-                                        <i class="bi bi-trophy-fill" style="background: linear-gradient(135deg, #FFD700, #DAA520);"></i>
-                                    </div>
-                                    <div class="page-info">
-                                        <h5 class="card-title">Prestasi</h5>
-                                        <small>Last updated: 28 April 2024</small>
-                                    </div>
-                                </div>
-                                <div class="d-grid mt-auto">
-                                    <a href="profile-pages-edit.html?id=prestasi" class="btn btn-primary-custom btn-sm">
-                                        <i class="bi bi-pencil-square me-2"></i> Edit Halaman
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-lg-4 col-md-6">
-                        <div class="card profile-card-item">
-                            <div class="card-body d-flex flex-column">
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="page-thumbnail me-3" style="background-color: transparent;">
-                                        <i class="bi bi-diagram-3-fill" style="background: linear-gradient(135deg, #5CB85C, #3F903F);"></i>
-                                    </div>
-                                    <div class="page-info">
-                                        <h5 class="card-title">Struktur Organisasi</h5>
-                                        <small>Last updated: 10 Maret 2024</small>
-                                    </div>
-                                </div>
-                                <div class="d-grid mt-auto">
-                                    <a href="profile-pages-edit.html?id=struktur-organisasi" class="btn btn-primary-custom btn-sm">
-                                        <i class="bi bi-pencil-square me-2"></i> Edit Halaman
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-lg-4 col-md-6">
-                        <div class="card profile-card-item">
-                            <div class="card-body d-flex flex-column">
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="page-thumbnail me-3" style="background-color: transparent;">
-                                        <i class="bi bi-folder-fill" style="background: linear-gradient(135deg, #F0AD4E, #EEA236);"></i>
-                                    </div>
-                                    <div class="page-info">
-                                        <h5 class="card-title">Dokumen Publik</h5>
-                                        <small>Last updated: 05 Januari 2024</small>
-                                    </div>
-                                </div>
-                                <div class="d-grid mt-auto">
-                                    <a href="profile-pages-edit.html?id=dokumen-publik" class="btn btn-primary-custom btn-sm">
-                                        <i class="bi bi-pencil-square me-2"></i> Edit Halaman
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
 
             </main>

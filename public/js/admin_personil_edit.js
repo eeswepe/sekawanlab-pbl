@@ -1,149 +1,164 @@
+document.addEventListener('DOMContentLoaded', function() {
+    const personilId = document.getElementById('personilEditForm').dataset.personilId;
+    let projectCounter = parseInt(document.getElementById('projects-container').dataset.projectCount || 0);
 
-        document.addEventListener('DOMContentLoaded', function() {
-            // ===================================
-            // 1. Sidebar Toggle Functionality
-            // ===================================
-            const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('main-content');
-            const toggleButton = document.getElementById('sidebarToggleMobile');
+    // ===================================
+    // 1. Sidebar Toggle Functionality
+    // ===================================
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('main-content');
+    const toggleButton = document.getElementById('sidebarToggleMobile');
 
-            // Check if screen is small enough to be toggled by default
-            if (window.innerWidth < 992) {
-                sidebar.classList.add('toggled');
-                mainContent.classList.add('toggled');
-            }
+    if (window.innerWidth < 992) {
+        sidebar.classList.add('toggled');
+        mainContent.classList.add('toggled');
+    }
 
-            function toggleSidebar() {
-                sidebar.classList.toggle('toggled');
-                mainContent.classList.toggle('toggled');
-            }
+    function toggleSidebar() {
+        sidebar.classList.toggle('toggled');
+        mainContent.classList.toggle('toggled');
+    }
 
-            if (toggleButton) {
-                toggleButton.addEventListener('click', toggleSidebar);
-            }
-            
-            // ===================================
-            // 2. Photo Preview Functionality
-            // ===================================
-            const photoInput = document.getElementById('photo');
-            const photoPreview = document.getElementById('photo-preview');
-
-            photoInput.addEventListener('change', function(event) {
-                const file = event.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        photoPreview.src = e.target.result;
-                    }
-                    reader.readAsDataURL(file);
-                }
-            });
-
-            // ===================================
-            // 3. Dynamic Form: Skills (Add/Remove)
-            // ===================================
-            const skillsContainer = document.getElementById('skills-container');
-            window.addSkillInput = function() {
-                const newItem = document.createElement('div');
-                newItem.classList.add('input-group', 'mb-2', 'dynamic-item');
-                newItem.innerHTML = `
-                    <input type="text" class="form-control" placeholder="Masukkan nama skill">
-                    <button class="btn btn-danger" type="button" onclick="removeDynamicItem(this)"><i class="bi bi-x-lg"></i></button>
-                `;
-                skillsContainer.appendChild(newItem);
+    if (toggleButton) {
+        toggleButton.addEventListener('click', toggleSidebar);
+    }
+    
+    // ===================================
+    // 2. Photo Preview Functionality
+    // ===================================
+    document.getElementById('photo')?.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('photo-preview').src = e.target.result;
             };
+            reader.readAsDataURL(file);
+        }
+    });
 
-            // Global remove function for both Skills and Projects
-            window.removeDynamicItem = function(element) {
-                element.remove();
-                // If the removed element was a Project, re-index the titles
-                if (element.closest('#projects-container')) {
-                    reIndexProjects();
-                }
-            };
-            
-            // ===================================
-            // 4. Dynamic Form: Projects (Add/Remove)
-            // ===================================
-            const projectsContainer = document.getElementById('projects-container');
-            const addProjectBtn = document.getElementById('addProjectBtn');
-            let projectIndex = projectsContainer.querySelectorAll('.dynamic-item').length;
-            
-            function reIndexProjects() {
-                const projectItems = projectsContainer.querySelectorAll('.dynamic-item');
-                let newIndex = 1;
-                projectItems.forEach(item => {
-                    item.querySelector('h6').textContent = `Project #${newIndex}`;
-                    item.setAttribute('data-index', newIndex);
-                    newIndex++;
-                });
-                projectIndex = newIndex - 1;
+    // ===================================
+    // 3. Dynamic Form: Skills (Add/Remove)
+    // ===================================
+    window.addSkillInput = function() {
+        const container = document.getElementById('skills-container');
+        const div = document.createElement('div');
+        div.className = 'input-group mb-2 dynamic-item';
+        div.innerHTML = `
+            <input type="text" class="form-control" placeholder="Nama skill">
+            <button class="btn btn-danger" type="button" onclick="removeDynamicItem(this)"><i class="bi bi-x-lg"></i></button>
+        `;
+        container.appendChild(div);
+    };
+
+    // Remove dynamic item
+    window.removeDynamicItem = function(element) {
+        const item = element.closest('.dynamic-item');
+        if (item) item.remove();
+    };
+
+    // ===================================
+    // 4. Dynamic Form: Projects (Add/Remove)
+    // ===================================
+    document.getElementById('addProjectBtn')?.addEventListener('click', function() {
+        projectCounter++;
+        const container = document.getElementById('projects-container');
+        const div = document.createElement('div');
+        div.className = 'dynamic-item';
+        div.setAttribute('data-index', projectCounter);
+        div.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0">Project #${projectCounter}</h6>
+                <button class="btn btn-sm btn-danger" type="button" onclick="removeDynamicItem(this.closest('.dynamic-item'))">Hapus</button>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Judul Proyek</label>
+                <input type="text" class="form-control project-title">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Deskripsi</label>
+                <textarea class="form-control project-description" rows="2"></textarea>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+
+    // ===================================
+    // 5. Submit Form
+    // ===================================
+    document.getElementById('personilEditForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        // Gather skills
+        const skills = [];
+        document.querySelectorAll('#skills-container .dynamic-item input').forEach(input => {
+            if (input.value.trim()) {
+                skills.push(input.value.trim());
             }
-
-            addProjectBtn.addEventListener('click', function() {
-                const newIndex = ++projectIndex;
-                const newItem = document.createElement('div');
-                newItem.classList.add('dynamic-item');
-                newItem.setAttribute('data-index', newIndex);
-                newItem.innerHTML = `
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="mb-0">Project #${newIndex}</h6>
-                        <button class="btn btn-sm btn-danger" type="button" onclick="removeDynamicItem(this.closest('.dynamic-item'))">Hapus</button>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Judul Proyek</label>
-                        <input type="text" class="form-control" placeholder="Nama Proyek">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Deskripsi</label>
-                        <textarea class="form-control" rows="2" placeholder="Deskripsi singkat proyek"></textarea>
-                    </div>
-                    <div class="mb-1 tag-input-group">
-                        <label class="form-label">Tech Stack (Tags)</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control project-tech-stack-input" placeholder="Masukkan teknologi (contoh: PHP, Vue.js)">
-                            <button class="btn btn-secondary" type="button" onclick="addProjectTag(this)">Tambah</button>
-                        </div>
-                    </div>
-                    <div class="tag-list mt-2">
-                        </div>
-                `;
-                projectsContainer.appendChild(newItem);
-            });
-            
-            // ===================================
-            // 5. Project Tag Management
-            // ===================================
-            // Function to create and add a tag
-            window.addProjectTag = function(buttonElement) {
-                const inputGroup = buttonElement.closest('.input-group');
-                const tagInput = inputGroup.querySelector('.project-tech-stack-input');
-                const tagName = tagInput.value.trim();
-                
-                if (tagName) {
-                    const tagList = buttonElement.closest('.dynamic-item').querySelector('.tag-list');
-                    const newTag = document.createElement('span');
-                    newTag.classList.add('badge', 'bg-info', 'text-dark', 'me-2', 'mb-2');
-                    newTag.innerHTML = `${tagName} <button type="button" class="btn-close" aria-label="Remove tag" onclick="removeTag(this)"></button>`;
-                    tagList.appendChild(newTag);
-                    tagInput.value = ''; // Clear the input
-                }
-            };
-            
-            // Function to remove a tag
-            window.removeTag = function(buttonElement) {
-                buttonElement.closest('.badge').remove();
-            };
-
-            // Initial setup for the existing project tags (simulating pre-filled tags)
-            projectsContainer.querySelectorAll('.dynamic-item').forEach(item => {
-                const tagInput = item.querySelector('.project-tech-stack-input');
-                const tagButton = item.querySelector('.input-group .btn-secondary');
-                if (tagInput && tagButton) {
-                    tagButton.onclick = function() {
-                        addProjectTag(this);
-                    };
-                }
-            });
-            
         });
+
+        // Gather projects
+        const projects = [];
+        document.querySelectorAll('#projects-container .dynamic-item').forEach(item => {
+            const title = item.querySelector('.project-title')?.value || '';
+            const description = item.querySelector('.project-description')?.value || '';
+            if (title.trim()) {
+                projects.push({ title: title.trim(), description: description.trim() });
+            }
+        });
+
+        const data = {
+            nama_lengkap: document.getElementById('namaLengkap').value,
+            role: document.querySelector('input[name="tipePersonil"]:checked')?.value || 'talent',
+            spesialisasi: document.getElementById('spesialisasi').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value,
+            location: document.getElementById('location').value,
+            tanggal_bergabung: document.getElementById('tanggalBergabung').value,
+            bio: document.getElementById('bio').value,
+            skills: skills,
+            projects: projects
+        };
+
+        try {
+            const response = await fetch(`/admin/personil/update/${personilId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert('Data personil berhasil diupdate!');
+                window.location.href = '/admin/personil';
+            } else {
+                alert(result.message || 'Gagal update personil');
+            }
+        } catch (error) {
+            alert('Terjadi kesalahan: ' + error.message);
+        }
+    });
+
+    // ===================================
+    // 6. Delete Personil
+    // ===================================
+    document.getElementById('confirmDeleteBtn')?.addEventListener('click', async function() {
+        try {
+            const response = await fetch(`/admin/personil/delete/${personilId}`, {
+                method: 'DELETE'
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert('Personil berhasil dihapus!');
+                window.location.href = '/admin/personil';
+            } else {
+                alert(result.message || 'Gagal menghapus personil');
+            }
+        } catch (error) {
+            alert('Terjadi kesalahan: ' + error.message);
+        }
+    });
+});

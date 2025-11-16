@@ -63,4 +63,12 @@ class ProjectModel
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         return $stmt->execute();
     }
+
+    public function deleteProjectsByPersonilId($personil_id)
+    {
+        $sql = "DELETE FROM project WHERE personil_id = :personil_id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':personil_id', $personil_id, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
 }

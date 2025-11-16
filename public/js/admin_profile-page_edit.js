@@ -47,4 +47,33 @@
                     reader.readAsDataURL(file);
                 }
             });
+
+            // ===================================
+            // 3. Form Submit Handler
+            // ===================================
+            const form = document.getElementById('profilePageEditForm');
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(form);
+                const pageId = window.location.pathname.split('/').pop();
+                
+                try {
+                    const response = await fetch(`/admin/profil-pages/update/${pageId}`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        alert('Halaman berhasil diupdate');
+                        window.location.href = '/admin/profil-pages';
+                    } else {
+                        alert(result.message || 'Gagal mengupdate halaman');
+                    }
+                } catch (error) {
+                    alert('Terjadi kesalahan: ' + error.message);
+                }
+            });
         });

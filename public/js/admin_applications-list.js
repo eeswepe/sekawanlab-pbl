@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- Auto-submit form on filter change ---
     const filterStatus = document.getElementById('filterStatus');
-    const filterProdi = document.getElementById('filterProdi');
     const filterForm = document.getElementById('filterForm');
 
     if (filterStatus) {
@@ -33,11 +32,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    if (filterProdi) {
-        filterProdi.addEventListener('change', function() {
-            filterForm.submit();
-        });
-    }
 
     // --- Delete Application Confirmation ---
     const deleteButtons = document.querySelectorAll('.delete-application');

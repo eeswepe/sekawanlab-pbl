@@ -46,9 +46,13 @@ $router->get("/admin/blog/create", AdminController::class, "renderBlogCreate")->
 $router->post("/admin/blog/create", AdminController::class, "createBlog")->middleware(AdminMiddleware::class);
 $router->delete("/admin/blog/delete/{id}", AdminController::class, "deleteBlog")->middleware(AdminMiddleware::class);
 $router->get("/admin/profil-pages", AdminController::class, "renderProfilePages")->middleware(AdminMiddleware::class);
-$router->get("/admin/profil-page/edit/{id}", AdminController::class, "renderProfilePagesEdit")->middleware(AdminMiddleware::class);
+$router->get("/admin/profil-pages/create", AdminController::class, "renderProfilePageCreate")->middleware(AdminMiddleware::class);
+$router->post("/admin/profil-pages/create", AdminController::class, "createProfilePage")->middleware(AdminMiddleware::class);
+$router->get("/admin/profil-pages/edit/{id}", AdminController::class, "renderProfilePagesEdit")->middleware(AdminMiddleware::class);
+$router->post("/admin/profil-pages/update/{id}", AdminController::class, "updateProfilePage")->middleware(AdminMiddleware::class);
 $router->get("/admin/personil", AdminController::class, "renderPersonilList")->middleware(AdminMiddleware::class);
 $router->get("/admin/personil/edit/{id}", AdminController::class, "renderPersonilEdit")->middleware(AdminMiddleware::class);
+$router->post("/admin/personil/update/{id}", AdminController::class, "updatePersonil")->middleware(AdminMiddleware::class);
 $router->get("/admin/personil/create", AdminController::class, "renderPersonilCreate")->middleware(AdminMiddleware::class);
 $router->post("/admin/personil/create", AdminController::class, "createPersonil")->middleware(AdminMiddleware::class);
 $router->delete("/admin/personil/delete/{id}", AdminController::class, "deletePersonil")->middleware(AdminMiddleware::class);
@@ -57,9 +61,6 @@ $router->get("/admin/join-application/{id}", AdminController::class, "renderAppl
 $router->delete("/admin/join-application/delete/{id}", AdminController::class, "deleteApplication")->middleware(AdminMiddleware::class);
 $router->post("/admin/join-application/update-status/{id}", AdminController::class, "updateApplicationStatus")->middleware(AdminMiddleware::class);
 $router->post("/admin/join-application/update-notes/{id}", AdminController::class, "updateAdminNotes")->middleware(AdminMiddleware::class);
-$router->get("/admin/site-settings", AdminController::class, "renderSiteSettings")->middleware(AdminMiddleware::class);
-
-
 
 // Personil
 $router->get("/personil", PersonilController::class, "dashboard")->middleware(PersonilMiddleware::class);

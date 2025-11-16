@@ -24,7 +24,6 @@
                     <li><a href="/admin/personil"><i class="bi bi-people-fill"></i> Personil Management</a></li>
                     <li><a href="/admin/profil-pages"><i class="bi bi-person-badge"></i> Profile Pages</a></li>
                     <li><a href="/admin/join-applications" class="active"><i class="bi bi-file-earmark-text"></i> Join Applications</a></li>
-                    <li><a href="/admin/site-settings"><i class="bi bi-gear-fill"></i> Settings</a></li>
                     <li><a href="/logout"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
                 </ul>
             </div>
@@ -159,13 +158,20 @@
                                 <h5 class="card-title mb-0"><i class="bi bi-lightning-fill me-2"></i> Quick Actions</h5>
                             </div>
                             <div class="card-body d-grid gap-2" id="quickActions">
-                                <button class="btn btn-success" id="quickAccept" data-id="<?= $application['id'] ?>">
-                                    <i class="bi bi-check-circle me-2"></i> Terima Aplikasi
-                                </button>
-                                <button class="btn btn-danger" id="quickReject" data-id="<?= $application['id'] ?>">
-                                    <i class="bi bi-x-circle me-2"></i> Tolak Aplikasi
-                                </button>
-                                <hr>
+                                <?php if ($application['status'] === 'accepted'): ?>
+                                    <a href="https://wa.me/<?= preg_replace('/[^0-9]/', '', $application['phone']) ?>?text=<?= urlencode('Selamat! Aplikasi Anda untuk bergabung dengan Software Engineering Laboratory telah diterima. Silakan hubungi kami untuk informasi lebih lanjut.') ?>" target="_blank" class="btn btn-success">
+                                        <i class="bi bi-whatsapp me-2"></i> Konfirmasi via WhatsApp
+                                    </a>
+                                    <hr>
+                                <?php else: ?>
+                                    <button class="btn btn-success" id="quickAccept" data-id="<?= $application['id'] ?>">
+                                        <i class="bi bi-check-circle me-2"></i> Terima Aplikasi
+                                    </button>
+                                    <button class="btn btn-danger" id="quickReject" data-id="<?= $application['id'] ?>">
+                                        <i class="bi bi-x-circle me-2"></i> Tolak Aplikasi
+                                    </button>
+                                    <hr>
+                                <?php endif; ?>
                                 <button class="btn btn-outline-danger" id="deleteApplication" data-id="<?= $application['id'] ?>">
                                     <i class="bi bi-trash me-2"></i> Hapus Aplikasi Permanen
                                 </button>
@@ -206,7 +212,7 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/admin_application-detail.js"></script>
+    <script src="/js/admin_application-detail.js"></script>
 
 </body>
 </html>
