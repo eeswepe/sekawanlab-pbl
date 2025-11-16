@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Quick Accept
     document.getElementById('quickAccept')?.addEventListener('click', async function() {
         const id = this.dataset.id;
-        if (!confirm('Terima aplikasi ini?')) return;
+        if (!confirm('Terima aplikasi ini? Sistem akan membuat akun personil dan secret key untuk registrasi.')) return;
         try {
             const response = await fetch(`/admin/join-application/update-status/${id}`, {
                 method: 'POST',
@@ -27,7 +27,18 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             const result = await response.json();
             if (result.success) {
-                alert('Aplikasi berhasil diterima');
+                if (result.secret_key) {
+                    // Show secret key in a modal or alert
+                    const message = `Aplikasi berhasil diterima!\n\nSecret Key untuk registrasi:\n${result.secret_key}\n\nKirimkan secret key ini ke applicant melalui email atau WhatsApp.`;
+                    alert(message);
+                    
+                    // Copy to clipboard
+                    navigator.clipboard.writeText(result.secret_key).then(() => {
+                        console.log('Secret key copied to clipboard');
+                    });
+                } else {
+                    alert('Aplikasi berhasil diterima');
+                }
                 location.reload();
             } else {
                 alert(result.message || 'Gagal memperbarui status');
@@ -82,6 +93,11 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         const id = document.querySelector('[data-id]').dataset.id;
         const newStatus = document.getElementById('newStatus').value;
+        
+        if (newStatus === 'accepted') {
+            if (!confirm('Terima aplikasi ini? Sistem akan membuat akun personil dan secret key untuk registrasi.')) return;
+        }
+        
         try {
             const response = await fetch(`/admin/join-application/update-status/${id}`, {
                 method: 'POST',
@@ -90,7 +106,13 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             const result = await response.json();
             if (result.success) {
-                alert('Status berhasil diperbarui');
+                if (result.secret_key) {
+                    const message = `Status berhasil diperbarui!\n\nSecret Key untuk registrasi:\n${result.secret_key}\n\nKirimkan secret key ini ke applicant.`;
+                    alert(message);
+                    navigator.clipboard.writeText(result.secret_key);
+                } else {
+                    alert('Status berhasil diperbarui');
+                }
                 location.reload();
             } else {
                 alert(result.message || 'Gagal memperbarui status');

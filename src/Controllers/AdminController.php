@@ -860,11 +860,65 @@ class AdminController extends Controller
         }
         
         // Update status
-        if ($applicationModel->updateApplicationStatus($id, $data['status'])) {
-            echo json_encode(['success' => true, 'message' => 'Status berhasil diupdate']);
-        } else {
+        if (!$applicationModel->updateApplicationStatus($id, $data['status'])) {
             echo json_encode(['success' => false, 'message' => 'Gagal mengupdate status']);
+            return;
         }
+        
+        // If status is 'accepted', create personil and invitation
+        if ($data['status'] === 'accepted') {
+            $personilModel = new \App\Models\PersonilModel();
+            $invitationModel = new \App\Models\PersonilInvitationModel();
+            
+            // Check if personil already created from this application (by email)
+            $db = \App\Database::getConnection();
+            $stmt = $db->prepare("SELECT id FROM personil WHERE email = :email");
+            $stmt->bindParam(':email', $application['email']);
+            $stmt->execute();
+            $existingPersonil = $stmt->fetch();
+            
+            if (!$existingPersonil) {
+                // Create personil from application data
+                $personilData = [
+                    'user_id' => null,
+                    'nama_lengkap' => $application['nama_lengkap'],
+                    'role' => 'talent', // default role
+                    'spesialisasi' => null,
+                    'email' => $application['email'],
+                    'phone' => $application['phone'],
+                    'location' => null,
+                    'tanggal_bergabung' => date('Y-m-d'),
+                    'bio' => $application['alasan_bergabung'],
+                    'skillks' => json_encode([]),
+                    'foto_url' => null
+                ];
+                
+                $personilId = $personilModel->createPersonil($personilData);
+                
+                if ($personilId) {
+                    // Generate invitation secret key
+                    $secretKey = $invitationModel->createInvitation($personilId, $id);
+                    
+                    if ($secretKey) {
+                        echo json_encode([
+                            'success' => true, 
+                            'message' => 'Status berhasil diupdate dan personil telah dibuat',
+                            'secret_key' => $secretKey,
+                            'personil_id' => $personilId
+                        ]);
+                        return;
+                    }
+                }
+            } else {
+                echo json_encode([
+                    'success' => true, 
+                    'message' => 'Status berhasil diupdate (Personil sudah ada sebelumnya)'
+                ]);
+                return;
+            }
+        }
+        
+        echo json_encode(['success' => true, 'message' => 'Status berhasil diupdate']);
     }
     
     public function updateAdminNotes($id)

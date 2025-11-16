@@ -92,3 +92,13 @@ CREATE TABLE join_application (
     status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'reviewed', 'accepted', 'rejected')),
     catatan_admin TEXT
 );
+
+-- personil invitation table
+CREATE TABLE personil_invitation (
+    id SERIAL PRIMARY KEY,
+    secret_key VARCHAR(64) UNIQUE NOT NULL,
+    personil_id INTEGER REFERENCES personil(id) ON DELETE CASCADE,
+    application_id INTEGER REFERENCES join_application(id),
+    is_used BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
