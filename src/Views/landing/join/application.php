@@ -220,7 +220,7 @@ include_once __DIR__ . "/../layouts/header.php";
  </div>
 </section>
 
-<script src="/assets/js/join_application.js"></script>
+<script src="/assets/js/landing/join/application.js"></script>
 
 <?php include_once __DIR__ . "/../layouts/footer.php";
 ?>

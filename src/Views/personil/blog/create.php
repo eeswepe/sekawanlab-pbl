@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
     <!-- Custom CSS File -->
-    <link rel="stylesheet" href="/css/personil_blog_create.css">
+    <link rel="stylesheet" href="/assets/css/personil/blog/create.css">
 
 </head>
 
@@ -200,7 +200,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- Custom JS File -->
-    <script src="/js/personil_blog_create.js"></script>
+    <script src="/assets/js/personil/blog/create.js"></script>
 
 </body>
 

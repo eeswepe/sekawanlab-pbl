@@ -14,7 +14,7 @@
         rel="stylesheet">
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/login.css">
+    <link rel="stylesheet" href="/assets/css/auth/login.css">
 
 </head>
 

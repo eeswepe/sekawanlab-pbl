@@ -14,7 +14,7 @@
         rel="stylesheet">
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/login.css">
+    <link rel="stylesheet" href="/assets/css/auth/login.css">
 
 </head>
 
@@ -71,7 +71,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Assuming login.js is for login-specific logic, we might need a register.js or just rely on form submission -->
-    <!-- <script src="/js/login.js"></script> -->
+    <!-- <script src="/assets/js/auth/login.js"></script> -->
 </body>
 
 </html>
