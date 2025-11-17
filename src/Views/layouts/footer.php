@@ -72,7 +72,9 @@
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/js/<?php echo $page_js; ?>"></script>
+<?php if (!empty($page_js)): ?>
+<script src="/assets/js/<?php echo $page_js; ?>"></script>
+<?php endif; ?>
 
 </body>
 </html>

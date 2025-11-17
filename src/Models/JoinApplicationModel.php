@@ -9,27 +9,27 @@ use PDO;
 
 class JoinApplicationModel extends BaseModel
 {
-    protected string $table = 'join_application';
-    protected string $primaryKey = 'id';
-    protected array $fillable = [
-        'nama_lengkap',
-        'email',
-        'phone',
-        'nim',
-        'prodi',
-        'semester',
-        'alasan_bergabung',
-        'github_url',
-        'cv_file_path',
-        'status',
-        'catatan_admin',
-        'tanggal_apply'
-    ];
-
     public function __construct(?PDO $db = null)
     {
         $db = $db ?? Database::getConnection();
         parent::__construct($db);
+        
+        $this->table = 'join_application';
+        $this->primaryKey = 'id';
+        $this->fillable = [
+            'nama_lengkap',
+            'email',
+            'phone',
+            'nim',
+            'prodi',
+            'semester',
+            'alasan_bergabung',
+            'github_url',
+            'cv_file_path',
+            'status',
+            'catatan_admin',
+            'tanggal_apply'
+        ];
     }
 
     // Ambil semua aplikasi

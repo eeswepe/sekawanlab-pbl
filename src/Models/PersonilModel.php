@@ -9,28 +9,28 @@ use PDO;
 
 class PersonilModel extends BaseModel
 {
-    protected string $table = 'personil';
-    protected string $primaryKey = 'id';
-    protected array $fillable = [
-        'user_id',
-        'nama_lengkap',
-        'role',
-        'spesialisasi',
-        'email',
-        'phone',
-        'location',
-        'tanggal_bergabung',
-        'bio',
-        'skillks',
-        'foto_url',
-        'created_at',
-        'updated_at'
-    ];
-
     public function __construct(?PDO $db = null)
     {
         $db = $db ?? Database::getConnection();
         parent::__construct($db);
+        
+        $this->table = 'personil';
+        $this->primaryKey = 'id';
+        $this->fillable = [
+            'user_id',
+            'nama_lengkap',
+            'role',
+            'spesialisasi',
+            'email',
+            'phone',
+            'location',
+            'tanggal_bergabung',
+            'bio',
+            'skillks',
+            'foto_url',
+            'created_at',
+            'updated_at'
+        ];
     }
 
     // Ambil semua personil

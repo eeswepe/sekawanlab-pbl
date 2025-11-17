@@ -1,7 +1,7 @@
 <?php
-$page_css = "join_application.css";
-$page_js = "join_application.js";
-include_once __DIR__ . "/../layouts/header.php";
+$page_css = "landing/join/application.css";
+$page_js = "landing/join/application.js";
+include_once __DIR__ . "/../../layouts/header.php";
 ?>
 
 <section class="page-header">
@@ -222,5 +222,5 @@ include_once __DIR__ . "/../layouts/header.php";
 
 <script src="/assets/js/landing/join/application.js"></script>
 
-<?php include_once __DIR__ . "/../layouts/footer.php";
+<?php include_once __DIR__ . "/../../layouts/footer.php";
 ?>

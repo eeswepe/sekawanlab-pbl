@@ -3,26 +3,47 @@
 namespace App\Controllers;
 
 use App\Controller;
-use App\Models\BlogModel;
+use App\Services\Public\BlogPublicService;
 
+/**
+ * BlogController (REFACTORED)
+ * 
+ * Controller untuk handle blog di area public
+ * Menggunakan BlogPublicService untuk business logic
+ */
 class BlogController extends Controller
 {
-    private $model;
+    private $blogService;
 
     public function __construct()
     {
-        $this->model = new BlogModel();
+        $this->blogService = new BlogPublicService();
     }
 
+    /**
+     * Display all published blogs
+     * 
+     * GET /blog
+     */
     public function index()
     {
-        $data["blogs"] = $this->model->getAllBlogPosts();
+        $blogs = $this->blogService->getAllPublishedBlogs();
+        
+        $data = [
+            'blogs' => $blogs
+        ];
+        
         $this->render("landing/blog/list", $data);
     }
 
+    /**
+     * Display blog detail by slug
+     * 
+     * GET /blog/{slug}
+     */
     public function showBySlug($slug)
     {
-        $blog = $this->model->getBlogBySlug($slug);
+        $blog = $this->blogService->getBlogBySlug($slug);
         
         if (!$blog) {
             header('Location: /blog');

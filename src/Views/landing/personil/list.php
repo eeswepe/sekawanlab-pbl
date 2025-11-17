@@ -1,6 +1,6 @@
 <?php
 
-$page_css = "/personil.css";
+$page_css = "landing/personil/list.css";
 $page_js = "";
 include_once __DIR__ . "/../../layouts/header.php";
 ?>

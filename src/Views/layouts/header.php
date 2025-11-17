@@ -25,7 +25,7 @@
 
         <!-- Custom CSS -->
         <link rel="stylesheet" href="/assets/css/shared/header.css" />
-        <link rel="stylesheet" href="/css/<?php echo $page_css; ?>" />
+        <link rel="stylesheet" href="/assets/css/<?php echo $page_css; ?>" />
         <link rel="stylesheet" href="/assets/css/shared/footer.css" />
 
         <style></style>

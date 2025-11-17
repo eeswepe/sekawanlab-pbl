@@ -9,20 +9,20 @@ use PDO;
 
 class ProjectModel extends BaseModel
 {
-    protected string $table = 'project';
-    protected string $primaryKey = 'id';
-    protected array $fillable = [
-        'personil_id',
-        'title',
-        'description',
-        'created_at',
-        'updated_at'
-    ];
-
     public function __construct(?PDO $db = null)
     {
         $db = $db ?? Database::getConnection();
         parent::__construct($db);
+        
+        $this->table = 'project';
+        $this->primaryKey = 'id';
+        $this->fillable = [
+            'personil_id',
+            'title',
+            'description',
+            'created_at',
+            'updated_at'
+        ];
     }
 
     // Ambil project berdasarkan personil_id

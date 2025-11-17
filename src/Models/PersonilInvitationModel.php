@@ -9,20 +9,20 @@ use PDO;
 
 class PersonilInvitationModel extends BaseModel
 {
-    protected string $table = 'personil_invitation';
-    protected string $primaryKey = 'id';
-    protected array $fillable = [
-        'secret_key',
-        'personil_id',
-        'application_id',
-        'is_used',
-        'created_at'
-    ];
-
     public function __construct(?PDO $db = null)
     {
         $db = $db ?? Database::getConnection();
         parent::__construct($db);
+        
+        $this->table = 'personil_invitation';
+        $this->primaryKey = 'id';
+        $this->fillable = [
+            'secret_key',
+            'personil_id',
+            'application_id',
+            'is_used',
+            'created_at'
+        ];
     }
 
     // Buat invitation dan kembalikan secret_key (Postgres RETURNING)

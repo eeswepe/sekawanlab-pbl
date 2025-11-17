@@ -85,13 +85,12 @@
                     <th>Judul</th>
                     <th>Tanggal</th>
                     <th>Status</th>
-                    <th>Views</th>
                   </tr>
                 </thead>
                 <tbody>
                   <?php if (empty($recentBlogs)): ?>
                     <tr>
-                      <td colspan="4" class="text-center text-muted py-4">
+                      <td colspan="3" class="text-center text-muted py-4">
                         <i class="bi bi-inbox fs-1 d-block mb-2"></i>
                         Belum ada blog post. <a href="/personil/blog/create">Buat yang pertama!</a>
                       </td>

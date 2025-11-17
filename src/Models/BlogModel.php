@@ -9,27 +9,27 @@ use PDO;
 
 class BlogModel extends BaseModel
 {
-    protected string $table = 'blog_post';
-    protected string $primaryKey = 'id';
-    protected array $fillable = [
-        'penulis_id',
-        'kategori_id',
-        'slug',
-        'judul',
-        'cuplikan',
-        'konten',
-        'penulis_nama',
-        'penulis_bio',
-        'tanggal_publish',
-        'featured_image_url',
-        'status',
-        'reading_time'
-    ];
-
     public function __construct(?PDO $db = null)
     {
         $db = $db ?? Database::getConnection();
         parent::__construct($db);
+        
+        $this->table = 'blog_post';
+        $this->primaryKey = 'id';
+        $this->fillable = [
+            'penulis_id',
+            'kategori_id',
+            'slug',
+            'judul',
+            'cuplikan',
+            'konten',
+            'penulis_nama',
+            'penulis_bio',
+            'tanggal_publish',
+            'featured_image_url',
+            'status',
+            'reading_time'
+        ];
     }
 
     // Ambil semua postingan

@@ -1,6 +1,6 @@
 <?php
-$page_css = "index.css";
-$page_js = "index.js";
+$page_css = "landing/home/index.css";
+$page_js = "landing/home/index.js";
 include_once __DIR__ . "/../../layouts/header.php";
 ?>
 

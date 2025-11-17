@@ -1,5 +1,5 @@
 <?php
-$page_css = "blog-detail.css";
+$page_css = "landing/blog/detail.css";
 $page_js = "";
 include_once __DIR__ . "/../../layouts/header.php";
 ?>

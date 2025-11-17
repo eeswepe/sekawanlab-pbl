@@ -9,23 +9,24 @@ use PDO;
 
 class ProfilPageModel extends BaseModel
 {
-    protected string $table = 'profil_page';
-    protected string $primaryKey = 'id';
-    protected array $fillable = [
-        'slug',
-        'page_title',
-        'page_subtitle',
-        'featured_image_url',
-        'content_title',
-        'content_subtitle',
-        'last_updated',
-        'created_at'
-    ];
-
     public function __construct(?PDO $db = null)
     {
         $db = $db ?? Database::getConnection();
         parent::__construct($db);
+        
+        // Set table and fillable after parent construct
+        $this->table = 'profil_page';
+        $this->primaryKey = 'id';
+        $this->fillable = [
+            'slug',
+            'page_title',
+            'page_subtitle',
+            'featured_image_url',
+            'content_title',
+            'content_subtitle',
+            'last_updated',
+            'created_at'
+        ];
     }
 
     // Buat halaman profil, kembalikan ID atau false

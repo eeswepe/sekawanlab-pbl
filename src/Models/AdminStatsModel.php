@@ -54,16 +54,6 @@ class AdminStatsModel extends BaseModel
     }
 
     /**
-     * Total views blog (contoh).
-     */
-    public function getTotalViews(): int
-    {
-        $stmt = $this->db->query("SELECT COALESCE(SUM(views), 0) as total FROM blog_post");
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        return (int) ($row['total'] ?? 0);
-    }
-
-    /**
      * Aktivitas terbaru dari blog & aplikasi join.
      */
     public function getRecentActivities(int $limit = 10): array
@@ -87,7 +77,7 @@ class AdminStatsModel extends BaseModel
                 'Mengajukan Permintaan Bergabung' AS aktivitas,
                 ja.email AS target,
                 ja.status,
-                ja.created_at AS waktu
+                ja.tanggal_apply AS waktu
             FROM join_application ja
 
             ORDER BY waktu DESC

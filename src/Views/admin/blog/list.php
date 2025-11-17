@@ -175,8 +175,7 @@
                                         <th scope="col" style="width: 30%;">Judul</th>
                                         <th scope="col" style="width: 10%;">Kategori</th>
                                         <th scope="col" style="width: 10%;">Penulis</th>
-                                        <th scope="col" style="width: 10%;">Tanggal</th>
-                                        <th scope="col" style="width: 5%;">Views</th>
+                                        <th scope="col" style="width: 15%;">Tanggal</th>
                                         <th scope="col" style="width: 10%;">Status</th>
                                         <th scope="col" style="width: 10%;">Actions</th>
                                     </tr>
@@ -184,7 +183,7 @@
                                 <tbody>
                                     <?php if (empty($blogs)): ?>
                                         <tr>
-                                            <td colspan="9" class="text-center text-muted py-4">Tidak ada blog ditemukan</td>
+                                            <td colspan="8" class="text-center text-muted py-4">Tidak ada blog ditemukan</td>
                                         </tr>
                                     <?php else: ?>
                                         <?php foreach ($blogs as $index => $blog): ?>
@@ -201,7 +200,6 @@
                                                 <td><?= htmlspecialchars($blog['kategori_nama'] ?? '-') ?></td>
                                                 <td><?= htmlspecialchars($blog['penulis_nama'] ?? '-') ?></td>
                                                 <td><?= $blog['tanggal_publish'] ? date('Y-m-d', strtotime($blog['tanggal_publish'])) : date('Y-m-d', strtotime($blog['created_at'])) ?></td>
-                                                <td>-</td>
                                                 <td>
                                                     <?php if ($blog['status'] === 'published'): ?>
                                                         <span class="badge" style="background-color: var(--gold); color: white;">Published</span>

@@ -9,17 +9,17 @@ use PDO;
 
 class KategoriModel extends BaseModel
 {
-    protected string $table = 'kategori';
-    protected string $primaryKey = 'id';
-    protected array $fillable = [
-        'name',
-        'post_count'
-    ];
-
     public function __construct(?PDO $db = null)
     {
         $db = $db ?? Database::getConnection();
         parent::__construct($db);
+        
+        $this->table = 'kategori';
+        $this->primaryKey = 'id';
+        $this->fillable = [
+            'name',
+            'post_count'
+        ];
     }
 
     // Ambil semua kategori

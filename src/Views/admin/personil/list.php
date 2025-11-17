@@ -115,13 +115,13 @@
                         
                         <ul class="nav nav-tabs mb-3">
                             <li class="nav-item">
-                                <a class="nav-link <?= empty($filters['role']) ? 'active' : '' ?>" href="/admin/personil">All (<?= $totalAll ?>)</a>
+                                <a class="nav-link <?= empty($filters['role']) ? 'active' : '' ?>" href="/admin/personil">All (<?= $stats['totalAll'] ?>)</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link <?= (isset($filters['role']) && $filters['role'] === 'dosen') ? 'active' : '' ?>" href="/admin/personil?role=dosen">Dosen Pembimbing (<?= $totalDosen ?>)</a>
+                                <a class="nav-link <?= (isset($filters['role']) && $filters['role'] === 'dosen') ? 'active' : '' ?>" href="/admin/personil?role=dosen">Dosen Pembimbing (<?= $stats['totalDosen'] ?>)</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link <?= (isset($filters['role']) && $filters['role'] === 'talent') ? 'active' : '' ?>" href="/admin/personil?role=talent">Talent/Geeks (<?= $totalTalent ?>)</a>
+                                <a class="nav-link <?= (isset($filters['role']) && $filters['role'] === 'talent') ? 'active' : '' ?>" href="/admin/personil?role=talent">Talent/Geeks (<?= $stats['totalTalent'] ?>)</a>
                             </li>
                         </ul>
 

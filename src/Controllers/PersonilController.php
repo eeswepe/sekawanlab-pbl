@@ -3,66 +3,87 @@
 namespace App\Controllers;
 
 use App\Controller;
-use App\Models\PersonilModel;
-use App\Models\BlogModel;
-use App\Models\KategoriModel;
-use App\Models\ProjectModel;
+use App\Services\Public\PersonilPublicService;
+use App\Services\Personil\PersonilDashboardService;
+use App\Services\Personil\PersonilBlogService;
+use App\Services\Personil\PersonilProfileService;
 use App\Helpers\SessionHelper;
 
+/**
+ * PersonilController (REFACTORED)
+ * 
+ * Controller untuk handle personil area
+ * Menggunakan services untuk business logic
+ */
 class PersonilController extends Controller
 {
-    private $model;
-    private $blogModel;
-    private $kategoriModel;
-    private $projectModel;
+    private $publicService;
+    private $dashboardService;
+    private $blogService;
+    private $profileService;
 
     public function __construct()
     {
-        $this->model = new PersonilModel();
-        $this->blogModel = new BlogModel();
-        $this->kategoriModel = new KategoriModel();
-        $this->projectModel = new ProjectModel();
+        $this->publicService = new PersonilPublicService();
+        $this->dashboardService = new PersonilDashboardService();
+        $this->blogService = new PersonilBlogService();
+        $this->profileService = new PersonilProfileService();
     }
 
-    public function dashboard()
-    {
-        // Get personil_id from session
-        $personil_id = SessionHelper::getPersonilId();
-        
-        if (!$personil_id) {
-            SessionHelper::setFlash('error', 'Session tidak valid. Silakan login kembali.');
-            header('Location: /login');
-            exit;
-        }
-        
-        // Get personil data
-        $personil = $this->model->getPersonilById($personil_id);
-        
-        // Get statistics
-        $stats = $this->model->getPersonilStats($personil_id);
-        
-        // Get recent blogs (5 latest)
-        $recentBlogs = $this->blogModel->getRecentBlogsByPenulis($personil_id, 5);
-        
-        // Prepare data for view
-        $data = [
-            'personil' => $personil,
-            'stats' => $stats,
-            'recentBlogs' => $recentBlogs
-        ];
-        
-        $this->render("personil/dashboard/index", $data);
-    }
-
+    // ===== PUBLIC AREA =====
+    
+    /**
+     * Display all personils (public)
+     * 
+     * GET /personil
+     */
     public function index()
     {
-        $data["personils"] = $this->model->getAllPersonils();
+        $personils = $this->publicService->getAllPersonils();
+        
+        $data = [
+            'personils' => $personils
+        ];
+        
         $this->render("landing/personil/list", $data);
     }
 
+    // ===== PERSONIL DASHBOARD =====
+    
+    /**
+     * Personil dashboard
+     * 
+     * GET /personil/dashboard
+     */
+    public function dashboard()
+    {
+        $personil_id = SessionHelper::getPersonilId();
+        
+        if (!$personil_id) {
+            SessionHelper::setFlash('error', 'Session tidak valid. Silakan login kembali.');
+            header('Location: /login');
+            exit;
+        }
+        
+        try {
+            $data = $this->dashboardService->getDashboardData($personil_id);
+            $this->render("personil/dashboard/index", $data);
+        } catch (\Exception $e) {
+            SessionHelper::setFlash('error', $e->getMessage());
+            header('Location: /login');
+            exit;
+        }
+    }
+
+    // ===== BLOG MANAGEMENT =====
+    
+    /**
+     * Render blog create form
+     * 
+     * GET /personil/blog/create
+     */
     public function renderBlogCreate()
     {
-        // Get personil_id from session
         $personil_id = SessionHelper::getPersonilId();
         
         if (!$personil_id) {
@@ -71,23 +92,30 @@ class PersonilController extends Controller
             exit;
         }
         
-        // Get personil data
-        $personil = $this->model->getPersonilById($personil_id);
-        
-        // Get all categories
-        $categories = $this->kategoriModel->getAllKategori();
-        
-        $data = [
-            'personil' => $personil,
-            'categories' => $categories
-        ];
-        
-        $this->render("personil/blog/create", $data);
+        try {
+            $personil = $this->publicService->getPersonilById($personil_id);
+            $categories = $this->blogService->getAllCategories();
+            
+            $data = [
+                'personil' => $personil,
+                'categories' => $categories
+            ];
+            
+            $this->render("personil/blog/create", $data);
+        } catch (\Exception $e) {
+            SessionHelper::setFlash('error', $e->getMessage());
+            header('Location: /personil/dashboard');
+            exit;
+        }
     }
 
+    /**
+     * Render blog list
+     * 
+     * GET /personil/blog
+     */
     public function renderBlogList()
     {
-        // Get personil_id from session
         $personil_id = SessionHelper::getPersonilId();
         
         if (!$personil_id) {
@@ -96,38 +124,27 @@ class PersonilController extends Controller
             exit;
         }
         
-        // Get pagination parameters
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-        $limit = 10; // Items per page
-        $offset = ($page - 1) * $limit;
         
-        // Get blog posts
-        $blogs = $this->blogModel->getBlogsByPenulis($personil_id, $limit, $offset);
-        
-        // Get total blogs for pagination
-        $totalBlogs = $this->blogModel->getTotalBlogsByPenulis($personil_id);
-        $totalPages = ceil($totalBlogs / $limit);
-        
-        // Get statistics
-        $stats = $this->blogModel->getBlogStatsByPenulis($personil_id);
-        
-        // Get personil data for display
-        $personil = $this->model->getPersonilById($personil_id);
-        
-        // Prepare data for view
-        $data = [
-            'blogs' => $blogs,
-            'stats' => $stats,
-            'personil' => $personil,
-            'currentPage' => $page,
-            'totalPages' => $totalPages,
-            'totalBlogs' => $totalBlogs,
-            'limit' => $limit
-        ];
-        
-        $this->render("personil/blog/list", $data);
+        try {
+            $result = $this->blogService->getBlogsByPersonil($personil_id, $page);
+            $personil = $this->publicService->getPersonilById($personil_id);
+            
+            $data = array_merge($result, ['personil' => $personil]);
+            
+            $this->render("personil/blog/list", $data);
+        } catch (\Exception $e) {
+            SessionHelper::setFlash('error', $e->getMessage());
+            header('Location: /personil/dashboard');
+            exit;
+        }
     }
 
+    /**
+     * Render blog edit form
+     * 
+     * GET /personil/blog/edit/{id}
+     */
     public function renderBlogEdit($id)
     {
         $personil_id = SessionHelper::getPersonilId();
@@ -137,211 +154,40 @@ class PersonilController extends Controller
             exit;
         }
         
-        $blog = $this->blogModel->getBlogById($id);
-        
-        if (!$blog || $blog['penulis_id'] != $personil_id) {
+        try {
+            $blog = $this->blogService->getBlogForEdit($id, $personil_id);
+            
+            if (!$blog) {
+                header('Location: /personil/blog');
+                exit;
+            }
+            
+            $personil = $this->publicService->getPersonilById($personil_id);
+            $categories = $this->blogService->getAllCategories();
+            
+            $data = [
+                'blog' => $blog,
+                'personil' => $personil,
+                'categories' => $categories
+            ];
+
+            $this->render("personil/blog/edit", $data);
+        } catch (\Exception $e) {
+            SessionHelper::setFlash('error', $e->getMessage());
             header('Location: /personil/blog');
             exit;
         }
-        
-        $personil = $this->model->getPersonilById($personil_id);
-        $categories = $this->kategoriModel->getAllKategori();
-        
-        $data = [
-            'blog' => $blog,
-            'personil' => $personil,
-            'categories' => $categories
-        ];
-
-        $this->render("personil/blog/edit", $data);
-    }
-
-    public function renderProfile()
-    {
-        // Get personil_id from session
-        $personil_id = SessionHelper::getPersonilId();
-        
-        if (!$personil_id) {
-            SessionHelper::setFlash('error', 'Session tidak valid. Silakan login kembali.');
-            header('Location: /login');
-            exit;
-        }
-        
-        // Get personil data with projects
-        $personil = $this->model->getPersonilWithProjects($personil_id);
-        
-        if (!$personil) {
-            SessionHelper::setFlash('error', 'Data personil tidak ditemukan.');
-            header('Location: /personil/dashboard');
-            exit;
-        }
-        
-        // Prepare data for view
-        $data = [
-            'personil' => $personil
-        ];
-        
-        $this->render("personil/profile/index", $data);
-    }
-
-    public function renderProfileEdit()
-    {
-        $personil_id = SessionHelper::getPersonilId();
-        
-        if (!$personil_id) {
-            header('Location: /login');
-            exit;
-        }
-        
-        $personil = $this->model->getPersonilById($personil_id);
-        $projects = $this->projectModel->getProjectsByPersonilId($personil_id);
-        
-        if (isset($personil['skillks'])) {
-            $personil['skills'] = json_decode($personil['skillks'], true) ?? [];
-        } else {
-            $personil['skills'] = [];
-        }
-        
-        $data = [
-            'personil' => $personil,
-            'projects' => $projects
-        ];
-        
-        $this->render("personil/profile/edit", $data);
-    }
-
-    public function updateProfile()
-    {
-        header('Content-Type: application/json');
-        
-        $personil_id = SessionHelper::getPersonilId();
-        
-        if (!$personil_id) {
-            echo json_encode(['success' => false, 'message' => 'Unauthorized']);
-            exit;
-        }
-        
-        $bio = $_POST['bio'] ?? '';
-        $email = $_POST['email'] ?? '';
-        $phone = $_POST['phone'] ?? '';
-        $skills = $_POST['skills'] ?? '[]';
-        
-        if (empty($email) || empty($phone)) {
-            echo json_encode(['success' => false, 'message' => 'Email dan phone harus diisi']);
-            exit;
-        }
-        
-        $personil = $this->model->getPersonilById($personil_id);
-        $foto_url = $personil['foto_url'];
-        
-        if (isset($_FILES['foto_url']) && $_FILES['foto_url']['error'] === UPLOAD_ERR_OK) {
-            $uploaded_url = $this->handleProfileImageUpload($_FILES['foto_url']);
-            if ($uploaded_url !== false) {
-                $foto_url = $uploaded_url;
-            }
-        }
-        
-        $profileData = [
-            'bio' => $bio,
-            'email' => $email,
-            'phone' => $phone,
-            'skillks' => $skills,
-            'foto_url' => $foto_url
-        ];
-        
-        $result = $this->model->updatePersonil($personil_id, $profileData);
-        
-        if ($result) {
-            if (isset($_POST['projects'])) {
-                $projects = json_decode($_POST['projects'], true);
-                foreach ($projects as $project) {
-                    if (isset($project['id']) && $project['id'] > 0) {
-                        $this->projectModel->updateProject($project['id'], [
-                            'title' => $project['title'],
-                            'description' => $project['description']
-                        ]);
-                    } else {
-                        $this->projectModel->createProject([
-                            'personil_id' => $personil_id,
-                            'title' => $project['title'],
-                            'description' => $project['description']
-                        ]);
-                    }
-                }
-            }
-            
-            if (isset($_POST['deleted_projects'])) {
-                $deleted = json_decode($_POST['deleted_projects'], true);
-                foreach ($deleted as $project_id) {
-                    $this->projectModel->deleteProject($project_id);
-                }
-            }
-            
-            echo json_encode([
-                'success' => true, 
-                'message' => 'Profile berhasil diupdate',
-                'redirect' => '/personil/profile'
-            ]);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Gagal mengupdate profile']);
-        }
-        exit;
     }
 
     /**
-     * API: Delete blog post
-     */
-    public function deleteBlog($id)
-    {
-        header('Content-Type: application/json');
-        
-        // Get personil_id from session
-        $personil_id = SessionHelper::getPersonilId();
-        
-        if (!$personil_id) {
-            echo json_encode(['success' => false, 'message' => 'Unauthorized']);
-            exit;
-        }
-        
-        // Get blog to verify ownership
-        $blog = $this->blogModel->getBlogById($id);
-        
-        if (!$blog) {
-            echo json_encode(['success' => false, 'message' => 'Blog not found']);
-            exit;
-        }
-        
-        // Verify ownership
-        if ($blog['penulis_id'] != $personil_id) {
-            echo json_encode(['success' => false, 'message' => 'Unauthorized to delete this blog']);
-            exit;
-        }
-        
-        // Only allow deleting drafts
-        if ($blog['status'] !== 'draft') {
-            echo json_encode(['success' => false, 'message' => 'Only draft posts can be deleted']);
-            exit;
-        }
-        
-        // Delete the blog
-        $result = $this->blogModel->deleteBlog($id);
-        
-        if ($result) {
-            echo json_encode(['success' => true, 'message' => 'Blog deleted successfully']);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Failed to delete blog']);
-        }
-        exit;
-    }
-
-    /**
-     * API: Create new blog post
+     * Create blog
+     * 
+     * POST /personil/blog/create
      */
     public function createBlog()
     {
         header('Content-Type: application/json');
         
-        // Get personil_id from session
         $personil_id = SessionHelper::getPersonilId();
         
         if (!$personil_id) {
@@ -349,73 +195,8 @@ class PersonilController extends Controller
             exit;
         }
         
-        // Get personil data for author info
-        $personil = $this->model->getPersonilById($personil_id);
-        
-        if (!$personil) {
-            echo json_encode(['success' => false, 'message' => 'Personil not found']);
-            exit;
-        }
-        
-        // Get POST data
-        $judul = $_POST['judul'] ?? '';
-        $konten = $_POST['konten'] ?? '';
-        $kategori_id = $_POST['kategori_id'] ?? '';
-        $status = $_POST['status'] ?? 'draft';
-        $cuplikan = $_POST['cuplikan'] ?? '';
-        
-        // Validate required fields
-        if (empty($judul) || empty($konten) || empty($kategori_id)) {
-            echo json_encode(['success' => false, 'message' => 'Judul, konten, dan kategori harus diisi']);
-            exit;
-        }
-        
-        // Generate slug from title
-        $slug = $this->generateSlug($judul);
-        
-        // Calculate reading time (words per minute = 200)
-        $wordCount = str_word_count(strip_tags($konten));
-        $reading_time = max(1, ceil($wordCount / 200));
-        
-        // Generate excerpt if not provided
-        if (empty($cuplikan)) {
-            $cuplikan = $this->generateExcerpt($konten);
-        }
-        
-        // Handle file upload
-        $featured_image_url = null;
-        if (isset($_FILES['featured_image']) && $_FILES['featured_image']['error'] === UPLOAD_ERR_OK) {
-            $featured_image_url = $this->handleImageUpload($_FILES['featured_image']);
-            if ($featured_image_url === false) {
-                echo json_encode(['success' => false, 'message' => 'Failed to upload image']);
-                exit;
-            }
-        }
-        
-        // Prepare blog data
-        $blogData = [
-            'penulis_id' => $personil_id,
-            'kategori_id' => $kategori_id,
-            'slug' => $slug,
-            'judul' => $judul,
-            'cuplikan' => $cuplikan,
-            'konten' => $konten,
-            'penulis_nama' => $personil['nama_lengkap'],
-            'penulis_bio' => $personil['bio'] ?? '',
-            'tanggal_publish' => $status === 'published' ? date('Y-m-d H:i:s') : null,
-            'featured_image_url' => $featured_image_url,
-            'status' => $status,
-            'reading_time' => $reading_time
-        ];
-        
-        // Create blog
-        $blog_id = $this->blogModel->createBlog($blogData);
-        
-        if ($blog_id) {
-            // Increment category post count if published
-            if ($status === 'published') {
-                $this->kategoriModel->incrementPostCount($kategori_id);
-            }
+        try {
+            $blog_id = $this->blogService->createBlog($_POST, $_FILES, $personil_id);
             
             echo json_encode([
                 'success' => true, 
@@ -423,14 +204,16 @@ class PersonilController extends Controller
                 'blog_id' => $blog_id,
                 'redirect' => '/personil/blog'
             ]);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Gagal membuat blog']);
+        } catch (\Exception $e) {
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
         }
         exit;
     }
 
     /**
-     * API: Update blog post
+     * Update blog
+     * 
+     * POST /personil/blog/update/{id}
      */
     public function updateBlog($id)
     {
@@ -443,161 +226,147 @@ class PersonilController extends Controller
             exit;
         }
         
-        $blog = $this->blogModel->getBlogById($id);
-        
-        if (!$blog || $blog['penulis_id'] != $personil_id) {
-            echo json_encode(['success' => false, 'message' => 'Blog not found or unauthorized']);
-            exit;
-        }
-        
-        $judul = $_POST['judul'] ?? '';
-        $konten = $_POST['konten'] ?? '';
-        $kategori_id = $_POST['kategori_id'] ?? '';
-        $status = $_POST['status'] ?? 'draft';
-        $cuplikan = $_POST['cuplikan'] ?? '';
-        
-        if (empty($judul) || empty($konten) || empty($kategori_id)) {
-            echo json_encode(['success' => false, 'message' => 'Judul, konten, dan kategori harus diisi']);
-            exit;
-        }
-        
-        $slug = $this->generateSlug($judul);
-        $wordCount = str_word_count(strip_tags($konten));
-        $reading_time = max(1, ceil($wordCount / 200));
-        
-        if (empty($cuplikan)) {
-            $cuplikan = $this->generateExcerpt($konten);
-        }
-        
-        $featured_image_url = $blog['featured_image_url'];
-        if (isset($_FILES['featured_image']) && $_FILES['featured_image']['error'] === UPLOAD_ERR_OK) {
-            $uploaded_url = $this->handleImageUpload($_FILES['featured_image']);
-            if ($uploaded_url !== false) {
-                $featured_image_url = $uploaded_url;
-            }
-        }
-        
-        $blogData = [
-            'kategori_id' => $kategori_id,
-            'slug' => $slug,
-            'judul' => $judul,
-            'cuplikan' => $cuplikan,
-            'konten' => $konten,
-            'tanggal_publish' => $status === 'published' ? date('Y-m-d H:i:s') : $blog['tanggal_publish'],
-            'featured_image_url' => $featured_image_url,
-            'status' => $status,
-            'reading_time' => $reading_time
-        ];
-        
-        $result = $this->blogModel->updateBlog($id, $blogData);
-        
-        if ($result) {
+        try {
+            $this->blogService->updateBlog($id, $_POST, $_FILES, $personil_id);
+            
             echo json_encode([
                 'success' => true, 
                 'message' => 'Blog berhasil diupdate',
                 'redirect' => '/personil/blog'
             ]);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Gagal mengupdate blog']);
+        } catch (\Exception $e) {
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
         }
         exit;
     }
 
     /**
-     * Generate URL-friendly slug from title
+     * Delete blog
+     * 
+     * DELETE /personil/blog/{id}
      */
-    private function generateSlug($title)
+    public function deleteBlog($id)
     {
-        $slug = strtolower(trim($title));
-        $slug = preg_replace('/[^a-z0-9-]/', '-', $slug);
-        $slug = preg_replace('/-+/', '-', $slug);
-        $slug = trim($slug, '-');
+        header('Content-Type: application/json');
         
-        // Add timestamp to ensure uniqueness
-        $slug .= '-' . time();
+        $personil_id = SessionHelper::getPersonilId();
         
-        return $slug;
+        if (!$personil_id) {
+            echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+            exit;
+        }
+        
+        try {
+            $this->blogService->deleteBlog($id, $personil_id);
+            echo json_encode(['success' => true, 'message' => 'Blog deleted successfully']);
+        } catch (\Exception $e) {
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+        }
+        exit;
+    }
+
+    // ===== PROFILE MANAGEMENT =====
+    
+    /**
+     * Render profile
+     * 
+     * GET /personil/profile
+     */
+    public function renderProfile()
+    {
+        $personil_id = SessionHelper::getPersonilId();
+        
+        if (!$personil_id) {
+            SessionHelper::setFlash('error', 'Session tidak valid. Silakan login kembali.');
+            header('Location: /login');
+            exit;
+        }
+        
+        try {
+            $personil = $this->profileService->getProfileWithProjects($personil_id);
+            
+            if (!$personil) {
+                SessionHelper::setFlash('error', 'Data personil tidak ditemukan.');
+                header('Location: /personil/dashboard');
+                exit;
+            }
+            
+            $data = [
+                'personil' => $personil
+            ];
+            
+            $this->render("personil/profile/index", $data);
+        } catch (\Exception $e) {
+            SessionHelper::setFlash('error', $e->getMessage());
+            header('Location: /personil/dashboard');
+            exit;
+        }
     }
 
     /**
-     * Generate excerpt from content
+     * Render profile edit form
+     * 
+     * GET /personil/profile/edit
      */
-    private function generateExcerpt($content, $length = 150)
+    public function renderProfileEdit()
     {
-        $text = strip_tags($content);
-        if (strlen($text) > $length) {
-            $text = substr($text, 0, $length);
-            $text = substr($text, 0, strrpos($text, ' ')) . '...';
+        $personil_id = SessionHelper::getPersonilId();
+        
+        if (!$personil_id) {
+            header('Location: /login');
+            exit;
         }
-        return $text;
+        
+        try {
+            $personil = $this->profileService->getProfileWithProjects($personil_id);
+            
+            $data = [
+                'personil' => $personil,
+                'projects' => $personil['projects']
+            ];
+            
+            $this->render("personil/profile/edit", $data);
+        } catch (\Exception $e) {
+            SessionHelper::setFlash('error', $e->getMessage());
+            header('Location: /personil/profile');
+            exit;
+        }
     }
 
     /**
-     * Handle image upload
+     * Update profile
+     * 
+     * POST /personil/profile/update
      */
-    private function handleImageUpload($file)
+    public function updateProfile()
     {
-        $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-        $max_size = 5 * 1024 * 1024; // 5MB
+        header('Content-Type: application/json');
         
-        // Validate file type
-        if (!in_array($file['type'], $allowed_types)) {
-            return false;
+        $personil_id = SessionHelper::getPersonilId();
+        
+        if (!$personil_id) {
+            echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+            exit;
         }
         
-        // Validate file size
-        if ($file['size'] > $max_size) {
-            return false;
+        try {
+            // Update profile
+            $this->profileService->updateProfile($personil_id, $_POST, $_FILES);
+            
+            // Update projects if provided
+            if (isset($_POST['projects'])) {
+                $projects = json_decode($_POST['projects'], true);
+                $this->profileService->updateProjects($personil_id, $projects);
+            }
+            
+            echo json_encode([
+                'success' => true, 
+                'message' => 'Profile berhasil diupdate',
+                'redirect' => '/personil/profile'
+            ]);
+        } catch (\Exception $e) {
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
         }
-        
-        // Create upload directory if not exists
-        $upload_dir = __DIR__ . '/../../public/upload/blog/';
-        if (!is_dir($upload_dir)) {
-            mkdir($upload_dir, 0777, true);
-        }
-        
-        // Generate unique filename
-        $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-        $filename = 'blog_' . time() . '_' . uniqid() . '.' . $extension;
-        $filepath = $upload_dir . $filename;
-        
-        // Move uploaded file
-        if (move_uploaded_file($file['tmp_name'], $filepath)) {
-            return '/upload/blog/' . $filename;
-        }
-        
-        return false;
-    }
-
-    /**
-     * Handle profile image upload
-     */
-    private function handleProfileImageUpload($file)
-    {
-        $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-        $max_size = 5 * 1024 * 1024; // 5MB
-        
-        if (!in_array($file['type'], $allowed_types)) {
-            return false;
-        }
-        
-        if ($file['size'] > $max_size) {
-            return false;
-        }
-        
-        $upload_dir = __DIR__ . '/../../public/upload/img/foto-profil/';
-        if (!is_dir($upload_dir)) {
-            mkdir($upload_dir, 0777, true);
-        }
-        
-        $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-        $filename = 'profile_' . time() . '_' . uniqid() . '.' . $extension;
-        $filepath = $upload_dir . $filename;
-        
-        if (move_uploaded_file($file['tmp_name'], $filepath)) {
-            return '/upload/img/foto-profil/' . $filename;
-        }
-        
-        return false;
+        exit;
     }
 }
