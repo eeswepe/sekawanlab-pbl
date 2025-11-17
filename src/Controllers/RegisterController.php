@@ -3,107 +3,75 @@
 namespace App\Controllers;
 
 use App\Controller;
-use App\Models\UserModel;
+use App\Services\Auth\RegistrationService;
 use App\Helpers\SessionHelper;
 
+/**
+ * RegisterController (REFACTORED)
+ * 
+ * Controller yang sudah di-refactor untuk menggunakan RegistrationService
+ * Tanggung jawab:
+ * - Handle HTTP request/response
+ * - Render views
+ * - Call RegistrationService untuk business logic
+ */
 class RegisterController extends Controller
 {
-    private $userModel;
+    private RegistrationService $registrationService;
 
     public function __construct()
     {
-        $this->userModel = new UserModel();
+        $this->registrationService = new RegistrationService();
     }
 
+    /**
+     * Render registration page
+     * 
+     * GET /register
+     */
     public function index()
     {
-        $error = isset($_GET["error"]) ? $_GET["error"] : null;
-        $success = isset($_GET["success"]) ? $_GET["success"] : null;
+        $error = $_GET['error'] ?? null;
+        $success = $_GET['success'] ?? null;
 
         $data = [
-            "error" => $error,
-            "success" => $success,
+            'error' => $error,
+            'success' => $success,
         ];
 
-        $this->render("auth/register", $data);
+        $this->render('auth/register', $data);
     }
 
+    /**
+     * Handle user registration
+     * 
+     * POST /register
+     */
     public function register()
     {
-        $username = isset($_POST["username"]) ? trim($_POST["username"]) : null;
-        $password = isset($_POST["password"]) ? $_POST["password"] : null;
-        $confirm_password = isset($_POST["confirm_password"]) ? $_POST["confirm_password"] : null;
-        $secret_key = isset($_POST["secret_key"]) ? trim($_POST["secret_key"]) : null;
+        // Get input dari POST
+        $data = [
+            'username' => $_POST['username'] ?? '',
+            'password' => $_POST['password'] ?? '',
+            'confirm_password' => $_POST['confirm_password'] ?? '',
+            'secret_key' => $_POST['secret_key'] ?? ''
+        ];
 
-        if (empty($username) || empty($password) || empty($confirm_password)) {
-            SessionHelper::setFlash("error", "Semua kolom harus diisi.");
-            header("Location: /register");
+        // Register dengan invitation menggunakan RegistrationService
+        $result = $this->registrationService->registerWithInvitation($data);
+
+        if (!$result['success']) {
+            // Set flash error message
+            SessionHelper::setFlash('error', $result['message']);
+            header('Location: /register');
             exit();
         }
 
-        if ($password !== $confirm_password) {
-            SessionHelper::setFlash("error", "Konfirmasi kata sandi tidak cocok.");
-            header("Location: /register");
-            exit();
-        }
-
-        if ($this->userModel->usernameExists($username)) {
-            SessionHelper::setFlash("error", "Nama pengguna sudah terdaftar.");
-            header("Location: /register");
-            exit();
-        }
-
-        // Check if secret_key is provided (invitation-based registration)
-        if (!empty($secret_key)) {
-            $invitationModel = new \App\Models\PersonilInvitationModel();
-            $invitation = $invitationModel->getInvitationBySecretKey($secret_key);
-            
-            if (!$invitation) {
-                SessionHelper::setFlash("error", "Secret key tidak valid.");
-                header("Location: /register");
-                exit();
-            }
-            
-            if ($invitation['is_used']) {
-                SessionHelper::setFlash("error", "Secret key sudah digunakan.");
-                header("Location: /register");
-                exit();
-            }
-            
-            // Create user account
-            $data = [
-                "username" => $username,
-                "password" => $password,
-                "role" => "personil", 
-            ];
-            
-            $userId = $this->userModel->createUser($data);
-            
-            if ($userId) {
-                // Link user to personil
-                $personilModel = new \App\Models\PersonilModel();
-                $db = \App\Database::getConnection();
-                $stmt = $db->prepare("UPDATE personil SET user_id = :user_id WHERE id = :personil_id");
-                $stmt->bindParam(':user_id', $userId);
-                $stmt->bindParam(':personil_id', $invitation['personil_id']);
-                $stmt->execute();
-                
-                // Mark invitation as used
-                $invitationModel->markAsUsed($secret_key);
-                
-                SessionHelper::setFlash("success", "Pendaftaran berhasil! Silakan masuk.");
-                header("Location: /login");
-                exit();
-            } else {
-                SessionHelper::setFlash("error", "Pendaftaran gagal. Silakan coba lagi.");
-                header("Location: /register");
-                exit();
-            }
-        } else {
-            // Regular registration (if you want to allow it)
-            SessionHelper::setFlash("error", "Registrasi memerlukan secret key dari admin.");
-            header("Location: /register");
-            exit();
-        }
+        // Set flash success message
+        SessionHelper::setFlash('success', $result['message']);
+        
+        // Redirect ke login page
+        header('Location: /login');
+        exit();
     }
 }

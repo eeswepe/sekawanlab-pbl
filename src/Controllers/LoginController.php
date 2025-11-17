@@ -3,78 +3,91 @@
 namespace App\Controllers;
 
 use App\Controller;
-use App\Models\UserModel;
-use App\Models\PersonilModel;
+use App\Services\Auth\AuthService;
 use App\Helpers\SessionHelper;
 
+/**
+ * LoginController (REFACTORED)
+ * 
+ * Controller yang sudah di-refactor untuk menggunakan AuthService
+ * Tanggung jawab:
+ * - Handle HTTP request/response
+ * - Render views
+ * - Call AuthService untuk business logic
+ */
 class LoginController extends Controller
 {
-    private $userModel;
-    private $personilModel;
+    private AuthService $authService;
 
     public function __construct()
     {
-        $this->userModel = new UserModel();
-        $this->personilModel = new PersonilModel();
+        $this->authService = new AuthService();
     }
 
+    /**
+     * Render login page
+     * 
+     * GET /login
+     */
     public function index()
     {
-        $error = isset($_GET["error"]) ? $_GET["error"] : null;
+        $error = $_GET['error'] ?? null;
 
         $data = [
-            "error" => $error,
+            'error' => $error,
         ];
 
-        $this->render("auth/login", $data);
+        $this->render('auth/login', $data);
     }
 
+    /**
+     * Handle login authentication
+     * 
+     * POST /login
+     */
     public function authenticate()
     {
-        $username = isset($_POST["username"]) ? trim($_POST["username"]) : null;
-        $password = isset($_POST["password"]) ? $_POST["password"] : null;
-        
-        $user = $this->userModel->validateCredentials($username, $password);
-        
-        if ($user) {
-            // Get personil_id if user is personil
-            $personil_id = null;
-            if ($user["role"] === "personil") {
-                $personil = $this->personilModel->getPersonilByUserId($user["id"]);
-                if ($personil) {
-                    $personil_id = $personil["id"];
-                }
-            }
-            
-            // Store user data in session using SessionHelper
-            SessionHelper::setUser([
-                "id" => $user["id"],
-                "username" => $user["username"],
-                "role" => $user["role"],
-                "personil_id" => $personil_id
-            ]);
-            
-            SessionHelper::setFlash("success", "Login berhasil! Selamat datang, " . $user["username"] . ".");
-            
-            // Redirect based on role
-            if ($user["role"] === "admin") {
-                header("Location: /admin");
-            } else {
-                header("Location: /personil/dashboard");
-            }
+        // Get input from POST
+        $username = $_POST['username'] ?? '';
+        $password = $_POST['password'] ?? '';
+
+        // Validate credentials menggunakan AuthService
+        $user = $this->authService->validateCredentials($username, $password);
+
+        if (!$user) {
+            // Redirect ke login dengan error
+            header('Location: /login?error=invalid_credentials');
             exit();
         }
 
-        header("Location: /login?error=invalid_credentials");
+        // Login user (set session) menggunakan AuthService
+        $loginSuccess = $this->authService->login($user);
+
+        if (!$loginSuccess) {
+            header('Location: /login?error=login_failed');
+            exit();
+        }
+
+        // Get redirect URL berdasarkan role
+        $redirectUrl = $this->authService->getRedirectUrlByRole($user['role']);
+
+        // Redirect to dashboard
+        header('Location: ' . $redirectUrl);
         exit();
     }
 
+    /**
+     * Handle logout
+     * 
+     * GET/POST /logout
+     */
     public function logout()
     {
-        SessionHelper::setFlash("success", "Anda telah berhasil logout.");
-        SessionHelper::destroy();
+        // Logout menggunakan AuthService
+        $this->authService->logout();
 
-        header("Location: /login");
+        // Redirect to login page
+        header('Location: /login');
         exit();
     }
 }
