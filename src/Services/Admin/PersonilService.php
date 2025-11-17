@@ -30,9 +30,17 @@ class PersonilService
     
     /**
      * Get personils with filters and pagination
+     * 
+     * @param array $rawFilters Raw filters dari $_GET
+     * @param int $page
+     * @param int $limit
+     * @return array
      */
-    public function getPersonilsWithFilters(array $filters, int $page = 1, int $limit = 10): array
+    public function getPersonilsWithFilters(array $rawFilters, int $page = 1, int $limit = 10): array
     {
+        // Normalize filters - Service menangani logika filtering
+        $filters = $this->normalizeFilters($rawFilters);
+        
         $offset = ($page - 1) * $limit;
         
         $personils = $this->personilModel->getPersonilsForAdmin($filters, $limit, $offset);
@@ -51,6 +59,27 @@ class PersonilService
                 'totalTalent' => $this->personilModel->countByRole('talent')
             ]
         ];
+    }
+    
+    /**
+     * Normalize and sanitize filters
+     * 
+     * @param array $rawFilters
+     * @return array
+     */
+    private function normalizeFilters(array $rawFilters): array
+    {
+        $filters = [];
+        
+        if (!empty($rawFilters['search'])) {
+            $filters['search'] = trim($rawFilters['search']);
+        }
+        
+        if (!empty($rawFilters['role']) && $rawFilters['role'] !== 'all') {
+            $filters['role'] = $rawFilters['role'];
+        }
+        
+        return $filters;
     }
     
     /**
@@ -81,13 +110,14 @@ class PersonilService
     /**
      * Create new personil
      */
-    public function createPersonil(array $data, array $files, PDO $db): int
+    public function createPersonil(array $data, array $files): int
     {
         // Validate
         if (empty($data['nama_lengkap']) || empty($data['email']) || empty($data['phone']) || empty($data['role'])) {
             throw new \Exception('Field wajib tidak boleh kosong');
         }
         
+        $db = \App\Database::getConnection();
         $db->beginTransaction();
         
         try {

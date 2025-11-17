@@ -6,7 +6,7 @@ namespace App\Services\Shared;
  * FileUploadService
  * 
  * Shared service untuk menangani semua file uploads
- * Digunakan oleh: AdminController, PersonilController, JoinApplicationController
+ * Digunakan oleh: Admin Services, Personil Services, JoinApplicationController
  * 
  * Tanggung jawab:
  * - Upload images (blog, profile photos)

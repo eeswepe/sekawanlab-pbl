@@ -2,27 +2,49 @@
 
 namespace App;
 
-use App\Models\ProfilPageModel;
-
+/**
+ * Base Controller
+ * 
+ * Controller dasar tanpa ketergantungan model
+ * Mengikuti Single Responsibility Principle (SRP)
+ */
 class Controller
 {
-    protected $profilModel;
-
-    public function __construct()
-    {
-        // Inisialisasi profilModel hanya jika dibutuhkan
-        // Child class bisa override constructor tanpa masalah
-    }
-
+    /**
+     * Render view dengan data
+     * 
+     * @param string $view Path ke view file
+     * @param array $data Data yang akan dikirim ke view
+     */
     protected function render($view, $data = [])
     {
-        // Lazy loading - hanya load profilModel jika belum di-set
-        if ($this->profilModel === null) {
-            $this->profilModel = new ProfilPageModel();
-        }
-        
-        $data["list-profil"] = $this->profilModel->getProfilTitle();
         extract($data);
         include "Views/$view.php";
     }
+
+    /**
+     * Send JSON response
+     * 
+     * @param array $data
+     * @param int $statusCode
+     */
+    protected function jsonResponse($data, $statusCode = 200)
+    {
+        http_response_code($statusCode);
+        header('Content-Type: application/json');
+        echo json_encode($data);
+        exit;
+    }
+
+    /**
+     * Redirect to URL
+     * 
+     * @param string $url
+     */
+    protected function redirect($url)
+    {
+        header("Location: $url");
+        exit;
+    }
 }
+

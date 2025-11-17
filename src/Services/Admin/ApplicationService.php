@@ -30,9 +30,17 @@ class ApplicationService
     
     /**
      * Get applications with filters and pagination
+     * 
+     * @param array $rawFilters Raw filters dari $_GET
+     * @param int $page
+     * @param int $limit
+     * @return array
      */
-    public function getApplicationsWithFilters(array $filters, int $page = 1, int $limit = 10): array
+    public function getApplicationsWithFilters(array $rawFilters, int $page = 1, int $limit = 10): array
     {
+        // Normalize filters - Service menangani logika filtering
+        $filters = $this->normalizeFilters($rawFilters);
+        
         $offset = ($page - 1) * $limit;
         
         $applications = $this->applicationModel->getApplicationsForAdmin($filters, $limit, $offset);
@@ -51,6 +59,31 @@ class ApplicationService
     }
     
     /**
+     * Normalize and sanitize filters
+     * 
+     * @param array $rawFilters
+     * @return array
+     */
+    private function normalizeFilters(array $rawFilters): array
+    {
+        $filters = [];
+        
+        if (!empty($rawFilters['search'])) {
+            $filters['search'] = trim($rawFilters['search']);
+        }
+        
+        if (!empty($rawFilters['status']) && $rawFilters['status'] !== 'all') {
+            $filters['status'] = $rawFilters['status'];
+        }
+        
+        if (!empty($rawFilters['prodi']) && $rawFilters['prodi'] !== 'all') {
+            $filters['prodi'] = $rawFilters['prodi'];
+        }
+        
+        return $filters;
+    }
+    
+    /**
      * Get application by ID
      */
     public function getApplicationById(int $id): ?array
@@ -61,7 +94,7 @@ class ApplicationService
     /**
      * Update application status
      */
-    public function updateStatus(int $id, string $status, PDO $db): array
+    public function updateStatus(int $id, string $status): array
     {
         // Validate
         if (trim($status) === '') {
@@ -80,7 +113,7 @@ class ApplicationService
         
         // Handle accepted status
         if ($status === 'accepted') {
-            return $this->handleAcceptedApplication($application, $db);
+            return $this->handleAcceptedApplication($application);
         }
         
         return ['message' => 'Status berhasil diupdate'];
@@ -89,8 +122,10 @@ class ApplicationService
     /**
      * Handle accepted application (create personil and invitation)
      */
-    private function handleAcceptedApplication(array $application, PDO $db): array
+    private function handleAcceptedApplication(array $application): array
     {
+        $db = \App\Database::getConnection();
+        
         // Check if personil exists
         $stmt = $db->prepare("SELECT id FROM personil WHERE email = :email");
         $stmt->bindParam(':email', $application['email']);
@@ -111,7 +146,7 @@ class ApplicationService
             'phone' => $application['phone'],
             'location' => null,
             'tanggal_bergabung' => date('Y-m-d'),
-            'bio' => $application['alasan_bergabung'],
+            'bio' => '',
             'skillks' => json_encode([]),
             'foto_url' => null
         ];

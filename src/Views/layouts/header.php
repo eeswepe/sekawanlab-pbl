@@ -31,6 +31,11 @@
         <style></style>
     </head>
     <body>
+        <?php
+        // Load global navigation data
+        use App\Helpers\GlobalDataProvider;
+        $globalData = GlobalDataProvider::getNavigationData();
+        ?>
         <!-- Navbar -->
         <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
             <div class="container">
@@ -64,7 +69,7 @@
                                 aria-labelledby="profileDropdown"
                             >
                                 <?php foreach (
-                                    $data["list-profil"]
+                                    $globalData["list-profil"]
                                     as $profil
                                 ) {
                                     echo '<li><a class="dropdown-item" href="/profil/' .

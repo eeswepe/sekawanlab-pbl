@@ -8,7 +8,13 @@ use App\Controllers\BlogController;
 use App\Controllers\JoinApplicationController;
 use App\Controllers\LoginController;
 use App\Controllers\RegisterController;
-use App\Controllers\AdminController;
+
+// Admin Controllers
+use App\Controllers\Admin\DashboardController;
+use App\Controllers\Admin\BlogController as AdminBlogController;
+use App\Controllers\Admin\PersonilController as AdminPersonilController;
+use App\Controllers\Admin\ApplicationController as AdminApplicationController;
+use App\Controllers\Admin\ProfilePageController as AdminProfilePageController;
 
 use App\Middlewares\GuestMiddleware;
 use App\Middlewares\AdminMiddleware;
@@ -38,32 +44,41 @@ $router
     ->middleware(GuestMiddleware::class);
 $router->post("/register", RegisterController::class, "register");
 
-// Admin
-$router->get("/admin", AdminController::class, "dashboard")->middleware(AdminMiddleware::class);
-$router->get("/admin/blog-list", AdminController::class, "blogList")->middleware(AdminMiddleware::class);
-$router->get("/admin/blog/edit/{id}", AdminController::class, "renderBlogEdit")->middleware(AdminMiddleware::class);
-$router->post("/admin/blog/update/{id}", AdminController::class, "updateBlog")->middleware(AdminMiddleware::class);
-$router->get("/admin/blog/create", AdminController::class, "renderBlogCreate")->middleware(AdminMiddleware::class);
-$router->post("/admin/blog/create", AdminController::class, "createBlog")->middleware(AdminMiddleware::class);
-$router->delete("/admin/blog/delete/{id}", AdminController::class, "deleteBlog")->middleware(AdminMiddleware::class);
-$router->get("/admin/profil-pages", AdminController::class, "renderProfilePages")->middleware(AdminMiddleware::class);
-$router->get("/admin/profil-pages/create", AdminController::class, "renderProfilePageCreate")->middleware(AdminMiddleware::class);
-$router->post("/admin/profil-pages/create", AdminController::class, "createProfilePage")->middleware(AdminMiddleware::class);
-$router->get("/admin/profil-pages/edit/{id}", AdminController::class, "renderProfilePagesEdit")->middleware(AdminMiddleware::class);
-$router->post("/admin/profil-pages/update/{id}", AdminController::class, "updateProfilePage")->middleware(AdminMiddleware::class);
-$router->get("/admin/personil", AdminController::class, "renderPersonilList")->middleware(AdminMiddleware::class);
-$router->get("/admin/personil/edit/{id}", AdminController::class, "renderPersonilEdit")->middleware(AdminMiddleware::class);
-$router->post("/admin/personil/update/{id}", AdminController::class, "updatePersonil")->middleware(AdminMiddleware::class);
-$router->get("/admin/personil/create", AdminController::class, "renderPersonilCreate")->middleware(AdminMiddleware::class);
-$router->post("/admin/personil/create", AdminController::class, "createPersonil")->middleware(AdminMiddleware::class);
-$router->delete("/admin/personil/delete/{id}", AdminController::class, "deletePersonil")->middleware(AdminMiddleware::class);
-$router->get("/admin/join-applications", AdminController::class, "renderApplicationsList")->middleware(AdminMiddleware::class);
-$router->get("/admin/join-application/{id}", AdminController::class, "renderApplicationView")->middleware(AdminMiddleware::class);
-$router->delete("/admin/join-application/delete/{id}", AdminController::class, "deleteApplication")->middleware(AdminMiddleware::class);
-$router->post("/admin/join-application/update-status/{id}", AdminController::class, "updateApplicationStatus")->middleware(AdminMiddleware::class);
-$router->post("/admin/join-application/update-notes/{id}", AdminController::class, "updateAdminNotes")->middleware(AdminMiddleware::class);
+// ===== ADMIN ROUTES =====
+// Dashboard
+$router->get("/admin", DashboardController::class, "index")->middleware(AdminMiddleware::class);
 
-// Personil
+// Blog Management
+$router->get("/admin/blog-list", AdminBlogController::class, "index")->middleware(AdminMiddleware::class);
+$router->get("/admin/blog/create", AdminBlogController::class, "create")->middleware(AdminMiddleware::class);
+$router->post("/admin/blog/create", AdminBlogController::class, "store")->middleware(AdminMiddleware::class);
+$router->get("/admin/blog/edit/{id}", AdminBlogController::class, "edit")->middleware(AdminMiddleware::class);
+$router->post("/admin/blog/update/{id}", AdminBlogController::class, "update")->middleware(AdminMiddleware::class);
+$router->delete("/admin/blog/delete/{id}", AdminBlogController::class, "delete")->middleware(AdminMiddleware::class);
+
+// Profile Pages Management
+$router->get("/admin/profil-pages", AdminProfilePageController::class, "index")->middleware(AdminMiddleware::class);
+$router->get("/admin/profil-pages/create", AdminProfilePageController::class, "create")->middleware(AdminMiddleware::class);
+$router->post("/admin/profil-pages/create", AdminProfilePageController::class, "store")->middleware(AdminMiddleware::class);
+$router->get("/admin/profil-pages/edit/{id}", AdminProfilePageController::class, "edit")->middleware(AdminMiddleware::class);
+$router->post("/admin/profil-pages/update/{id}", AdminProfilePageController::class, "update")->middleware(AdminMiddleware::class);
+
+// Personil Management
+$router->get("/admin/personil", AdminPersonilController::class, "index")->middleware(AdminMiddleware::class);
+$router->get("/admin/personil/create", AdminPersonilController::class, "create")->middleware(AdminMiddleware::class);
+$router->post("/admin/personil/create", AdminPersonilController::class, "store")->middleware(AdminMiddleware::class);
+$router->get("/admin/personil/edit/{id}", AdminPersonilController::class, "edit")->middleware(AdminMiddleware::class);
+$router->post("/admin/personil/update/{id}", AdminPersonilController::class, "update")->middleware(AdminMiddleware::class);
+$router->delete("/admin/personil/delete/{id}", AdminPersonilController::class, "delete")->middleware(AdminMiddleware::class);
+
+// Applications Management
+$router->get("/admin/join-applications", AdminApplicationController::class, "index")->middleware(AdminMiddleware::class);
+$router->get("/admin/join-application/{id}", AdminApplicationController::class, "show")->middleware(AdminMiddleware::class);
+$router->delete("/admin/join-application/delete/{id}", AdminApplicationController::class, "delete")->middleware(AdminMiddleware::class);
+$router->post("/admin/join-application/update-status/{id}", AdminApplicationController::class, "updateStatus")->middleware(AdminMiddleware::class);
+$router->post("/admin/join-application/update-notes/{id}", AdminApplicationController::class, "updateNotes")->middleware(AdminMiddleware::class);
+
+// ===== PERSONIL ROUTES =====
 $router->get("/personil", PersonilController::class, "dashboard")->middleware(PersonilMiddleware::class);
 $router->get("/personil/blog/create", PersonilController::class, "renderBlogCreate")->middleware(PersonilMiddleware::class);
 $router->post("/personil/blog/create", PersonilController::class, "createBlog")->middleware(PersonilMiddleware::class);

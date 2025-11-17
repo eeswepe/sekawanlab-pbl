@@ -29,9 +29,17 @@ class BlogService
     
     /**
      * Get blogs with filters and pagination
+     * 
+     * @param array $rawFilters Raw filters dari $_GET
+     * @param int $page
+     * @param int $limit
+     * @return array
      */
-    public function getBlogsWithFilters(array $filters, int $page = 1, int $limit = 10): array
+    public function getBlogsWithFilters(array $rawFilters, int $page = 1, int $limit = 10): array
     {
+        // Normalize filters - Service menangani logika filtering
+        $filters = $this->normalizeFilters($rawFilters);
+        
         $offset = ($page - 1) * $limit;
         
         $blogs = $this->blogModel->getBlogsForAdmin($filters, $limit, $offset);
@@ -45,6 +53,35 @@ class BlogService
             'currentPage' => $page,
             'offset' => $offset
         ];
+    }
+    
+    /**
+     * Normalize and sanitize filters
+     * 
+     * @param array $rawFilters
+     * @return array
+     */
+    private function normalizeFilters(array $rawFilters): array
+    {
+        $filters = [];
+        
+        if (!empty($rawFilters['search'])) {
+            $filters['search'] = trim($rawFilters['search']);
+        }
+        
+        if (!empty($rawFilters['kategori']) && $rawFilters['kategori'] !== 'all') {
+            $filters['kategori_id'] = (int)$rawFilters['kategori'];
+        }
+        
+        if (!empty($rawFilters['penulis']) && $rawFilters['penulis'] !== 'all') {
+            $filters['penulis_id'] = (int)$rawFilters['penulis'];
+        }
+        
+        if (!empty($rawFilters['status']) && $rawFilters['status'] !== 'all') {
+            $filters['status'] = $rawFilters['status'];
+        }
+        
+        return $filters;
     }
     
     /**
