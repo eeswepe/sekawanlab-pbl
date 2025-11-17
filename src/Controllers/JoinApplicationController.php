@@ -4,28 +4,46 @@ namespace App\Controllers;
 
 use App\Controller;
 use App\Models\JoinApplicationModel;
+use App\Services\Shared\FileUploadService;
 
+/**
+ * JoinApplicationController (REFACTORED)
+ * 
+ * Controller untuk handle join application
+ * Menggunakan FileUploadService untuk upload CV
+ */
 class JoinApplicationController extends Controller
 {
     private JoinApplicationModel $model;
-    private $uploadDir;
+    private FileUploadService $fileUploadService;
 
     public function __construct()
     {
         $this->model = new JoinApplicationModel();
-        $this->uploadDir = "upload/cv";
+        $this->fileUploadService = new FileUploadService();
     }
 
+    /**
+     * Render application form
+     * 
+     * GET /join
+     */
     public function index()
     {
         $this->render("landing/join/application", []);
     }
 
+    /**
+     * Submit application
+     * 
+     * POST /join/submit
+     */
     public function submitApplication()
     {
         header("Content-Type: application/json");
 
         try {
+            // Validate required fields
             $requiredFields = [
                 "nama_lengkap",
                 "email",
@@ -36,6 +54,7 @@ class JoinApplicationController extends Controller
                 "alasan_bergabung",
                 "github_url",
             ];
+
             foreach ($requiredFields as $field) {
                 if (empty($_POST[$field])) {
                     echo json_encode([
@@ -64,36 +83,35 @@ class JoinApplicationController extends Controller
                 return;
             }
 
-            // Handle file upload
+            // Handle CV upload menggunakan FileUploadService ✅
             $cvFilePath = null;
-            if (
-                isset($_FILES["cv"]) &&
-                $_FILES["cv"]["error"] === UPLOAD_ERR_OK
-            ) {
-                $cvFilePath = $this->handleFileUpload($_FILES["cv"]);
+            if (isset($_FILES["cv"]) && $_FILES["cv"]["error"] === UPLOAD_ERR_OK) {
+                $uploadResult = $this->fileUploadService->uploadPDF(
+                    $_FILES["cv"],
+                    "cv",
+                    "cv_"
+                );
 
-                if ($cvFilePath === false) {
+                if (!$uploadResult['success']) {
                     echo json_encode([
                         "success" => false,
-                        "message" => "Gagal mengupload file CV",
+                        "message" => "Upload CV gagal: " . $uploadResult['message'],
                     ]);
                     return;
                 }
+
+                $cvFilePath = $uploadResult['path'];
             }
 
             // Prepare data for database
             $data = [
-                "nama_lengkap" => htmlspecialchars(
-                    trim($_POST["nama_lengkap"]),
-                ),
+                "nama_lengkap" => htmlspecialchars(trim($_POST["nama_lengkap"])),
                 "email" => htmlspecialchars(trim($_POST["email"])),
                 "phone" => htmlspecialchars(trim($_POST["phone"])),
                 "nim" => htmlspecialchars(trim($_POST["nim"])),
                 "prodi" => htmlspecialchars(trim($_POST["prodi"])),
                 "semester" => (int) $_POST["semester"],
-                "alasan_bergabung" => htmlspecialchars(
-                    trim($_POST["alasan_bergabung"]),
-                ),
+                "alasan_bergabung" => htmlspecialchars(trim($_POST["alasan_bergabung"])),
                 "github_url" => htmlspecialchars(trim($_POST["github_url"])),
                 "cv_file_path" => $cvFilePath,
             ];
@@ -104,16 +122,12 @@ class JoinApplicationController extends Controller
             if ($saved) {
                 echo json_encode([
                     "success" => true,
-                    "message" =>
-                        "Pendaftaran berhasil dikirim! Tim kami akan menghubungi Anda dalam 3-5 hari kerja.",
+                    "message" => "Pendaftaran berhasil dikirim! Tim kami akan menghubungi Anda dalam 3-5 hari kerja.",
                 ]);
             } else {
-                // Delete uploaded file if database save fails
-                if (
-                    $cvFilePath &&
-                    file_exists($this->uploadDir . basename($cvFilePath))
-                ) {
-                    unlink($this->uploadDir . basename($cvFilePath));
+                // Rollback: Delete uploaded CV if database save fails
+                if ($cvFilePath) {
+                    $this->fileUploadService->deleteFile($cvFilePath);
                 }
 
                 echo json_encode([
@@ -125,44 +139,8 @@ class JoinApplicationController extends Controller
             error_log("Join Application Error: " . $e->getMessage());
             echo json_encode([
                 "success" => false,
-                "message" =>
-                    "Terjadi kesalahan pada server. Silakan coba lagi.",
+                "message" => "Terjadi kesalahan pada server. Silakan coba lagi.",
             ]);
         }
-    }
-
-    private function handleFileUpload(array $file): string|false
-    {
-        // Validate file type
-        $allowedTypes = ["application/pdf"];
-        $allowedExtensions = ["pdf"];
-
-        $fileExtension = strtolower(
-            pathinfo($file["name"], PATHINFO_EXTENSION),
-        );
-
-        if (
-            !in_array($file["type"], $allowedTypes) &&
-            !in_array($fileExtension, $allowedExtensions)
-        ) {
-            return false;
-        }
-
-        // Validate file size (5MB max)
-        $maxSize = 5 * 1024 * 1024;
-        if ($file["size"] > $maxSize) {
-            return false;
-        }
-
-        // Generate unique filename
-        $uniqueName = uniqid("cv_", true) . "." . $fileExtension;
-        $destination = $this->uploadDir . $uniqueName;
-
-        // Move uploaded file
-        if (move_uploaded_file($file["tmp_name"], $destination)) {
-            return "/upload/cv/" . $uniqueName;
-        }
-
-        return false;
     }
 }
