@@ -25,6 +25,7 @@ $router->get("/blog/{slug}", BlogController::class, "showBySlug");
 $router->get("/join", JoinApplicationController::class, "index");
 $router->post("/join", JoinApplicationController::class, "submitApplication");
 $router->get("/personil-list", PersonilController::class, "index");
+$router->get("/personil/{id}", PersonilController::class, "showById");
 
 // Authentication
 $router

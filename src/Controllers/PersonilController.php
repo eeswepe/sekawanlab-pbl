@@ -48,6 +48,32 @@ class PersonilController extends Controller
         $this->render("landing/personil/list", $data);
     }
 
+    /**
+     * Display personil detail by ID (public)
+     * 
+     * GET /personil/{id}
+     */
+    public function showById($id)
+    {
+        try {
+            $personil = $this->publicService->getPersonilWithDetails($id);
+            
+            if (!$personil) {
+                header('Location: /personil');
+                exit;
+            }
+            
+            $data = [
+                'personil' => $personil
+            ];
+            
+            $this->render("landing/personil/detail", $data);
+        } catch (\Exception $e) {
+            header('Location: /personil');
+            exit;
+        }
+    }
+
     // ===== PERSONIL DASHBOARD =====
     
     /**
