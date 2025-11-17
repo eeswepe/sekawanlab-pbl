@@ -26,7 +26,7 @@ class PersonilModel extends BaseModel
             'location',
             'tanggal_bergabung',
             'bio',
-            'skillks',
+            'skills',
             'foto_url',
             'created_at',
             'updated_at'
@@ -82,13 +82,12 @@ class PersonilModel extends BaseModel
         $stmt->execute();
         $personil['projects'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Parse JSON field 'skillks' ke array 'skills'
-        $personil['skills'] = [];
-        if (!empty($personil['skillks'])) {
-            $decoded = json_decode($personil['skillks'], true);
-            if (is_array($decoded)) {
-                $personil['skills'] = $decoded;
-            }
+        // Parse JSON field 'skills' ke array jika masih string
+        if (!empty($personil['skills']) && is_string($personil['skills'])) {
+            $decoded = json_decode($personil['skills'], true);
+            $personil['skills'] = is_array($decoded) ? $decoded : [];
+        } elseif (empty($personil['skills'])) {
+            $personil['skills'] = [];
         }
 
         return $personil;
@@ -98,9 +97,9 @@ class PersonilModel extends BaseModel
     public function updatePersonil(int $id, array $data): bool
     {
         $data = $this->filterFillable($data);
-        // pastikan skillks tersimpan sebagai JSON string jika diberikan array
-        if (isset($data['skillks']) && is_array($data['skillks'])) {
-            $data['skillks'] = json_encode($data['skillks']);
+        // pastikan skills tersimpan sebagai JSON string jika diberikan array
+        if (isset($data['skills']) && is_array($data['skills'])) {
+            $data['skills'] = json_encode($data['skills']);
         }
         return $this->update($id, $data);
     }
@@ -124,8 +123,8 @@ class PersonilModel extends BaseModel
     public function createPersonil(array $data)
     {
         $data = $this->filterFillable($data);
-        if (isset($data['skillks']) && is_array($data['skillks'])) {
-            $data['skillks'] = json_encode($data['skillks']);
+        if (isset($data['skills']) && is_array($data['skills'])) {
+            $data['skills'] = json_encode($data['skills']);
         }
 
         return $this->create($data);
@@ -186,6 +185,71 @@ class PersonilModel extends BaseModel
     }
 
     /**
+     * Get personils by role
+     */
+    public function getPersonilsByRole(string $role): array
+    {
+        return $this->where(['role' => $role]);
+    }
+
+    /**
+     * Get personils with filters (for pagination)
+     */
+    public function getPersonilsWithFilters(array $filters = [], int $limit = 12, int $offset = 0): array
+    {
+        $sql = "SELECT * FROM {$this->table} WHERE 1=1";
+        [$sql, $params] = $this->applyFiltersToSql($sql, $filters);
+        $sql .= " ORDER BY created_at DESC LIMIT :limit OFFSET :offset";
+        
+        $stmt = $this->db->prepare($sql);
+        foreach ($params as $key => $val) {
+            $stmt->bindValue($key, $val);
+        }
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Count personils by role
+     */
+    public function countPersonilsByRole(?string $role = null): int
+    {
+        if ($role === null) {
+            return $this->count();
+        }
+        return $this->count(['role' => $role]);
+    }
+
+    /**
+     * Search personils by name or specialization
+     */
+    public function searchPersonils(string $query, ?string $role = null): array
+    {
+        $sql = "SELECT * FROM {$this->table} 
+                WHERE (nama_lengkap ILIKE :query OR spesialisasi ILIKE :query)";
+        
+        $params = [':query' => '%' . $query . '%'];
+        
+        if ($role !== null) {
+            $sql .= " AND role = :role";
+            $params[':role'] = $role;
+        }
+        
+        $sql .= " ORDER BY nama_lengkap ASC";
+        
+        $stmt = $this->db->prepare($sql);
+        foreach ($params as $key => $val) {
+            $stmt->bindValue($key, $val);
+        }
+        $stmt->execute();
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
      * Helper untuk menambahkan kondisi filter ke SQL.
      * Mengembalikan tuple [$sql, $params]
      */
@@ -194,12 +258,12 @@ class PersonilModel extends BaseModel
         $params = [];
 
         if (!empty($filters['search'])) {
-            $sql .= " AND p.nama_lengkap ILIKE :search";
+            $sql .= " AND nama_lengkap ILIKE :search";
             $params[':search'] = '%' . $filters['search'] . '%';
         }
 
         if (!empty($filters['role'])) {
-            $sql .= " AND p.role = :role";
+            $sql .= " AND role = :role";
             $params[':role'] = $filters['role'];
         }
 

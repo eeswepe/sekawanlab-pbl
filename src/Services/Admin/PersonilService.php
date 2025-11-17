@@ -169,7 +169,7 @@ class PersonilService
                 'location' => $data['location'] ?? null,
                 'tanggal_bergabung' => $data['tanggal_bergabung'] ?? date('Y-m-d'),
                 'bio' => $data['bio'] ?? null,
-                'skillks' => json_encode($skills),
+                'skills' => json_encode($skills),
                 'foto_url' => $fotoUrl
             ];
             
@@ -214,7 +214,7 @@ class PersonilService
             'location' => $data['location'] ?? '',
             'tanggal_bergabung' => $data['tanggal_bergabung'] ?? null,
             'bio' => $data['bio'] ?? '',
-            'skillks' => json_encode($data['skills'] ?? []),
+            'skills' => json_encode($data['skills'] ?? []),
             'foto_url' => $personil['foto_url']
         ];
         

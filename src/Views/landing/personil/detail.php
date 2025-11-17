@@ -90,8 +90,8 @@ include_once __DIR__ . "/../../layouts/header.php";
                 <?php foreach ($data["personil"]["projects"] as $project): ?>
                     <div class="col-lg-6">
                         <div class="project-card">
-                            <h3 class="project-title"><?php echo htmlspecialchars($project["nama_project"]); ?></h3>
-                            <p class="project-description"><?php echo htmlspecialchars($project["deskripsi_project"] ?? "-"); ?></p>
+                            <h3 class="project-title"><?php echo htmlspecialchars($project["title"]); ?></h3>
+                            <p class="project-description"><?php echo htmlspecialchars($project["description"] ?? "-"); ?></p>
                             <?php if (!empty($project["link_project"])): ?>
                                 <a href="<?php echo htmlspecialchars($project["link_project"]); ?>" 
                                    class="project-link" 

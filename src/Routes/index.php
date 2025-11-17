@@ -26,12 +26,12 @@ $router = new Router();
 $router->get("/", HomeController::class, "index");
 $router->get("/profil/{slug}", ProfilPageController::class, "show");
 $router->get("/personil", PersonilController::class, "index");
+$router->get("/personil/detail/{id}", PersonilController::class, "showById");
+$router->get("/personil-list", PersonilController::class, "index");
 $router->get("/blog", BlogController::class, "index");
 $router->get("/blog/{slug}", BlogController::class, "showBySlug");
 $router->get("/join", JoinApplicationController::class, "index");
 $router->post("/join", JoinApplicationController::class, "submitApplication");
-$router->get("/personil-list", PersonilController::class, "index");
-$router->get("/personil/{id}", PersonilController::class, "showById");
 
 // Authentication
 $router
@@ -79,7 +79,7 @@ $router->post("/admin/join-application/update-status/{id}", AdminApplicationCont
 $router->post("/admin/join-application/update-notes/{id}", AdminApplicationController::class, "updateNotes")->middleware(AdminMiddleware::class);
 
 // ===== PERSONIL ROUTES =====
-$router->get("/personil", PersonilController::class, "dashboard")->middleware(PersonilMiddleware::class);
+$router->get("/personil/dashboard", PersonilController::class, "dashboard")->middleware(PersonilMiddleware::class);
 $router->get("/personil/blog/create", PersonilController::class, "renderBlogCreate")->middleware(PersonilMiddleware::class);
 $router->post("/personil/blog/create", PersonilController::class, "createBlog")->middleware(PersonilMiddleware::class);
 $router->get("/personil/blog", PersonilController::class, "renderBlogList")->middleware(PersonilMiddleware::class);

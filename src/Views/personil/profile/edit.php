@@ -23,7 +23,7 @@
             </div>
 
             <ul class="sidebar-nav">
-                <li><a href="/personil"><i class="bi bi-grid-fill"></i> Dashboard</a></li>
+                <li><a href="/personil/dashboard"><i class="bi bi-grid-fill"></i> Dashboard</a></li>
                 <li><a href="/personil/profile" class="active"><i class="bi bi-person-circle"></i> My Profile</a></li>
                 <li><a href="/personil/blog"><i class="bi bi-journal-text"></i> My Blog Posts</a></li>
                 <li><a href="/logout"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
@@ -158,7 +158,7 @@
                                     <div id="skillsContainer" class="d-flex flex-wrap align-items-center mb-3">
                                         <?php if (!empty($personil['skills'])): ?>
                                             <?php foreach ($personil['skills'] as $skill): ?>
-                                                <span class="skill-tag" data-skill="<?= htmlspecialchars($skill) ?>"><?= htmlspecialchars($skill) ?> <button type="button" class="btn-close"></button></span>
+                                                <span class="skill-tag" data-skill="<?= htmlspecialchars($skill) ?>"><?= htmlspecialchars($skill) ?> <button type="button" class="btn-close" onclick="removeSkill(this)"></button></span>
                                             <?php endforeach; ?>
                                         <?php endif; ?>
                                     </div>

@@ -22,7 +22,7 @@ CREATE TABLE personil(
     location VARCHAR(255),
     tanggal_bergabung DATE,
     bio TEXT,
-    skillks JSONB,
+    skills JSONB,
     foto_url VARCHAR(500),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

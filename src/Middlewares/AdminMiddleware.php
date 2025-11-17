@@ -24,7 +24,7 @@ class AdminMiddleware implements Middleware
             
             // Redirect personil to personil dashboard
             if (SessionHelper::isPersonil()) {
-                header("Location: /personil");
+                header("Location: /personil/dashboard");
             } else {
                 header("Location: /login");
             }

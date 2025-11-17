@@ -36,7 +36,12 @@ class PersonilProfileService
         }
         
         // Parse skills
-        $personil['skills'] = !empty($personil['skillks']) ? json_decode($personil['skillks'], true) : [];
+        if (!empty($personil['skills']) && is_string($personil['skills'])) {
+            $decoded = json_decode($personil['skills'], true);
+            $personil['skills'] = is_array($decoded) ? $decoded : [];
+        } elseif (empty($personil['skills'])) {
+            $personil['skills'] = [];
+        }
         
         // Get projects
         $personil['projects'] = $this->projectModel->getProjectsByPersonilId($personilId);
@@ -69,6 +74,12 @@ class PersonilProfileService
             }
         }
         
+        // Prepare skills data
+        $skills = [];
+        if (isset($data['skills']) && is_array($data['skills'])) {
+            $skills = array_filter($data['skills']); // Remove empty values
+        }
+        
         // Prepare update data
         $updateData = [
             'nama_lengkap' => $data['nama_lengkap'] ?? $personil['nama_lengkap'],
@@ -79,7 +90,7 @@ class PersonilProfileService
             'location' => $data['location'] ?? $personil['location'],
             'tanggal_bergabung' => $personil['tanggal_bergabung'],
             'bio' => $data['bio'] ?? $personil['bio'],
-            'skillks' => json_encode($data['skills'] ?? []),
+            'skills' => json_encode($skills),
             'foto_url' => $fotoUrl
         ];
         
@@ -128,7 +139,7 @@ class PersonilProfileService
             'location' => $personil['location'],
             'tanggal_bergabung' => $personil['tanggal_bergabung'],
             'bio' => $personil['bio'],
-            'skillks' => json_encode($skills),
+            'skills' => json_encode($skills),
             'foto_url' => $personil['foto_url']
         ];
         

@@ -110,7 +110,11 @@ document.getElementById('editProfileForm')?.addEventListener('submit', function(
     document.querySelectorAll('.skill-tag').forEach(tag => {
         skills.push(tag.dataset.skill);
     });
-    formData.append('skills', JSON.stringify(skills));
+    
+    // Add skills as individual array items, not JSON string
+    skills.forEach(skill => {
+        formData.append('skills[]', skill);
+    });
     
     // Collect projects
     const projects = [];

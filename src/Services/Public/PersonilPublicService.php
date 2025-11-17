@@ -3,6 +3,7 @@
 namespace App\Services\Public;
 
 use App\Models\PersonilModel;
+use App\Models\ProjectModel;
 
 /**
  * PersonilPublicService
@@ -12,10 +13,12 @@ use App\Models\PersonilModel;
 class PersonilPublicService
 {
     private $personilModel;
+    private $projectModel;
     
     public function __construct()
     {
         $this->personilModel = new PersonilModel();
+        $this->projectModel = new ProjectModel();
     }
     
     /**
@@ -54,11 +57,15 @@ class PersonilPublicService
         }
         
         // Parse skills if JSON
-        if (!empty($personil['skillks'])) {
-            $personil['skills'] = json_decode($personil['skillks'], true) ?? [];
-        } else {
+        if (!empty($personil['skills']) && is_string($personil['skills'])) {
+            $decoded = json_decode($personil['skills'], true);
+            $personil['skills'] = is_array($decoded) ? $decoded : [];
+        } elseif (empty($personil['skills'])) {
             $personil['skills'] = [];
         }
+        
+        // Get projects
+        $personil['projects'] = $this->projectModel->getProjectsByPersonilId($id);
         
         return $personil;
     }

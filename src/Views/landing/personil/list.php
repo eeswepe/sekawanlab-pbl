@@ -33,7 +33,7 @@ include_once __DIR__ . "/../../layouts/header.php";
                 <?php foreach ($data["personils"] as $personil): ?>
                 <?php if ($personil["role"] === "dosen"): ?>
                     <div class="col-lg-3 col-md-6 mb-4">
-                        <a class="person-card" href="/personil/<?php echo htmlspecialchars(
+                        <a class="person-card" href="/personil/detail/<?php echo htmlspecialchars(
                             $personil["id"],
                         ); ?>">
                             <div class="person-image">
@@ -116,7 +116,7 @@ include_once __DIR__ . "/../../layouts/header.php";
                 <?php foreach ($data["personils"] as $personil): ?>
                 <?php if ($personil["role"] === "talent"): ?>
                     <div class="col-lg-3 col-md-6 mb-4">
-                        <a class="person-card" href="/personil/<?php echo htmlspecialchars(
+                        <a class="person-card" href="/personil/detail/<?php echo htmlspecialchars(
                             $personil["id"],
                         ); ?>">
                             <div class="person-image">

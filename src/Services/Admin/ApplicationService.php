@@ -147,7 +147,7 @@ class ApplicationService
             'location' => null,
             'tanggal_bergabung' => date('Y-m-d'),
             'bio' => '',
-            'skillks' => json_encode([]),
+            'skills' => json_encode([]),
             'foto_url' => null
         ];
         
