@@ -44,7 +44,7 @@ $blogsToShow = !empty($data['blogs']) ? array_slice($data['blogs'], $offset, $pe
                         <i class="bi bi-search"></i>
                     </button>
                 </div>
-                
+
                 <!-- Blog Posts -->
                 <div class="row g-4">
                     <?php if (!empty($blogsToShow)): ?>
@@ -60,8 +60,7 @@ $blogsToShow = !empty($data['blogs']) ? array_slice($data['blogs'], $offset, $pe
                             $img = !empty($post['featured_image_url']) ? htmlspecialchars($post['featured_image_url']) : null;
                             $excerpt = !empty($post['cuplikan']) ? $post['cuplikan'] : (strlen($post['konten']) > 200 ? substr($post['konten'], 0, 200) . '...' : $post['konten']);
                             $excerpt = htmlspecialchars($excerpt);
-                            $kategoriNama = isset($kategoriMap[$post['kategori_id']]) ? htmlspecialchars($kategoriMap[$post['kategori_id']]) : ('Kategori ' . (int)$post['kategori_id']);
-                            // set url sesuai routing: /blog/{slug} atau blog-detail.php?id={id}
+                            $kategoriNama = isset($post['kategori_id'], $kategoriMap[$post['kategori_id']]) ? htmlspecialchars($kategoriMap[$post['kategori_id']]) : (isset($post['kategori_nama']) ? htmlspecialchars($post['kategori_nama']) : 'Uncategorized');                            // set url sesuai routing: /blog/{slug} atau blog-detail.php?id={id}
                             $postUrl = '/blog/' . $slug; // ubah jika perlu
                         ?>
                             <div class="col-md-6">
@@ -119,74 +118,74 @@ $blogsToShow = !empty($data['blogs']) ? array_slice($data['blogs'], $offset, $pe
 
                 <!-- Pagination -->
                 <?php if ($totalPages > 1): ?>
-                <div class="pagination-wrapper">
-                    <nav aria-label="Blog pagination">
-                        <ul class="pagination justify-content-center">
-                            <!-- Previous Button -->
-                            <li class="page-item <?php echo ($currentPage <= 1) ? 'disabled' : ''; ?>">
-                                <a class="page-link" href="?page=<?php echo $currentPage - 1; ?>" style="border-radius: 10px 0 0 10px;">
-                                    <i class="bi bi-chevron-left"></i>
-                                </a>
-                            </li>
-                            
-                            <?php
-                            // Tampilkan maksimal 5 halaman di pagination
-                            $startPage = max(1, $currentPage - 2);
-                            $endPage = min($totalPages, $currentPage + 2);
-                            
-                            // Tampilkan halaman pertama jika tidak di range
-                            if ($startPage > 1): ?>
-                                <li class="page-item">
-                                    <a class="page-link" href="?page=1">1</a>
-                                </li>
-                                <?php if ($startPage > 2): ?>
-                                    <li class="page-item disabled">
-                                        <span class="page-link">...</span>
-                                    </li>
-                                <?php endif; ?>
-                            <?php endif; ?>
-                            
-                            <!-- Halaman di range -->
-                            <?php for ($i = $startPage; $i <= $endPage; $i++): ?>
-                                <li class="page-item <?php echo ($i == $currentPage) ? 'active' : ''; ?>">
-                                    <a class="page-link" href="?page=<?php echo $i; ?>" 
-                                       <?php if ($i == $currentPage): ?>
-                                       style="background: var(--gold); border-color: var(--gold);"
-                                       <?php endif; ?>>
-                                        <?php echo $i; ?>
+                    <div class="pagination-wrapper">
+                        <nav aria-label="Blog pagination">
+                            <ul class="pagination justify-content-center">
+                                <!-- Previous Button -->
+                                <li class="page-item <?php echo ($currentPage <= 1) ? 'disabled' : ''; ?>">
+                                    <a class="page-link" href="?page=<?php echo $currentPage - 1; ?>" style="border-radius: 10px 0 0 10px;">
+                                        <i class="bi bi-chevron-left"></i>
                                     </a>
                                 </li>
-                            <?php endfor; ?>
-                            
-                            <!-- Tampilkan halaman terakhir jika tidak di range -->
-                            <?php if ($endPage < $totalPages): ?>
-                                <?php if ($endPage < $totalPages - 1): ?>
-                                    <li class="page-item disabled">
-                                        <span class="page-link">...</span>
+
+                                <?php
+                                // Tampilkan maksimal 5 halaman di pagination
+                                $startPage = max(1, $currentPage - 2);
+                                $endPage = min($totalPages, $currentPage + 2);
+
+                                // Tampilkan halaman pertama jika tidak di range
+                                if ($startPage > 1): ?>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=1">1</a>
+                                    </li>
+                                    <?php if ($startPage > 2): ?>
+                                        <li class="page-item disabled">
+                                            <span class="page-link">...</span>
+                                        </li>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+
+                                <!-- Halaman di range -->
+                                <?php for ($i = $startPage; $i <= $endPage; $i++): ?>
+                                    <li class="page-item <?php echo ($i == $currentPage) ? 'active' : ''; ?>">
+                                        <a class="page-link" href="?page=<?php echo $i; ?>"
+                                            <?php if ($i == $currentPage): ?>
+                                            style="background: var(--gold); border-color: var(--gold);"
+                                            <?php endif; ?>>
+                                            <?php echo $i; ?>
+                                        </a>
+                                    </li>
+                                <?php endfor; ?>
+
+                                <!-- Tampilkan halaman terakhir jika tidak di range -->
+                                <?php if ($endPage < $totalPages): ?>
+                                    <?php if ($endPage < $totalPages - 1): ?>
+                                        <li class="page-item disabled">
+                                            <span class="page-link">...</span>
+                                        </li>
+                                    <?php endif; ?>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=<?php echo $totalPages; ?>"><?php echo $totalPages; ?></a>
                                     </li>
                                 <?php endif; ?>
-                                <li class="page-item">
-                                    <a class="page-link" href="?page=<?php echo $totalPages; ?>"><?php echo $totalPages; ?></a>
+
+                                <!-- Next Button -->
+                                <li class="page-item <?php echo ($currentPage >= $totalPages) ? 'disabled' : ''; ?>">
+                                    <a class="page-link" href="?page=<?php echo $currentPage + 1; ?>" style="border-radius: 0 10px 10px 0;">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </a>
                                 </li>
-                            <?php endif; ?>
-                            
-                            <!-- Next Button -->
-                            <li class="page-item <?php echo ($currentPage >= $totalPages) ? 'disabled' : ''; ?>">
-                                <a class="page-link" href="?page=<?php echo $currentPage + 1; ?>" style="border-radius: 0 10px 10px 0;">
-                                    <i class="bi bi-chevron-right"></i>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
-                    
-                    <!-- Info halaman -->
-                    <div class="text-center mt-3 text-muted">
-                        <small>
-                            Menampilkan <?php echo $offset + 1; ?> - <?php echo min($offset + $perPage, $totalBlogs); ?> dari <?php echo $totalBlogs; ?> artikel
-                            (Halaman <?php echo $currentPage; ?> dari <?php echo $totalPages; ?>)
-                        </small>
+                            </ul>
+                        </nav>
+
+                        <!-- Info halaman -->
+                        <div class="text-center mt-3 text-muted">
+                            <small>
+                                Menampilkan <?php echo $offset + 1; ?> - <?php echo min($offset + $perPage, $totalBlogs); ?> dari <?php echo $totalBlogs; ?> artikel
+                                (Halaman <?php echo $currentPage; ?> dari <?php echo $totalPages; ?>)
+                            </small>
+                        </div>
                     </div>
-                </div>
                 <?php endif; ?>
             </div>
 
