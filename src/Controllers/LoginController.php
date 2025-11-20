@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Controller;
 use App\Services\Auth\AuthService;
 use App\Helpers\SessionHelper;
+use App\Services\External\SiakadService;
 
 /**
  * LoginController (REFACTORED)
@@ -18,10 +19,12 @@ use App\Helpers\SessionHelper;
 class LoginController extends Controller
 {
     private AuthService $authService;
+    private SiakadService $siakadService;
 
     public function __construct()
     {
         $this->authService = new AuthService();
+        $this->siakadService = new SiakadService();
     }
 
     /**
@@ -48,20 +51,24 @@ class LoginController extends Controller
     public function authenticate()
     {
         // Get input from POST
-        $username = $_POST['username'] ?? '';
+        $nimNip = $_POST['nim_nip'] ?? '';
         $password = $_POST['password'] ?? '';
 
-        // Validate credentials menggunakan AuthService
-        $user = $this->authService->validateCredentials($username, $password);
+        if($this->authService->unveriviedNimNip($nimNip, $password)) {
+            return $this->siakadService->checkPassword($nimNip, $password);
+        }
 
-        if (!$user) {
+        // Validate credentials menggunakan AuthService
+        $personil = $this->authService->validateCredentials($nimNip, $password);
+
+        if (!$personil) {
             // Redirect ke login dengan error
             header('Location: /login?error=invalid_credentials');
             exit();
         }
 
         // Login user (set session) menggunakan AuthService
-        $loginSuccess = $this->authService->login($user);
+        $loginSuccess = $this->authService->login($personil);
 
         if (!$loginSuccess) {
             header('Location: /login?error=login_failed');
@@ -69,7 +76,7 @@ class LoginController extends Controller
         }
 
         // Get redirect URL berdasarkan role
-        $redirectUrl = $this->authService->getRedirectUrlByRole($user['role']);
+        $redirectUrl = $this->authService->getRedirectUrlByRole($personil['role']);
 
         // Redirect to dashboard
         header('Location: ' . $redirectUrl);

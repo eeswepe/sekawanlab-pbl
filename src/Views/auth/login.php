@@ -61,8 +61,8 @@
 
         <form id="loginForm" action="/login" method="POST">
             <div class="mb-3 text-start">
-                <label for="username" class="form-label">Email atau Username</label>
-                <input type="text" class="form-control" id="username" name="username" required>
+                <label for="nim_nip" class="form-label">NIM ata NIP anda</label>
+                <input type="text" class="form-control" id="nim_nip" name="nim_nip" required>
             </div>
 
             <div class="mb-2 text-start">

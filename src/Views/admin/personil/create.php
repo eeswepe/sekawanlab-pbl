@@ -108,6 +108,10 @@
                                         <label for="namaLengkap" class="form-label">Nama Lengkap</label>
                                         <input type="text" class="form-control" id="namaLengkap" name="nama_lengkap" placeholder="Masukkan nama lengkap personil" required>
                                     </div>
+                                    <div class="mb-3">
+                                        <label for="nimNip" class="form-label">NIM / NIP</label>
+                                        <input type="text" class="form-control" id="nimNip" name="nim_nip" placeholder="Masukkan NIM (mahasiswa) atau NIP (dosen)" required>
+                                    </div>
                                     <div class="row mb-3">
                                         <div class="col-md-6">
                                             <label class="form-label">Tipe Personil</label>
@@ -263,15 +267,8 @@
                             <div id="account-fields" class="row" style="display: none;">
                                 <div class="col-md-12 mb-3">
                                     <label for="username" class="form-label">Username</label>
-                                    <input type="text" class="form-control" id="username" name="username" placeholder="Masukkan username unik">
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="password" class="form-label">Password</label>
-                                    <input type="password" class="form-control" id="password" name="password" placeholder="Masukkan password">
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="confirmPassword" class="form-label">Confirm Password</label>
-                                    <input type="password" class="form-control" id="confirmPassword" placeholder="Konfirmasi password">
+                                    <input type="text" class="form-control" id="username" name="username" placeholder="Masukkan username unik" disabled>
+                                    <small class="text-muted">Username akan otomatis diisi dari NIM/NIP. Password akan diatur melalui proses terpisah</small>
                                 </div>
                             </div>
                         </div>

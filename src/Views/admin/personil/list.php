@@ -106,7 +106,7 @@
                                 <div class="col-md-6 col-lg-4 offset-lg-4">
                                     <select class="form-select" name="role" id="filterRole" aria-label="Filter by Type">
                                         <option value="all" <?= empty($filters['role']) ? 'selected' : '' ?>>Filter by Tipe (All)</option>
-                                        <option value="dosen" <?= (isset($filters['role']) && $filters['role'] === 'dosen') ? 'selected' : '' ?>>Dosen Pembimbing</option>
+                                        <option value="dosen" <?= (isset($filters['role']) && $filters['role'] === 'admin') ? 'selected' : '' ?>>Dosen Pembimbing</option>
                                         <option value="talent" <?= (isset($filters['role']) && $filters['role'] === 'talent') ? 'selected' : '' ?>>Talent/Geeks</option>
                                     </select>
                                 </div>
@@ -132,6 +132,7 @@
                                         <th>#</th>
                                         <th>Avatar</th>
                                         <th>Nama</th>
+                                        <th>NIM / NIP</th>
                                         <th>Spesialisasi</th>
                                         <th>Tipe</th>
                                         <th>Email</th>
@@ -155,9 +156,10 @@
                                                     <?php endif; ?>
                                                 </td>
                                                 <td><?= htmlspecialchars($personil['nama_lengkap']) ?></td>
+                                                <td><?= htmlspecialchars($personil['nim_nip']) ?></td>
                                                 <td><?= htmlspecialchars($personil['spesialisasi'] ?? '-') ?></td>
                                                 <td>
-                                                    <?php if ($personil['role'] === 'dosen'): ?>
+                                                    <?php if ($personil['role'] === 'admin'): ?>
                                                         <span class="badge bg-secondary">Dosen Pembimbing</span>
                                                     <?php else: ?>
                                                         <span class="badge" style="background-color: var(--gold); color: white;">Talent/Geek</span>

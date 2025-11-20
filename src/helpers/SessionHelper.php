@@ -70,7 +70,18 @@ class SessionHelper
      */
     public static function isAdmin(): bool
     {
-        return self::getRole() === "admin";
+        return in_array(self::getRole(), ["admin", "superadmin"], true);
+    }
+
+    /**
+     * Check apakah personil memiliki privilege admin (admin atau dosen)
+     * 
+     * @return bool
+     */
+    public static function hasAdminPrivilege(): bool
+    {
+        $user = self::getUser();
+        return $user && in_array($user['role'], ['admin', 'dosen'], true);
     }
 
     /**
@@ -83,13 +94,23 @@ class SessionHelper
     }
 
     /**
+     * Check apakah personil adalah talent (personil biasa)
+     * 
+     * @return bool
+     */
+    public static function isTalent(): bool
+    {
+        return self::getRole() === "talent";
+    }
+
+    /**
      * Mendapatkan personil_id dari user yang sedang login
      * @return int|null
      */
     public static function getPersonilId(): ?int
     {
         self::start();
-        return $_SESSION["user"]["personil_id"] ?? null;
+        return $_SESSION["user"]["id"] ?? null;
     }
 
     /**

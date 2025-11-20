@@ -25,11 +25,16 @@ class Controller
     /**
      * Send JSON response
      * 
-     * @param array $data
+     * @param mixed $data
      * @param int $statusCode
      */
     protected function jsonResponse($data, $statusCode = 200)
     {
+        // Clear any output that might have been sent
+        if (ob_get_length()) {
+            ob_clean();
+        }
+        
         http_response_code($statusCode);
         header('Content-Type: application/json');
         echo json_encode($data);

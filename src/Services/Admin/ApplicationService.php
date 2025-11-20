@@ -138,8 +138,9 @@ class ApplicationService
         
         // Create personil
         $personilData = [
-            'user_id' => null,
             'nama_lengkap' => $application['nama_lengkap'],
+            'nim_nip' => $application['nim'], // Field 'nim' di join_application
+            'password' => null, // Will be set later via external program
             'role' => 'talent',
             'spesialisasi' => null,
             'email' => $application['email'],

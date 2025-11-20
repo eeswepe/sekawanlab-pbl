@@ -4,7 +4,7 @@ return [
     "driver" => "pgsql",
     "host" => "localhost",
     "port" => 5432,
-    "database" => "sekawanlab_db",
+    "database" => "sekawanlab_db_2",
     "username" => "postgres",
     "password" => "password",
     "charset" => "utf8",

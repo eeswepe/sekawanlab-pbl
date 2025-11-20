@@ -19,7 +19,7 @@ class AdminMiddleware implements Middleware
         }
 
         // Check if user has admin role
-        if (!SessionHelper::isAdmin()) {
+        if (!SessionHelper::hasAdminPrivilege()) {
             SessionHelper::setFlash('error', 'Anda tidak memiliki akses ke halaman ini.');
             
             // Redirect personil to personil dashboard

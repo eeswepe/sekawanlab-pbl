@@ -2,7 +2,6 @@
 
 namespace App\Services\Auth;
 
-use App\Models\UserModel;
 use App\Models\PersonilModel;
 use App\Helpers\SessionHelper;
 
@@ -10,74 +9,78 @@ use App\Helpers\SessionHelper;
  * AuthService
  * 
  * Service untuk menangani logic autentikasi
+ * Updated: Menggunakan PersonilModel langsung (tanpa UserModel)
+ * 
  * Tanggung jawab:
- * - Validasi credentials
+ * - Validasi credentials (nim_nip dan password)
  * - Login (set session)
  * - Logout (destroy session)
- * - Get data personil untuk role personil
+ * - Get data personil
+ * - Check role & privilege
  */
 class AuthService
 {
-    private UserModel $userModel;
     private PersonilModel $personilModel;
 
     public function __construct()
     {
-        $this->userModel = new UserModel();
         $this->personilModel = new PersonilModel();
     }
 
     /**
-     * Validasi username dan password
+     * Validasi nim_nip dan password
      * 
-     * @param string $username
-     * @param string $password
-     * @return array|false User data jika valid, false jika tidak
+     * @param string $nimNip NIM/NIP untuk login
+     * @param string $password Password
+     * @return array|false Personil data jika valid, false jika tidak
      */
-    public function validateCredentials(string $username, string $password): array|false
+    public function validateCredentials(string $nimNip, string $password): array|false
     {
-        // Trim username
-        $username = trim($username);
+        // Trim nim_nip
+        $nimNip = trim($nimNip);
 
         // Validasi input kosong
-        if (empty($username) || empty($password)) {
+        if (empty($nimNip) || empty($password)) {
             return false;
         }
 
-        // Validasi credentials menggunakan UserModel
-        $user = $this->userModel->validateCredentials($username, $password);
+        // Validasi credentials menggunakan PersonilModel
+        $personil = $this->personilModel->validateCredentials($nimNip, $password);
 
-        return $user;
+        return $personil;
+    }
+
+    public function unveriviedNimNip(string $nimNip, string $password): bool
+    {
+        $user = $this->personilModel->getPersonilByNimNip($nimNip);
+        if(!$this->personilModel->passwordExist($nimNip)) {
+            $this->personilModel->changePassword($user['id'], $password);
+            return true;
+        }
+        return false;
     }
 
     /**
-     * Login user dan set session
+     * Login personil dan set session
      * 
-     * @param array $user User data dari database
+     * @param array $personil Personil data dari database
      * @return bool
      */
-    public function login(array $user): bool
+    public function login(array $personil): bool
     {
         try {
-            // Get personil_id jika user adalah personil
-            $personil_id = null;
-            if ($user['role'] === 'personil') {
-                $personil = $this->personilModel->getPersonilByUserId($user['id']);
-                if ($personil) {
-                    $personil_id = $personil['id'];
-                }
-            }
-
             // Set session data menggunakan SessionHelper
             SessionHelper::setUser([
-                'id' => $user['id'],
-                'username' => $user['username'],
-                'role' => $user['role'],
-                'personil_id' => $personil_id
+                'id' => $personil['id'],
+                'nim_nip' => $personil['nim_nip'],
+                'nama_lengkap' => $personil['nama_lengkap'],
+                'role' => $personil['role'],  // admin / dosen / talent
+                'email' => $personil['email'] ?? null,
+                'foto_url' => $personil['foto_url'] ?? null
             ]);
 
             // Set flash message
-            SessionHelper::setFlash('success', 'Login berhasil! Selamat datang, ' . $user['username'] . '.');
+            SessionHelper::setFlash('success', 'Login berhasil! Selamat datang, ' . $personil['nama_lengkap'] . '.');
 
             return true;
         } catch (\Exception $e) {
@@ -87,7 +90,7 @@ class AuthService
     }
 
     /**
-     * Logout user (destroy session)
+     * Logout personil (destroy session)
      * 
      * @return void
      */
@@ -98,7 +101,7 @@ class AuthService
     }
 
     /**
-     * Get redirect URL berdasarkan role user
+     * Get redirect URL berdasarkan role
      * 
      * @param string $role
      * @return string
@@ -106,25 +109,25 @@ class AuthService
     public function getRedirectUrlByRole(string $role): string
     {
         return match ($role) {
-            'admin' => '/admin',
-            'personil' => '/personil/dashboard',
+            'admin', 'dosen' => '/admin',  // admin dan dosen ke admin dashboard
+            'talent' => '/personil/dashboard',
             default => '/'
         };
     }
 
     /**
-     * Get personil data by user_id
+     * Get personil data by id
      * 
-     * @param int $userId
+     * @param int $personilId
      * @return array|null
      */
-    public function getPersonilDataByUserId(int $userId): ?array
+    public function getPersonilDataById(int $personilId): ?array
     {
-        return $this->personilModel->getPersonilByUserId($userId);
+        return $this->personilModel->getPersonilById($personilId);
     }
 
     /**
-     * Check apakah user sudah login
+     * Check apakah personil sudah login
      * 
      * @return bool
      */
@@ -134,7 +137,7 @@ class AuthService
     }
 
     /**
-     * Get current logged in user
+     * Get current logged in personil
      * 
      * @return array|null
      */
@@ -144,7 +147,7 @@ class AuthService
     }
 
     /**
-     * Check apakah user adalah admin
+     * Check apakah personil adalah admin murni (bukan dosen)
      * 
      * @return bool
      */
@@ -155,13 +158,23 @@ class AuthService
     }
 
     /**
-     * Check apakah user adalah personil
+     * Check apakah personil adalah dosen
      * 
      * @return bool
      */
-    public function isPersonil(): bool
+    public function isDosen(): bool
     {
         $user = $this->getCurrentUser();
-        return $user && $user['role'] === 'personil';
+        return $user && $user['role'] === 'dosen';
+    }
+
+    /**
+     * Get personil model instance
+     * 
+     * @return PersonilModel
+     */
+    public function getPersonilModel(): PersonilModel
+    {
+        return $this->personilModel;
     }
 }

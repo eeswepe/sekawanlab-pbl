@@ -3,7 +3,7 @@
 namespace App\Services\Admin;
 
 use App\Models\PersonilModel;
-use App\Models\UserModel;
+use App\Helpers\SessionHelper;
 use App\Models\ProjectModel;
 use App\Services\Shared\FileUploadService;
 use PDO;
@@ -16,14 +16,12 @@ use PDO;
 class PersonilService
 {
     private $personilModel;
-    private $userModel;
     private $projectModel;
     private $fileService;
     
     public function __construct()
     {
         $this->personilModel = new PersonilModel();
-        $this->userModel = new UserModel();
         $this->projectModel = new ProjectModel();
         $this->fileService = new FileUploadService();
     }
@@ -113,7 +111,7 @@ class PersonilService
     public function createPersonil(array $data, array $files): int
     {
         // Validate
-        if (empty($data['nama_lengkap']) || empty($data['email']) || empty($data['phone']) || empty($data['role'])) {
+        if (empty($data['nama_lengkap']) || empty($data['nim_nip']) || empty($data['email']) || empty($data['phone']) || empty($data['role'])) {
             throw new \Exception('Field wajib tidak boleh kosong');
         }
         
@@ -121,25 +119,6 @@ class PersonilService
         $db->beginTransaction();
         
         try {
-            $userId = null;
-            
-            // Create user account if requested
-            if (!empty($data['create_account']) && $data['create_account'] === 'true') {
-                if (empty($data['username']) || empty($data['password'])) {
-                    throw new \Exception('Username dan password wajib diisi untuk membuat akun');
-                }
-                
-                $userId = $this->userModel->createUser([
-                    'username' => $data['username'],
-                    'password' => $data['password'],
-                    'role' => 'personil'
-                ]);
-                
-                if (!$userId) {
-                    throw new \Exception('Gagal membuat akun user');
-                }
-            }
-            
             // Handle photo upload
             $fotoUrl = null;
             if (!empty($files['photo']) && $files['photo']['error'] === UPLOAD_ERR_OK) {
@@ -158,10 +137,12 @@ class PersonilService
                 $skills = json_decode($data['skills'], true) ?? [];
             }
             
-            // Create personil
+            // Create personil with password set to NULL initially
+            // Password will be set through external program
             $personilData = [
-                'user_id' => $userId,
                 'nama_lengkap' => $data['nama_lengkap'],
+                'nim_nip' => $data['nim_nip'],
+                'password' => null, // Will be set by external program
                 'role' => $data['role'],
                 'spesialisasi' => $data['spesialisasi'] ?? null,
                 'email' => $data['email'],
@@ -207,6 +188,8 @@ class PersonilService
         // Prepare data
         $updateData = [
             'nama_lengkap' => $data['nama_lengkap'] ?? '',
+            'nim_nip' => $data['nim_nip'] ?? '',
+            'password' => $data['password'] ?? null,
             'role' => $data['role'] ?? 'talent',
             'spesialisasi' => $data['spesialisasi'] ?? '',
             'email' => $data['email'] ?? '',
@@ -218,6 +201,12 @@ class PersonilService
             'foto_url' => $personil['foto_url']
         ];
         
+        if ($this->personilModel->nimNipExists($data['nim_nip'])) {
+        SessionHelper::setFlash('error', 'NIM/NIP sudah terdaftar!');
+        header('Location: /admin/personil/create');
+        exit;
+    }
+
         // Update personil
         if (!$this->personilModel->updatePersonil($id, $updateData)) {
             throw new \Exception('Gagal update personil');

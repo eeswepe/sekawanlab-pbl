@@ -39,23 +39,23 @@ document.addEventListener('DOMContentLoaded', function() {
     const createAccountCheck = document.getElementById('createAccountCheck');
     const accountFields = document.getElementById('account-fields');
     const usernameInput = document.getElementById('username');
-    const passwordInput = document.getElementById('password');
-    const confirmPasswordInput = document.getElementById('confirmPassword');
+    const nimNipInput = document.getElementById('nimNip');
+    
+    // Auto-fill username from nim_nip
+    nimNipInput.addEventListener('input', function() {
+        usernameInput.value = this.value;
+    });
     
     createAccountCheck.addEventListener('change', function() {
         if (this.checked) {
             accountFields.style.display = 'flex';
             usernameInput.setAttribute('required', 'required');
-            passwordInput.setAttribute('required', 'required');
-            confirmPasswordInput.setAttribute('required', 'required');
+            // Fill username with current nim_nip value
+            usernameInput.value = nimNipInput.value;
         } else {
             accountFields.style.display = 'none';
             usernameInput.removeAttribute('required');
-            passwordInput.removeAttribute('required');
-            confirmPasswordInput.removeAttribute('required');
             usernameInput.value = '';
-            passwordInput.value = '';
-            confirmPasswordInput.value = '';
         }
     });
     
@@ -119,12 +119,9 @@ document.addEventListener('DOMContentLoaded', function() {
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        // Validate password confirmation
+        // Enable username temporarily to include in form data
         if (createAccountCheck.checked) {
-            if (passwordInput.value !== confirmPasswordInput.value) {
-                alert('Password dan konfirmasi password tidak sama!');
-                return;
-            }
+            usernameInput.removeAttribute('disabled');
         }
         
         const formData = new FormData(form);
@@ -173,12 +170,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('Error: ' + result.message);
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalText;
+                usernameInput.setAttribute('disabled', 'disabled');
             }
         } catch (error) {
             console.error('Error:', error);
             alert('Terjadi kesalahan saat menyimpan personil');
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalText;
+            usernameInput.setAttribute('disabled', 'disabled');
         }
     });
 });

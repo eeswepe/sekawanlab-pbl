@@ -23,7 +23,7 @@ class BlogPublicService
      */
     public function getAllPublishedBlogs(): array
     {
-        return $this->blogModel->getAllBlogPosts();
+        return $this->blogModel->getAllPublishedBlogPosts();
     }
     
     /**

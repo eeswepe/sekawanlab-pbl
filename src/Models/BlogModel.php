@@ -38,6 +38,25 @@ class BlogModel extends BaseModel
         return $this->all();
     }
 
+    /**
+     * Get all published blog posts only
+     */
+    public function getAllPublishedBlogPosts(): array
+    {
+        $sql = "SELECT bp.id, bp.judul, bp.slug, bp.cuplikan, bp.featured_image_url,
+                       bp.tanggal_publish, bp.reading_time, bp.penulis_nama, bp.penulis_bio,
+                       k.name AS kategori_nama
+                FROM {$this->table} bp
+                LEFT JOIN kategori k ON bp.kategori_id = k.id
+                WHERE bp.status = 'published'
+                ORDER BY bp.tanggal_publish DESC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     // Recent posts by author
     public function getRecentBlogsByPenulis(int $penulis_id, int $limit = 5): array
     {
@@ -238,6 +257,129 @@ class BlogModel extends BaseModel
         if (!empty($filters['status'])) {
             $sql .= " AND bp.status = :status";
             $params[':status'] = $filters['status'];
+        }
+
+        return [$sql, $params];
+    }
+
+    /**
+     * Get published blogs with filters (for public)
+     */
+    public function getPublishedBlogsWithFilters(array $filters = [], int $limit = 12, int $offset = 0): array
+    {
+        $sql = "SELECT bp.id, bp.judul, bp.slug, bp.cuplikan, bp.featured_image_url,
+                       bp.tanggal_publish, bp.reading_time, bp.penulis_nama, bp.penulis_bio,
+                       k.name AS kategori_nama
+                FROM {$this->table} bp
+                LEFT JOIN kategori k ON bp.kategori_id = k.id
+                WHERE bp.status = 'published'";
+
+        [$sql, $params] = $this->applyPublicFiltersToSql($sql, $filters);
+
+        $sql .= " ORDER BY bp.tanggal_publish DESC LIMIT :limit OFFSET :offset";
+
+        $stmt = $this->db->prepare($sql);
+
+        foreach ($params as $key => $val) {
+            $stmt->bindValue($key, $val);
+        }
+
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Count published blogs with filters (for public)
+     */
+    public function countPublishedBlogsWithFilters(array $filters = []): int
+    {
+        $sql = "SELECT COUNT(*) AS total FROM {$this->table} bp WHERE bp.status = 'published'";
+        [$sql, $params] = $this->applyPublicFiltersToSql($sql, $filters);
+
+        $stmt = $this->db->prepare($sql);
+        foreach ($params as $key => $val) {
+            $stmt->bindValue($key, $val);
+        }
+        $stmt->execute();
+
+        $res = $stmt->fetch(PDO::FETCH_ASSOC);
+        return (int) ($res['total'] ?? 0);
+    }
+
+    /**
+     * Get recent published blogs
+     */
+    public function getRecentBlogs(int $limit = 5): array
+    {
+        $sql = "SELECT bp.id, bp.judul, bp.slug, bp.cuplikan, bp.featured_image_url,
+                       bp.tanggal_publish, bp.reading_time, bp.penulis_nama,
+                       k.name AS kategori_nama
+                FROM {$this->table} bp
+                LEFT JOIN kategori k ON bp.kategori_id = k.id
+                WHERE bp.status = 'published'
+                ORDER BY bp.tanggal_publish DESC
+                LIMIT :limit";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Get featured blogs (can be based on criteria like most recent, or add a 'featured' flag)
+     */
+    public function getFeaturedBlogs(int $limit = 3): array
+    {
+        // For now, just return most recent published blogs
+        // You can add a 'is_featured' column later if needed
+        return $this->getRecentBlogs($limit);
+    }
+
+    /**
+     * Get related blogs based on same category
+     */
+    public function getRelatedBlogs(int $blogId, int $kategoriId, int $limit = 3): array
+    {
+        $sql = "SELECT bp.id, bp.judul, bp.slug, bp.cuplikan, bp.featured_image_url,
+                       bp.tanggal_publish, bp.reading_time, bp.penulis_nama,
+                       k.name AS kategori_nama
+                FROM {$this->table} bp
+                LEFT JOIN kategori k ON bp.kategori_id = k.id
+                WHERE bp.status = 'published'
+                  AND bp.kategori_id = :kategori_id
+                  AND bp.id != :blog_id
+                ORDER BY bp.tanggal_publish DESC
+                LIMIT :limit";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':kategori_id', $kategoriId, PDO::PARAM_INT);
+        $stmt->bindValue(':blog_id', $blogId, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Helper for public filters (search by title, filter by category)
+     */
+    protected function applyPublicFiltersToSql(string $sql, array $filters): array
+    {
+        $params = [];
+
+        if (!empty($filters['search'])) {
+            $sql .= " AND bp.judul ILIKE :search";
+            $params[':search'] = '%' . $filters['search'] . '%';
+        }
+
+        if (!empty($filters['kategori_id'])) {
+            $sql .= " AND bp.kategori_id = :kategori_id";
+            $params[':kategori_id'] = (int)$filters['kategori_id'];
         }
 
         return [$sql, $params];

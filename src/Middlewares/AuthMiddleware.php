@@ -10,7 +10,7 @@ class AuthMiddleware implements Middleware
         }
 
         // Check if user is logged in
-        if (!isset($_SESSION["user"]["id"])) {
+        if (!isset($_SESSION["user"])) {
             header("Location: /login");
             exit();
         }

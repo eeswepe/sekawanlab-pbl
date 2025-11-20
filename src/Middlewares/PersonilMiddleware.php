@@ -19,7 +19,7 @@ class PersonilMiddleware implements Middleware
         }
 
         // Check if user has personil role
-        if (!SessionHelper::isPersonil()) {
+        if (!SessionHelper::isTalent()) {
             SessionHelper::setFlash('error', 'Anda tidak memiliki akses ke halaman ini.');
             
             // Redirect admin to admin dashboard
