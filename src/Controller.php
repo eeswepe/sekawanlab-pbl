@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Helpers\GlobalDataProvider;
+
 /**
  * Base Controller
  * 
@@ -18,7 +20,10 @@ class Controller
      */
     protected function render($view, $data = [])
     {
+        // Inject global navigation/profile data
+        $globalData = GlobalDataProvider::getNavigationData();
         extract($data);
+        // $globalData now available to all views (header/footer)
         include "Views/$view.php";
     }
 

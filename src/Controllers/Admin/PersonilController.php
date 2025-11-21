@@ -89,8 +89,8 @@ class PersonilController extends Controller
             }
             
             // Parse skills JSON
-            $personil['skills'] = !empty($personil['skillks']) 
-                ? json_decode($personil['skillks'], true) 
+            $personil['skills'] = !empty($personil['skills']) 
+                ? json_decode($personil['skills'], true) 
                 : [];
             
             $data = ['personil' => $personil];

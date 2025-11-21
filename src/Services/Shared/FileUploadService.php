@@ -39,7 +39,13 @@ class FileUploadService
     public function __construct()
     {
         // Base upload path (relative to public/)
-        $this->baseUploadPath = __DIR__ . '/../../../public/upload/';
+        // Resolve to absolute path untuk memastikan akurasi
+        $this->baseUploadPath = realpath(__DIR__ . '/../../../public') . DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR;
+        
+        // Create base upload directory if not exists
+        if (!is_dir($this->baseUploadPath)) {
+            mkdir($this->baseUploadPath, 0777, true);
+        }
     }
 
     /**
@@ -77,12 +83,12 @@ class FileUploadService
         }
 
         // Create directory if not exists
-        $uploadDir = $this->baseUploadPath . rtrim($directory, '/') . '/';
+        $uploadDir = $this->baseUploadPath . rtrim($directory, '/') . DIRECTORY_SEPARATOR;
         if (!$this->createDirectory($uploadDir)) {
             return [
                 'success' => false,
                 'path' => null,
-                'message' => 'Gagal membuat directory upload'
+                'message' => 'Gagal membuat directory upload: ' . $uploadDir
             ];
         }
 
@@ -104,7 +110,7 @@ class FileUploadService
         return [
             'success' => false,
             'path' => null,
-            'message' => 'Gagal memindahkan file'
+            'message' => 'Gagal memindahkan file dari ' . $file['tmp_name'] . ' ke ' . $filepath
         ];
     }
 

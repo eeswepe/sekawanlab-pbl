@@ -186,39 +186,9 @@
                             </button>
                         </div>
                     </div>
-                    
                     <div class="card">
                         <div class="card-header">
-                            <h5 class="card-title">4. Social Media</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <label for="linkedin" class="form-label">LinkedIn URL</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="bi bi-linkedin"></i></span>
-                                    <input type="url" class="form-control" id="linkedin" value="https://linkedin.com/in/budisantoso">
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="github" class="form-label">GitHub URL</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="bi bi-github"></i></span>
-                                    <input type="url" class="form-control" id="github" value="https://github.com/budigeeek">
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="website" class="form-label">Website URL</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="bi bi-globe"></i></span>
-                                    <input type="url" class="form-control" id="website" value="">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="card-title">5. Projects</h5>
+                            <h5 class="card-title">4. Projects</h5>
                         </div>
                         <div class="card-body">
                             <p class="text-muted">Daftar proyek yang pernah dikerjakan personil.</p>

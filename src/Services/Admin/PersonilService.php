@@ -185,27 +185,27 @@ class PersonilService
             throw new \Exception('Personil tidak ditemukan');
         }
         
-        // Prepare data
+        // Prepare data - only include fields present; keep existing values otherwise
         $updateData = [
-            'nama_lengkap' => $data['nama_lengkap'] ?? '',
-            'nim_nip' => $data['nim_nip'] ?? '',
-            'password' => $data['password'] ?? null,
-            'role' => $data['role'] ?? 'talent',
-            'spesialisasi' => $data['spesialisasi'] ?? '',
-            'email' => $data['email'] ?? '',
-            'phone' => $data['phone'] ?? '',
-            'location' => $data['location'] ?? '',
-            'tanggal_bergabung' => $data['tanggal_bergabung'] ?? null,
-            'bio' => $data['bio'] ?? '',
-            'skills' => json_encode($data['skills'] ?? []),
+            'nama_lengkap' => $data['nama_lengkap'] ?? $personil['nama_lengkap'],
+            'role' => $data['role'] ?? $personil['role'],
+            'spesialisasi' => $data['spesialisasi'] ?? ($personil['spesialisasi'] ?? ''),
+            'email' => $data['email'] ?? $personil['email'],
+            'phone' => $data['phone'] ?? ($personil['phone'] ?? ''),
+            'location' => $data['location'] ?? ($personil['location'] ?? ''),
+            'tanggal_bergabung' => $data['tanggal_bergabung'] ?? ($personil['tanggal_bergabung'] ?? null),
+            'bio' => $data['bio'] ?? ($personil['bio'] ?? ''),
+            'skills' => json_encode($data['skills'] ?? (is_string($personil['skills']) ? (json_decode($personil['skills'], true) ?? []) : ($personil['skills'] ?? []))),
             'foto_url' => $personil['foto_url']
         ];
-        
-        if ($this->personilModel->nimNipExists($data['nim_nip'])) {
-        SessionHelper::setFlash('error', 'NIM/NIP sudah terdaftar!');
-        header('Location: /admin/personil/create');
-        exit;
-    }
+
+        // Optional nim_nip update & uniqueness check
+        if (isset($data['nim_nip']) && $data['nim_nip'] !== '' && $data['nim_nip'] !== $personil['nim_nip']) {
+            if ($this->personilModel->nimNipExists($data['nim_nip'], $id)) {
+                throw new \Exception('NIM/NIP sudah terdaftar');
+            }
+            $updateData['nim_nip'] = $data['nim_nip'];
+        }
 
         // Update personil
         if (!$this->personilModel->updatePersonil($id, $updateData)) {

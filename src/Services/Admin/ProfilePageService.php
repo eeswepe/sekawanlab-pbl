@@ -43,7 +43,7 @@ class ProfilePageService
     public function createPage(array $data, array $files): int
     {
         // Validate
-        if (empty($data['slug']) || empty($data['page_title']) || empty($data['page_subtitle'])) {
+        if (empty($data['slug']) || empty($data['page_title']) || empty($data['page_subtitle']) || empty($data['content_title']) || empty($data['content_subtitle'])) {
             throw new \Exception('Field wajib tidak boleh kosong');
         }
         
@@ -59,13 +59,21 @@ class ProfilePageService
             $featuredImageUrl = $uploadResult['path'];
         }
         
-        // Create page
+        // Map fields to model signature
+        $slug = $data['slug'];
+        $pageTitle = $data['page_title'];
+        $pageSubtitle = $data['page_subtitle'];
+        $contentTitle = $data['content_title'] ?? null;
+        $contentSubtitle = $data['content_subtitle'] ?? null;
+
+        // Create page (model expects: slug, pageTitle, pageSubtitle, featuredImageUrl, contentTitle, contentSubtitle)
         $pageId = $this->profilPageModel->createProfilPage(
-            $data['slug'],
-            $data['page_title'],
-            $data['page_subtitle'],
-            $data['page_description'] ?? '',
-            $featuredImageUrl
+            $slug,
+            $pageTitle,
+            $pageSubtitle,
+            $featuredImageUrl,
+            $contentTitle,
+            $contentSubtitle
         );
         
         if (!$pageId) {
@@ -100,13 +108,22 @@ class ProfilePageService
             }
         }
         
-        // Update page
+        // Map incoming data
+        $slug = $data['slug'] ?? $page['slug'];
+        $pageTitle = $data['page_title'] ?? $page['page_title'];
+        $pageSubtitle = $data['page_subtitle'] ?? $page['page_subtitle'];
+        $contentTitle = $data['content_title'] ?? $page['content_title'];
+        $contentSubtitle = $data['content_subtitle'] ?? $page['content_subtitle'];
+
+        // Update page (signature: id, slug, pageTitle, pageSubtitle, featuredImageUrl, contentTitle, contentSubtitle)
         $success = $this->profilPageModel->updateProfilPage(
             $id,
-            $data['page_title'],
-            $data['page_subtitle'],
-            $data['page_description'] ?? '',
-            $featuredImageUrl
+            $slug,
+            $pageTitle,
+            $pageSubtitle,
+            $featuredImageUrl,
+            $contentTitle,
+            $contentSubtitle
         );
         
         if (!$success) {

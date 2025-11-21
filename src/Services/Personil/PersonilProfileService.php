@@ -62,8 +62,8 @@ class PersonilProfileService
         
         // Handle photo upload
         $fotoUrl = $personil['foto_url'];
-        if (!empty($files['photo']) && $files['photo']['error'] === UPLOAD_ERR_OK) {
-            $uploadResult = $this->fileService->uploadImage($files['photo'], 'img/foto-profil', 'profile_');
+        if (!empty($files['foto_url']) && $files['foto_url']['error'] === UPLOAD_ERR_OK) {
+            $uploadResult = $this->fileService->uploadImage($files['foto_url'], 'img/foto-profil', 'profile_');
             
             if ($uploadResult['success']) {
                 // Delete old photo
@@ -71,6 +71,8 @@ class PersonilProfileService
                     $this->fileService->deleteFile($fotoUrl);
                 }
                 $fotoUrl = $uploadResult['path'];
+            } else {
+                throw new \Exception($uploadResult['message']);
             }
         }
         

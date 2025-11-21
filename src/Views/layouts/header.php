@@ -102,3 +102,4 @@
                 </div>
             </div>
         </nav>
+        <script src="/assets/js/shared/header.js"></script>
