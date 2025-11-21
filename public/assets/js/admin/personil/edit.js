@@ -107,24 +107,29 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        const data = {
-            nama_lengkap: document.getElementById('namaLengkap').value,
-            role: document.querySelector('input[name="tipePersonil"]:checked')?.value || 'talent',
-            spesialisasi: document.getElementById('spesialisasi').value,
-            email: document.getElementById('email').value,
-            phone: document.getElementById('phone').value,
-            location: document.getElementById('location').value,
-            tanggal_bergabung: document.getElementById('tanggalBergabung').value,
-            bio: document.getElementById('bio').value,
-            skills: skills,
-            projects: projects
-        };
+        // Use FormData to support file upload
+        const formData = new FormData();
+        formData.append('nama_lengkap', document.getElementById('namaLengkap').value);
+        formData.append('role', document.querySelector('input[name="tipePersonil"]:checked')?.value || 'talent');
+        formData.append('spesialisasi', document.getElementById('spesialisasi').value);
+        formData.append('email', document.getElementById('email').value);
+        formData.append('phone', document.getElementById('phone').value);
+        formData.append('location', document.getElementById('location').value);
+        formData.append('tanggal_bergabung', document.getElementById('tanggalBergabung').value);
+        formData.append('bio', document.getElementById('bio').value);
+        formData.append('skills', JSON.stringify(skills));
+        formData.append('projects', JSON.stringify(projects));
+
+        // Append photo if selected
+        const photoInput = document.getElementById('photo');
+        if (photoInput.files.length > 0) {
+            formData.append('foto_url', photoInput.files[0]);
+        }
 
         try {
             const response = await fetch(`/admin/personil/update/${personilId}`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
+                body: formData
             });
 
             const result = await response.json();

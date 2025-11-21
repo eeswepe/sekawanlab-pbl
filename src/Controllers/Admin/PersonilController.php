@@ -108,9 +108,17 @@ class PersonilController extends Controller
     public function update($id)
     {
         try {
-            // Read JSON body
-            $rawData = json_decode(file_get_contents('php://input'), true);
-            $this->personilService->updatePersonil($id, $rawData);
+            // Handle both JSON and multipart/form-data
+            $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+            
+            if (strpos($contentType, 'application/json') !== false) {
+                // JSON request (backward compatibility)
+                $rawData = json_decode(file_get_contents('php://input'), true);
+                $this->personilService->updatePersonil($id, $rawData, []);
+            } else {
+                // FormData request (with file upload support)
+                $this->personilService->updatePersonil($id, $_POST, $_FILES);
+            }
             
             $this->jsonResponse([
                 'success' => true, 

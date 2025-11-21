@@ -58,10 +58,14 @@ $blogsToShow = !empty($data['blogs']) ? array_slice($data['blogs'], $offset, $pe
                             $dateRaw = $post['tanggal_publish'] ?? $post['created_at'] ?? null;
                             $dateFmt = $dateRaw ? date('d F Y', strtotime($dateRaw)) : '';
                             $img = !empty($post['featured_image_url']) ? htmlspecialchars($post['featured_image_url']) : null;
-                            $excerpt = !empty($post['cuplikan']) ? $post['cuplikan'] : (strlen($post['konten']) > 200 ? substr($post['konten'], 0, 200) . '...' : $post['konten']);
+                            
+                            // Generate excerpt with null safety
+                            $konten = $post['konten'] ?? '';
+                            $excerpt = !empty($post['cuplikan']) ? $post['cuplikan'] : (strlen($konten) > 200 ? substr($konten, 0, 200) . '...' : $konten);
                             $excerpt = htmlspecialchars($excerpt);
-                            $kategoriNama = isset($post['kategori_id'], $kategoriMap[$post['kategori_id']]) ? htmlspecialchars($kategoriMap[$post['kategori_id']]) : (isset($post['kategori_nama']) ? htmlspecialchars($post['kategori_nama']) : 'Uncategorized');                            // set url sesuai routing: /blog/{slug} atau blog-detail.php?id={id}
-                            $postUrl = '/blog/' . $slug; // ubah jika perlu
+                            
+                            $kategoriNama = isset($post['kategori_id'], $kategoriMap[$post['kategori_id']]) ? htmlspecialchars($kategoriMap[$post['kategori_id']]) : (isset($post['kategori_nama']) ? htmlspecialchars($post['kategori_nama']) : 'Uncategorized');
+                            $postUrl = '/blog/' . $slug;
                         ?>
                             <div class="col-md-6">
                                 <div class="blog-card">

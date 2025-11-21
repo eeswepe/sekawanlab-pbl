@@ -177,12 +177,18 @@ class PersonilService
     /**
      * Update personil
      */
-    public function updatePersonil(int $id, array $data): bool
+    public function updatePersonil(int $id, array $data, array $files = []): bool
     {
         // Check if exists
         $personil = $this->personilModel->getPersonilById($id);
         if (!$personil) {
             throw new \Exception('Personil tidak ditemukan');
+        }
+        
+        // Handle skills parsing if it's JSON string
+        $skills = $data['skills'] ?? [];
+        if (is_string($skills)) {
+            $skills = json_decode($skills, true) ?? [];
         }
         
         // Prepare data - only include fields present; keep existing values otherwise
@@ -195,7 +201,7 @@ class PersonilService
             'location' => $data['location'] ?? ($personil['location'] ?? ''),
             'tanggal_bergabung' => $data['tanggal_bergabung'] ?? ($personil['tanggal_bergabung'] ?? null),
             'bio' => $data['bio'] ?? ($personil['bio'] ?? ''),
-            'skills' => json_encode($data['skills'] ?? (is_string($personil['skills']) ? (json_decode($personil['skills'], true) ?? []) : ($personil['skills'] ?? []))),
+            'skills' => json_encode($skills),
             'foto_url' => $personil['foto_url']
         ];
 
@@ -207,15 +213,37 @@ class PersonilService
             $updateData['nim_nip'] = $data['nim_nip'];
         }
 
+        // Handle photo upload
+        if (!empty($files['foto_url']) && $files['foto_url']['error'] === UPLOAD_ERR_OK) {
+            $uploadResult = $this->fileService->uploadImage($files['foto_url'], 'img/foto-profil', 'profile_');
+            
+            if (!$uploadResult['success']) {
+                throw new \Exception($uploadResult['message']);
+            }
+            
+            // Delete old photo if exists
+            if (!empty($personil['foto_url'])) {
+                $this->fileService->deleteFile($personil['foto_url']);
+            }
+            
+            $updateData['foto_url'] = $uploadResult['path'];
+        }
+
         // Update personil
         if (!$this->personilModel->updatePersonil($id, $updateData)) {
             throw new \Exception('Gagal update personil');
         }
         
+        // Handle projects parsing if it's JSON string
+        $projects = $data['projects'] ?? null;
+        if (is_string($projects)) {
+            $projects = json_decode($projects, true);
+        }
+        
         // Handle projects
-        if (isset($data['projects'])) {
+        if (isset($projects)) {
             $this->projectModel->deleteProjectsByPersonilId($id);
-            $this->createProjects($id, $data['projects']);
+            $this->createProjects($id, $projects);
         }
         
         return true;
