@@ -37,58 +37,6 @@
 
         <!-- Main Content -->
         <div id="main-content">
-            <!-- Top Navbar -->
-            <nav id="topbar" class="navbar navbar-expand-lg">
-                <div class="container-fluid d-flex justify-content-between align-items-center">
-
-                    <div class="d-flex align-items-center">
-                        <button class="btn sidebar-toggle sidebar-toggle-mobile" id="sidebarToggleMobile">
-                            <i class="bi bi-list"></i>
-                        </button>
-
-                        <!-- Search Bar di Topbar (untuk desktop) -->
-                        <form class="d-none d-md-inline-block ms-2">
-                            <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Cari di sini...">
-                                <button class="btn" style="background-color: var(--gold); color: white;" type="button">
-                                    <i class="bi bi-search"></i>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-
-                    <ul class="navbar-nav topbar-nav ms-auto">
-                        <!-- Notifikasi -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link position-relative" href="#" id="alertsDropdown" role="button" data-bs-toggle="dropdown">
-                                <i class="bi bi-bell-fill"></i>
-                                <span class="notification-badge">3</span>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="alertsDropdown">
-                                <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-text"></i> New Application</a></li>
-                                <li><a class="dropdown-item" href="#"><i class="bi bi-chat-dots"></i> New Comment</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="#">Show All Alerts</a></li>
-                            </ul>
-                        </li>
-                        <!-- Profile Dropdown -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle profile-dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown">
-                                <img src="https://placehold.co/150x150/1a1a1a/ffffff?text=AD" alt="Profile Picture">
-                                <span class="d-none d-md-inline">Admin User</span>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                                <li><a class="dropdown-item" href="#"><i class="bi bi-person-fill"></i> My Profile</a></li>
-                                <li><a class="dropdown-item" href="#"><i class="bi bi-gear-fill"></i> Settings</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="#"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-
-                </div>
-            </nav>
-
             <!-- Main Content Area -->
             <main class="content-fluid">
                 <!-- Page Header & Button -->

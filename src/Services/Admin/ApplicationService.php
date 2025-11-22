@@ -4,7 +4,6 @@ namespace App\Services\Admin;
 
 use App\Models\JoinApplicationModel;
 use App\Models\PersonilModel;
-use App\Models\PersonilInvitationModel;
 use App\Services\Shared\FileUploadService;
 use PDO;
 
@@ -17,14 +16,12 @@ class ApplicationService
 {
     private $applicationModel;
     private $personilModel;
-    private $invitationModel;
     private $fileService;
     
     public function __construct()
     {
         $this->applicationModel = new JoinApplicationModel();
         $this->personilModel = new PersonilModel();
-        $this->invitationModel = new PersonilInvitationModel();
         $this->fileService = new FileUploadService();
     }
     
@@ -158,16 +155,8 @@ class ApplicationService
             throw new \Exception('Gagal membuat personil');
         }
         
-        // Create invitation
-        $secretKey = $this->invitationModel->createInvitation($personilId, $application['id']);
-        
-        if (!$secretKey) {
-            throw new \Exception('Gagal membuat invitation');
-        }
-        
         return [
             'message' => 'Status berhasil diupdate dan personil telah dibuat',
-            'secret_key' => $secretKey,
             'personil_id' => $personilId
         ];
     }

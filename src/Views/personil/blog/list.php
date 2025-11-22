@@ -38,42 +38,6 @@
 
         <!-- Main Content -->
         <div id="main-content">
-            <!-- Top Navbar -->
-            <nav id="topbar" class="navbar navbar-expand-lg">
-                <div class="container-fluid d-flex justify-content-between align-items-center">
-
-                    <div class="d-flex align-items-center">
-                        <button class="btn sidebar-toggle sidebar-toggle-mobile" id="sidebarToggleMobile">
-                            <i class="bi bi-list"></i>
-                        </button>
-
-                        <form class="d-none d-md-inline-block ms-2">
-                            <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Cari Blog Saya...">
-                                <button class="btn" style="background-color: var(--gold); color: white;" type="button">
-                                    <i class="bi bi-search"></i>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-
-                    <ul class="navbar-nav topbar-nav ms-auto">
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle profile-dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown">
-                                <img src="<?= htmlspecialchars($personil['foto_url'] ?? 'https://placehold.co/150x150/1a1a1a/ffffff?text=' . substr($personil['nama_lengkap'], 0, 1)) ?>" alt="Profile Picture">
-                                <span class="d-none d-md-inline"><?= htmlspecialchars($personil['nama_lengkap'] ?? 'Personil') ?></span>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                                <li><a class="dropdown-item" href="/personil/profile"><i class="bi bi-person-fill"></i> My Profile</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-
-                </div>
-            </nav>
-
             <!-- Main Content Area: Blog List -->
             <main class="content-fluid">
                 <div class="page-header d-flex justify-content-between align-items-center flex-wrap">

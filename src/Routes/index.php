@@ -7,7 +7,6 @@ use App\Controllers\PersonilController;
 use App\Controllers\BlogController;
 use App\Controllers\JoinApplicationController;
 use App\Controllers\LoginController;
-use App\Controllers\RegisterController;
 
 // Admin Controllers
 use App\Controllers\Admin\DashboardController;
@@ -39,10 +38,6 @@ $router
     ->middleware(GuestMiddleware::class);
 $router->post("/login", LoginController::class, "authenticate");
 $router->get("/logout", LoginController::class, "logout");
-$router
-    ->get("/register", RegisterController::class, "index")
-    ->middleware(GuestMiddleware::class);
-$router->post("/register", RegisterController::class, "register");
 
 // ===== ADMIN ROUTES =====
 // Dashboard
@@ -76,7 +71,6 @@ $router->get("/admin/join-applications", AdminApplicationController::class, "ind
 $router->get("/admin/join-application/{id}", AdminApplicationController::class, "show")->middleware(AdminMiddleware::class);
 $router->delete("/admin/join-application/delete/{id}", AdminApplicationController::class, "delete")->middleware(AdminMiddleware::class);
 $router->post("/admin/join-application/update-status/{id}", AdminApplicationController::class, "updateStatus")->middleware(AdminMiddleware::class);
-$router->post("/admin/join-application/update-notes/{id}", AdminApplicationController::class, "updateNotes")->middleware(AdminMiddleware::class);
 
 // ===== PERSONIL ROUTES =====
 $router->get("/personil/dashboard", PersonilController::class, "dashboard")->middleware(PersonilMiddleware::class);

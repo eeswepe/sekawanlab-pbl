@@ -67,19 +67,11 @@ class ApplicationController extends Controller
             $data = json_decode(file_get_contents('php://input'), true);
             $result = $this->applicationService->updateStatus($id, $data['status']);
             
-            if (isset($result['secret_key'])) {
-                $this->jsonResponse([
-                    'success' => true,
-                    'message' => $result['message'],
-                    'secret_key' => $result['secret_key'],
-                    'personil_id' => $result['personil_id']
-                ]);
-            } else {
-                $this->jsonResponse([
-                    'success' => true, 
-                    'message' => $result['message']
-                ]);
-            }
+            $this->jsonResponse([
+                'success' => true, 
+                'message' => $result['message'],
+                'personil_id' => $result['personil_id'] ?? null
+            ]);
         } catch (Exception $e) {
             $this->jsonResponse([
                 'success' => false, 
