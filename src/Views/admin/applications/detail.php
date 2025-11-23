@@ -133,17 +133,21 @@
                                 <h5 class="card-title mb-0"><i class="bi bi-paperclip me-2"></i> Dokumen Lampiran (CV)</h5>
                             </div>
                             <div class="card-body">
-                                <?php if (!empty($application['cv_file_path'])): ?>
+                                <?php if (!empty($application['cv_file_path'])): 
+                                    $cvName = basename($application['cv_file_path']);
+                                    $cvPath = ltrim($application['cv_file_path'], '/');
+                                    $cvExt = strtolower(pathinfo($cvPath, PATHINFO_EXTENSION));
+                                ?>
                                     <span class="detail-label">Nama File:</span>
-                                    <span class="detail-value d-block mb-3"><?= htmlspecialchars(basename($application['cv_file_path'])) ?></span>
+                                    <span class="detail-value d-block mb-3"><?= htmlspecialchars($cvName) ?></span>
                                     
-                                    <a href="/<?= htmlspecialchars($application['cv_file_path']) ?>" download class="btn btn-sm btn-outline-secondary me-2">
+                                    <a href="/<?= htmlspecialchars($cvPath) ?>" id="downloadCvBtn" data-cv-path="<?= htmlspecialchars($cvPath) ?>" data-cv-name="<?= htmlspecialchars($cvName) ?>" class="btn btn-sm btn-outline-secondary me-2">
                                         <i class="bi bi-download me-1"></i> Download CV
                                     </a>
-                                    <?php if (strtolower(pathinfo($application['cv_file_path'], PATHINFO_EXTENSION)) === 'pdf'): ?>
-                                    <a href="/<?= htmlspecialchars($application['cv_file_path']) ?>" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                    <?php if ($cvExt === 'pdf'): ?>
+                                    <button type="button" id="previewCvBtn" data-cv-path="<?= htmlspecialchars($cvPath) ?>" data-cv-name="<?= htmlspecialchars($cvName) ?>" class="btn btn-sm btn-outline-secondary">
                                         <i class="bi bi-file-earmark-pdf me-1"></i> Preview PDF
-                                    </a>
+                                    </button>
                                     <?php endif; ?>
                                 <?php else: ?>
                                     <p class="text-muted mb-0">Tidak ada CV yang dilampirkan</p>
@@ -197,13 +201,14 @@
                     <h5 class="modal-title" id="cvPreviewModalLabel">Preview CV: Joko Susilo</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="text-center p-5 border rounded bg-light">
-                        <i class="bi bi-file-earmark-pdf" style="font-size: 3rem; color: #dc3545;"></i>
-                        <p class="mt-3">Area Pratinjau Dokumen PDF</p>
-                        <small class="text-muted">Dalam implementasi nyata, gunakan `&lt;iframe&gt;` atau pustaka penampil PDF di sini.</small>
-                    </div>
-                </div>
+                            <div class="modal-body">
+                                <div class="text-center mb-3">
+                                    <small class="text-muted">Jika file PDF, pratinjau akan ditampilkan di bawah.</small>
+                                </div>
+                                <div class="border rounded bg-light p-2">
+                                    <iframe id="cvPreviewIframe" src="" style="width:100%;height:70vh;border:0" aria-label="CV Preview"></iframe>
+                                </div>
+                            </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Tutup</button>
                     <a href="#" class="btn btn-primary-custom"><i class="bi bi-download"></i> Unduh</a>
