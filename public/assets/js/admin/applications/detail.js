@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Quick Accept
     document.getElementById('quickAccept')?.addEventListener('click', async function() {
         const id = this.dataset.id;
-        if (!confirm('Terima aplikasi ini? Sistem akan membuat akun personil dan secret key untuk registrasi.')) return;
+        if (!confirm('Terima aplikasi ini? Sistem akan membuat akun personil dengan password kosong.')) return;
         try {
             const response = await fetch(`/admin/join-application/update-status/${id}`, {
                 method: 'POST',
@@ -27,17 +27,11 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             const result = await response.json();
             if (result.success) {
-                if (result.secret_key) {
-                    // Show secret key in a modal or alert
-                    const message = `Aplikasi berhasil diterima!\n\nSecret Key untuk registrasi:\n${result.secret_key}\n\nKirimkan secret key ini ke applicant melalui email atau WhatsApp.`;
-                    alert(message);
-                    
-                    // Copy to clipboard
-                    navigator.clipboard.writeText(result.secret_key).then(() => {
-                        console.log('Secret key copied to clipboard');
-                    });
+                const pid = result.personil_id ?? null;
+                if (pid) {
+                    alert(`Aplikasi berhasil diterima. Akun personil dibuat (ID: ${pid}).`);
                 } else {
-                    alert('Aplikasi berhasil diterima');
+                    alert('Aplikasi berhasil diterima.');
                 }
                 location.reload();
             } else {
@@ -95,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const newStatus = document.getElementById('newStatus').value;
         
         if (newStatus === 'accepted') {
-            if (!confirm('Terima aplikasi ini? Sistem akan membuat akun personil dan secret key untuk registrasi.')) return;
+            if (!confirm('Terima aplikasi ini? Sistem akan membuat akun personil dengan password kosong.')) return;
         }
         
         try {
@@ -106,10 +100,9 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             const result = await response.json();
             if (result.success) {
-                if (result.secret_key) {
-                    const message = `Status berhasil diperbarui!\n\nSecret Key untuk registrasi:\n${result.secret_key}\n\nKirimkan secret key ini ke applicant.`;
-                    alert(message);
-                    navigator.clipboard.writeText(result.secret_key);
+                const pid = result.personil_id ?? null;
+                if (pid) {
+                    alert(`Status berhasil diperbarui. Akun personil dibuat (ID: ${pid}).`);
                 } else {
                     alert('Status berhasil diperbarui');
                 }
@@ -143,4 +136,50 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Terjadi kesalahan: ' + error.message);
         }
     });
+
+    // --- 3. CV Download & Preview ---
+    const downloadBtn = document.getElementById('downloadCvBtn');
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', async function(e) {
+            e.preventDefault();
+            const path = this.dataset.cvPath;
+            const name = this.dataset.cvName || 'cv';
+            try {
+                const resp = await fetch('/' + path);
+                if (!resp.ok) throw new Error('Gagal mengambil file');
+                const blob = await resp.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = name;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(url);
+            } catch (err) {
+                alert('Gagal download CV: ' + err.message);
+            }
+        });
+    }
+
+    const previewBtn = document.getElementById('previewCvBtn');
+    if (previewBtn) {
+        previewBtn.addEventListener('click', function() {
+            const path = this.dataset.cvPath;
+            const name = this.dataset.cvName || 'CV Preview';
+            const iframe = document.getElementById('cvPreviewIframe');
+            const titleEl = document.getElementById('cvPreviewModalLabel');
+            if (iframe) {
+                iframe.src = '/' + path;
+            }
+            if (titleEl) {
+                titleEl.textContent = 'Preview CV: ' + name;
+            }
+            const modalEl = document.getElementById('cvPreviewModal');
+            if (modalEl) {
+                const modal = new bootstrap.Modal(modalEl);
+                modal.show();
+            }
+        });
+    }
 });
