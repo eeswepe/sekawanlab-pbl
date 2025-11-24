@@ -404,3 +404,115 @@ a:hover {
         display: none;
     }
 }
+
+/* ASSESSMENT SUMMARY MODAL STYLING */
+#viewSummaryModal .modal-dialog {
+    max-width: 95%;
+}
+
+#viewSummaryModal .card {
+    margin-bottom: 0;
+    height: 100%;
+    border-radius: 10px;
+}
+
+#viewSummaryModal .card-header {
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-radius: 10px 10px 0 0 !important;
+}
+
+#viewSummaryModal .badge {
+    font-size: 0.8rem;
+    padding: 0.4em 0.8em;
+}
+
+#viewSummaryModal .border.rounded.p-3 {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef !important;
+    transition: all 0.3s ease;
+}
+
+#viewSummaryModal .border.rounded.p-3:hover {
+    background-color: #e9ecef;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+#viewSummaryModal .text-center.py-5 {
+    color: #6c757d;
+}
+
+#viewSummaryModal .bg-light.p-3 {
+    border-left: 4px solid var(--gold);
+}
+
+/* Final Verdict styling */
+#viewSummaryModal .badge.fs-5 {
+    font-size: 1.1rem !important;
+    padding: 0.7em 1.5em;
+    border-radius: 25px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* Projects styling */
+#viewSummaryModal .badge.bg-primary.rounded-pill {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+/* Reasons list styling */
+#viewSummaryModal .list-unstyled li {
+    background: rgba(255,255,255,0.7);
+    padding: 0.5rem;
+    border-radius: 6px;
+    margin-bottom: 0.5rem !important;
+    border-left: 3px solid transparent;
+}
+
+#viewSummaryModal .list-unstyled li:has(.text-success) {
+    border-left-color: #198754;
+    background: rgba(25, 135, 84, 0.05);
+}
+
+#viewSummaryModal .list-unstyled li:has(.text-danger) {
+    border-left-color: #dc3545;
+    background: rgba(220, 53, 69, 0.05);
+}
+
+/* Executive summary styling */
+#viewSummaryModal .bg-primary {
+    background-color: var(--gold) !important;
+    color: var(--black) !important;
+}
+
+#viewSummaryModal .bg-info {
+    background-color: #17a2b8 !important;
+}
+
+#viewSummaryModal .bg-success {
+    background-color: #28a745 !important;
+}
+
+/* Print styles */
+@media print {
+    #viewSummaryModal .modal-footer {
+        display: none;
+    }
+    
+    #viewSummaryModal .modal-header {
+        border-bottom: 2px solid #000;
+        padding-bottom: 1rem;
+    }
+    
+    #viewSummaryModal .card {
+        border: 1px solid #ddd;
+        page-break-inside: avoid;
+    }
+}
