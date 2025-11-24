@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Controller;
 use App\Models\JoinApplicationModel;
 use App\Services\Shared\FileUploadService;
+use App\Services\External\AssessorService;
 
 /**
  * JoinApplicationController (REFACTORED)
@@ -16,11 +17,13 @@ class JoinApplicationController extends Controller
 {
     private JoinApplicationModel $model;
     private FileUploadService $fileUploadService;
+    private AssessorService $assessorService;
 
     public function __construct()
     {
         $this->model = new JoinApplicationModel();
         $this->fileUploadService = new FileUploadService();
+        $this->assessorService = new AssessorService();
     }
 
     /**
@@ -83,7 +86,7 @@ class JoinApplicationController extends Controller
                 return;
             }
 
-            // Handle CV upload menggunakan FileUploadService ✅
+            // Handle CV upload menggunakan FileUploadService
             $cvFilePath = null;
             if (isset($_FILES["cv"]) && $_FILES["cv"]["error"] === UPLOAD_ERR_OK) {
                 $uploadResult = $this->fileUploadService->uploadPDF(
@@ -101,6 +104,22 @@ class JoinApplicationController extends Controller
                 }
 
                 $cvFilePath = $uploadResult['path'];
+
+                // 5. Panggil Assessor Service
+                $githubUsername = $this->extractGithubUsername($_POST["github_url"]);
+                
+                $data['assessor_summary'] = null;
+
+                try {
+                    $assessorResult = $this->assessorService->analyzeApplication($githubUsername, $cvFilePath);
+                    // Simpan hasil analisis ke variabel untuk disimpan ke DB atau ditampilkan
+                    $data['assessor_summary'] = $assessorResult;
+                    // Log atau tangani hasil analisis sesuai kebutuhan
+                    error_log("Assessor Result for {$githubUsername}: " . json_encode($assessorResult));
+                } catch (\Exception $assessorE) {
+                    // Jika Assessor gagal, log error dan lanjutkan proses pendaftaran
+                    error_log("Assessor Service Error: " . $assessorE->getMessage());
+                }
             }
 
             // Prepare data for database
@@ -113,6 +132,7 @@ class JoinApplicationController extends Controller
                 "semester" => (int) $_POST["semester"],
                 "alasan_bergabung" => htmlspecialchars(trim($_POST["alasan_bergabung"])),
                 "github_url" => htmlspecialchars(trim($_POST["github_url"])),
+                "assessor_summary" => $data['assessor_summary'],
                 "cv_file_path" => $cvFilePath,
             ];
 
@@ -142,5 +162,23 @@ class JoinApplicationController extends Controller
                 "message" => "Terjadi kesalahan pada server. Silakan coba lagi.",
             ]);
         }
+    }
+
+    /**
+     * Helper function untuk mengekstrak username dari URL GitHub.
+     * 
+     * @param string $url URL GitHub.
+     * @return string Username GitHub.
+     */
+    private function extractGithubUsername(string $url): string
+    {
+        // Hapus protokol (http/https)
+        $url = preg_replace('#^https?://#', '', $url);
+        // Hapus www.
+        $url = preg_replace('#^www\.#', '', $url);
+        // Ambil bagian path
+        $parts = explode('/', $url);
+        // Username adalah bagian pertama setelah domain (misal: github.com/username)
+        return $parts[1] ?? '';
     }
 }

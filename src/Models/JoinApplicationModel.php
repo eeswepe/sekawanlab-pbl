@@ -26,6 +26,8 @@ class JoinApplicationModel extends BaseModel
             'alasan_bergabung',
             'github_url',
             'cv_file_path',
+            'assessor_score',
+            'assessor_summary',
             'status',
             'catatan_admin',
             'tanggal_apply'
