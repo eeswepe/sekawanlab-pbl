@@ -1,26 +1,32 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // --- Sidebar Toggle Logic ---
-    const sidebar = document.getElementById('sidebar');
-    const mainContent = document.getElementById('main-content');
-    const toggleButton = document.getElementById('sidebarToggleMobile');
+    // --- Sidebar Toggle Logic (SB Admin 2 style) ---
+    const sidebar = document.querySelector('.sidebar');
+    const contentWrapper = document.getElementById('content-wrapper');
+    const toggleButton = document.getElementById('sidebarToggle');
+    const toggleButtonTop = document.getElementById('sidebarToggleTop');
     
-    // Sidebar Toggle
-    if (window.innerWidth >= 992) {
-        sidebar.classList.remove('toggled');
-        mainContent.classList.remove('toggled');
-    } else {
-        sidebar.classList.add('toggled');
-        mainContent.classList.add('toggled');
-    }
-
+    // Toggling function for all sidebar buttons
     function toggleSidebar() {
         sidebar.classList.toggle('toggled');
-        mainContent.classList.toggle('toggled');
     }
 
     if (toggleButton) {
         toggleButton.addEventListener('click', toggleSidebar);
     }
+    
+    if (toggleButtonTop) {
+        toggleButtonTop.addEventListener('click', toggleSidebar);
+    }
+
+    // Close sidebar on mobile when a link is clicked
+    const navLinks = document.querySelectorAll('.nav-item .nav-link');
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            if (window.innerWidth < 992) {
+                sidebar.classList.remove('toggled');
+            }
+        });
+    });
 
     // --- Auto-submit form on filter change ---
     const filterStatus = document.getElementById('filterStatus');
@@ -40,7 +46,9 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', async function(e) {
             e.preventDefault();
             const applicationId = this.getAttribute('data-id');
-            const applicationName = this.closest('tr').querySelector('td:nth-child(2)').textContent.trim();
+            // Safely get application name, considering the table structure
+            const applicationNameElement = this.closest('tr').querySelector('td:nth-child(2)');
+            const applicationName = applicationNameElement ? applicationNameElement.textContent.trim() : 'aplikasi ini';
             
             if (!confirm(`Apakah Anda yakin ingin menghapus application dari "${applicationName}"?\n\nTindakan ini tidak dapat dibatalkan.`)) {
                 return;
@@ -49,9 +57,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // Disable button to prevent double-click
             this.disabled = true;
             const originalHTML = this.innerHTML;
-            this.innerHTML = '<i class="bi bi-hourglass-split"></i>';
+            this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
             
             try {
+                // Assuming the base URL is correct for the fetch call
                 const response = await fetch(`/admin/join-application/delete/${applicationId}`, {
                     method: 'DELETE',
                     headers: {
