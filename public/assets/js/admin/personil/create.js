@@ -1,22 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Sidebar Toggle
-    const sidebar = document.getElementById('sidebar');
-    const mainContent = document.getElementById('main-content');
-    const toggleButton = document.getElementById('sidebarToggleMobile');
-
-    if (window.innerWidth < 992) {
-        sidebar.classList.add('toggled');
-        mainContent.classList.add('toggled');
-    }
-
-    function toggleSidebar() {
-        sidebar.classList.toggle('toggled');
-        mainContent.classList.toggle('toggled');
-    }
-
-    if (toggleButton) {
-        toggleButton.addEventListener('click', toggleSidebar);
-    }
+    
+    // Catatan: Logika sidebar toggle telah dipindahkan ke file HTML/PHP utama 
+    // agar sesuai dengan mekanisme SB Admin 2 (menambahkan kelas pada body/sidebar).
     
     // Photo Preview
     const photoInput = document.getElementById('photo');
@@ -52,10 +37,14 @@ document.addEventListener('DOMContentLoaded', function() {
             usernameInput.setAttribute('required', 'required');
             // Fill username with current nim_nip value
             usernameInput.value = nimNipInput.value;
+            // Enable username field to be sent with form data
+            usernameInput.removeAttribute('disabled'); 
         } else {
             accountFields.style.display = 'none';
             usernameInput.removeAttribute('required');
             usernameInput.value = '';
+            // Disable username field again
+            usernameInput.setAttribute('disabled', 'disabled'); 
         }
     });
     
@@ -63,10 +52,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const skillsContainer = document.getElementById('skills-container');
     window.addSkillInput = function() {
         const newItem = document.createElement('div');
-        newItem.classList.add('input-group', 'mb-2', 'dynamic-item');
+        newItem.classList.add('input-group', 'mb-2', 'dynamic-item-compact'); 
         newItem.innerHTML = `
             <input type="text" class="form-control skill-input" placeholder="Masukkan nama skill">
-            <button class="btn btn-danger" type="button" onclick="removeDynamicItem(this.closest('.dynamic-item'))"><i class="bi bi-x-lg"></i></button>
+            <button class="btn btn-danger" type="button" onclick="removeDynamicItem(this.closest('.dynamic-item-compact'))"><i class="bi bi-x-lg"></i></button>
         `;
         skillsContainer.appendChild(newItem);
     };
@@ -81,22 +70,27 @@ document.addEventListener('DOMContentLoaded', function() {
     // Dynamic Projects
     const projectsContainer = document.getElementById('projects-container');
     const addProjectBtn = document.getElementById('addProjectBtn');
-    let projectIndex = 1;
+    let projectIndex = projectsContainer.querySelectorAll('.dynamic-item').length; 
 
     function reIndexProjects() {
         const projectItems = projectsContainer.querySelectorAll('.dynamic-item');
-        projectIndex = 1;
+        let currentIdx = 1;
         projectItems.forEach(item => {
-            item.querySelector('h6').textContent = `Project #${projectIndex}`;
-            item.setAttribute('data-index', projectIndex);
-            projectIndex++;
+            item.querySelector('h6').textContent = `Project #${currentIdx}`;
+            item.setAttribute('data-index', currentIdx);
+            currentIdx++;
         });
+        projectIndex = currentIdx - 1; // Update global index
     }
+    
+    // Initial indexing for existing item
+    reIndexProjects(); 
 
     addProjectBtn.addEventListener('click', function() {
+        projectIndex++; // Increment index for new item
         const newItem = document.createElement('div');
         newItem.classList.add('dynamic-item');
-        newItem.setAttribute('data-index', ++projectIndex);
+        newItem.setAttribute('data-index', projectIndex);
         newItem.innerHTML = `
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h6 class="mb-0">Project #${projectIndex}</h6>
@@ -110,6 +104,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 <label class="form-label">Deskripsi</label>
                 <textarea class="form-control project-description" rows="2" placeholder="Deskripsi singkat proyek"></textarea>
             </div>
+            <div class="mb-1 tag-input-group">
+                <label class="form-label">Tech Stack (Tags)</label>
+                <div class="input-group">
+                    <input type="text" class="form-control project-tech-stack-input" placeholder="Masukkan teknologi (contoh: PHP, Vue.js)">
+                    <button class="btn btn-secondary" type="button">Tambah</button>
+                </div>
+            </div>
+            <div class="tag-list mt-2">
+                </div>
         `;
         projectsContainer.appendChild(newItem);
     });
@@ -119,9 +122,11 @@ document.addEventListener('DOMContentLoaded', function() {
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        // Enable username temporarily to include in form data
+        // Ensure username is enabled if account creation is checked
         if (createAccountCheck.checked) {
             usernameInput.removeAttribute('disabled');
+        } else {
+            usernameInput.setAttribute('disabled', 'disabled');
         }
         
         const formData = new FormData(form);
@@ -161,6 +166,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: formData
             });
             
+            // Re-disable username input after form data is constructed (before API call is crucial, but keeping it here for safety after it's been sent)
+            if (createAccountCheck.checked) {
+                usernameInput.setAttribute('disabled', 'disabled');
+            }
+            
             const result = await response.json();
             
             if (result.success) {
@@ -170,14 +180,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('Error: ' + result.message);
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalText;
-                usernameInput.setAttribute('disabled', 'disabled');
             }
         } catch (error) {
             console.error('Error:', error);
             alert('Terjadi kesalahan saat menyimpan personil');
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalText;
-            usernameInput.setAttribute('disabled', 'disabled');
+            // Re-disable username input in case of error
+            if (createAccountCheck.checked) {
+                usernameInput.setAttribute('disabled', 'disabled');
+            }
         }
     });
 });

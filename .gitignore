@@ -4,3 +4,5 @@ public/uploads/
 public/upload/
 *.ps1
 .git/
+
+config/database.php
