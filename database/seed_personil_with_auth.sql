@@ -21,7 +21,7 @@ INSERT INTO personil (
 ) VALUES 
 (
     'ADMIN001',
-    '$2y$10$l0yms1P.NBd3F47.cftRg.490tF4ysSim0pkPngyZQ7r9KWkAqO9W',
+    '$2y$12$fSU0eTI2TW8KiGX0M.9lt.MTP6pBzrxnvJm7iksvO.DIsZM5fPJlS',
     'Administrator SEKAWAN Lab',
     'admin',
     'Lab Management',

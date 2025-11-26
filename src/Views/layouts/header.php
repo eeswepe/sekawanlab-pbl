@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Software Engineering Laboratory - Universitas</title>
+        <title>Software Engineering Laboratory - Politeknik Negeri Malang</title>
 
         <!-- Bootstrap CSS -->
         <link
@@ -19,7 +19,7 @@
 
         <!-- Google Fonts -->
         <link
-            href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap"
             rel="stylesheet"
         />
 
@@ -27,8 +27,6 @@
         <link rel="stylesheet" href="/assets/css/shared/header.css" />
         <link rel="stylesheet" href="/assets/css/<?php echo $page_css; ?>" />
         <link rel="stylesheet" href="/assets/css/shared/footer.css" />
-
-        <style></style>
     </head>
     <body>
         <?php
@@ -40,7 +38,9 @@
         <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
             <div class="container">
                 <a class="navbar-brand" href="/">
-                    <div class="logo-icon">SE</div>
+                    <div class="logo-icon">
+                        <img src="/assets/img/mascot-hero.png">
+                    </div>
                     <span>SE Laboratory</span>
                 </a>
                 <button
