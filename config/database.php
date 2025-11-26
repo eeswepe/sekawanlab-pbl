@@ -6,7 +6,7 @@ return [
     "port" => 5432,
     "database" => "sekawanlab_db_2",
     "username" => "postgres",
-    "password" => "12345678",
+    "password" => "password",
     "charset" => "utf8",
     "prefix" => "",
     "schema" => "public",

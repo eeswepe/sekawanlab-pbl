@@ -1,21 +1,14 @@
-/* Footer - Light Background with Blue Accents */
+/* Footer */
 .footer {
-    background: linear-gradient(135deg, #f0f7fb 0%, #e8f4f8 100%);
-    color: var(--black);
-    padding: 80px 0 30px;
-    border-top: 3px solid var(--dusk-blue);
+    background-color: var(--black);
+    color: var(--white);
+    padding: 60px 0 30px;
 }
 
 .footer h5 {
-    color: var(--dusk-blue);
+    color: var(--gold);
     margin-bottom: 1.5rem;
     font-size: 1.3rem;
-    font-weight: 800;
-}
-
-.footer p {
-    color: var(--gray);
-    line-height: 1.8;
 }
 
 .footer ul {
@@ -28,56 +21,40 @@
 }
 
 .footer ul li a {
-    color: var(--gray);
+    color: #adb5bd;
     text-decoration: none;
     transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 500;
 }
 
 .footer ul li a:hover {
-    color: var(--dusk-blue);
-    padding-left: 8px;
-}
-
-.footer ul li i {
-    color: var(--bright-amber);
-}
-
-.footer ul li a:hover i {
-    color: var(--dusk-blue);
+    color: var(--gold);
+    padding-left: 5px;
 }
 
 .social-links a {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 50px;
-    height: 50px;
-    background: var(--white);
+    width: 45px;
+    height: 45px;
+    background: rgba(212, 175, 55, 0.1);
     border-radius: 50%;
-    color: var(--dusk-blue);
+    color: var(--gold);
     margin-right: 1rem;
     transition: all 0.3s ease;
-    font-size: 1.3rem;
-    border: 2px solid var(--dusk-blue);
+    font-size: 1.2rem;
 }
 
 .social-links a:hover {
-    background: linear-gradient(135deg, var(--dusk-blue), var(--bright-amber));
+    background: var(--gold);
     color: var(--white);
-    border-color: transparent;
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(33, 82, 128, 0.3);
+    transform: translateY(-3px);
 }
 
 .footer-bottom {
-    border-top: 2px solid rgba(33, 82, 128, 0.1);
-    margin-top: 4rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 3rem;
     padding-top: 2rem;
     text-align: center;
-    color: var(--gray);
-    font-weight: 500;
+    color: #6c757d;
 }
