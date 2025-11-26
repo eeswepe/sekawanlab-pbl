@@ -114,20 +114,22 @@ CREATE TABLE profil_page(
 DROP TABLE IF EXISTS join_application CASCADE;
 
 CREATE TABLE join_application (
-    id SERIAL PRIMARY KEY,
-    nama_lengkap VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    phone VARCHAR(20) NOT NULL,
-    nim VARCHAR(50) NOT NULL,
-    prodi VARCHAR(10) NOT NULL CHECK (prodi IN ('TI', 'SIB', 'PPLS')),
-    semester INTEGER NOT NULL CHECK (semester >= 1 AND semester <= 8),
-    alasan_bergabung TEXT NOT NULL,
-    github_url VARCHAR(500),
-    cv_file_path VARCHAR(500),
-    tanggal_apply TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'reviewed', 'accepted', 'rejected')),
-    catatan_admin TEXT
+    id                SERIAL PRIMARY KEY,
+    nama_lengkap      VARCHAR(255)           NOT NULL,
+    email             VARCHAR(255)           NOT NULL,
+    phone             VARCHAR(20)            NOT NULL,
+    nim               VARCHAR(50)            NOT NULL,
+    prodi             VARCHAR(10)            NOT NULL,
+    semester          INTEGER                NOT NULL,
+    alasan_bergabung  TEXT                   NOT NULL,
+    github_url        VARCHAR(500),
+    cv_file_path      VARCHAR(500),
+    tanggal_apply     TIMESTAMP,
+    status            VARCHAR(20),
+    catatan_admin     TEXT,
+    assessor_summary  TEXT
 );
+
 
 CREATE INDEX idx_join_application_status ON join_application(status);
 CREATE INDEX idx_join_application_email ON join_application(email);
