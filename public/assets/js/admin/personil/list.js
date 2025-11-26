@@ -1,55 +1,43 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const sidebar = document.getElementById('sidebar');
-    const mainContent = document.getElementById('main-content');
-    const toggleButton = document.getElementById('sidebarToggleMobile');
-
-    // Sidebar Toggle
-    if (window.innerWidth >= 992) {
-        sidebar.classList.remove('toggled');
-        mainContent.classList.remove('toggled');
-    } else {
-        sidebar.classList.add('toggled');
-        mainContent.classList.add('toggled');
-    }
-
-    function toggleSidebar() {
-        sidebar.classList.toggle('toggled');
-        mainContent.classList.toggle('toggled');
-    }
-
-    if (toggleButton) {
-        toggleButton.addEventListener('click', toggleSidebar);
-    }
-
-    // Auto-submit form on filter change
+    
+    // ===================================
+    // 1. Auto-submit form on filter change (Role)
+    // ===================================
     const filterRole = document.getElementById('filterRole');
     const filterForm = document.getElementById('filterForm');
 
-    if (filterRole) {
+    if (filterRole && filterForm) {
         filterRole.addEventListener('change', function() {
+            // Langsung submit form untuk menerapkan filter, 
+            // query string 'search', 'role', dan 'page' akan otomatis terkirim.
             filterForm.submit();
         });
     }
 
-    // Delete Personil Confirmation
+    // ===================================
+    // 2. Delete Personil Confirmation & AJAX
+    // ===================================
     const deleteButtons = document.querySelectorAll('.delete-personil');
     
     deleteButtons.forEach(button => {
         button.addEventListener('click', async function(e) {
             e.preventDefault();
+            
             const personilId = this.getAttribute('data-id');
-            const personilName = this.closest('tr').querySelector('td:nth-child(3)').textContent.trim();
+            // Mengambil nama personil dari kolom nama di baris yang sama (asumsi td:nth-child(2))
+            const personilName = this.closest('tr').querySelector('td:nth-child(2) span')?.textContent.trim() || 'Personil Ini'; 
             
             if (!confirm(`Apakah Anda yakin ingin menghapus personil "${personilName}"?\n\nTindakan ini tidak dapat dibatalkan.`)) {
                 return;
             }
             
-            // Disable button to prevent double-click
+            // Nonaktifkan tombol dan tampilkan spinner loading
             this.disabled = true;
             const originalHTML = this.innerHTML;
-            this.innerHTML = '<i class="bi bi-hourglass-split"></i>';
+            this.innerHTML = '<span class="spinner-border spinner-border-sm"></span>'; // Bootstrap Spinner
             
             try {
+                // Endpoint DELETE, asumsikan /admin/personil/delete/{id}
                 const response = await fetch(`/admin/personil/delete/${personilId}`, {
                     method: 'DELETE',
                     headers: {
@@ -57,19 +45,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
                 
-                const result = await response.json();
+                const result = await response.json(); // Backend harus mengembalikan JSON { success: bool, message: string }
                 
                 if (result.success) {
                     alert('Personil berhasil dihapus!');
-                    window.location.reload();
+                    window.location.reload(); // Reload halaman untuk update daftar/pagination
                 } else {
-                    alert('Error: ' + result.message);
+                    alert('Error: ' + (result.message || 'Gagal menghapus personil'));
                     this.disabled = false;
                     this.innerHTML = originalHTML;
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Terjadi kesalahan saat menghapus personil');
+                alert('Terjadi kesalahan saat menghapus personil: ' + error.message);
                 this.disabled = false;
                 this.innerHTML = originalHTML;
             }
