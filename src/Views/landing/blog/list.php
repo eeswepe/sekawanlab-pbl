@@ -3,6 +3,16 @@ $page_css = "landing/blog/list.css";
 $page_js = "";
 include_once __DIR__ . "/../../layouts/header.php";
 
+// Filter by category if selected
+if (isset($_GET['kategori_id']) && !empty($data['blogs'])) {
+    $kategoriId = intval($_GET['kategori_id']);
+    $data['blogs'] = array_filter($data['blogs'], function ($blog) use ($kategoriId) {
+        return isset($blog['kategori_id']) && $blog['kategori_id'] == $kategoriId;
+    });
+    // Re-index array
+    $data['blogs'] = array_values($data['blogs']);
+}
+
 // Pagination settings
 $perPage = 2; // 2 artikel per halaman untuk testing
 $currentPage = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
@@ -48,148 +58,148 @@ $blogsToShow = !empty($data['blogs']) ? array_slice($data['blogs'], $offset, $pe
                 <!-- Blog Posts -->
                 <div class="row g-4">
                     <?php if (!empty($blogsToShow)): ?>
-                        <?php
-                        // optional: kalau kamu juga mengirim map kategori id->nama, pakai itu.
-                        $kategoriMap = $data['kategori_map'] ?? [];
-                        foreach ($blogsToShow as $post):
-                            $slug  = htmlspecialchars($post['slug']);
-                            $title = htmlspecialchars($post['judul']);
-                            $author = htmlspecialchars($post['penulis_nama']);
-                            $dateRaw = $post['tanggal_publish'] ?? $post['created_at'] ?? null;
-                            $dateFmt = $dateRaw ? date('d F Y', strtotime($dateRaw)) : '';
-                            $img = !empty($post['featured_image_url']) ? htmlspecialchars($post['featured_image_url']) : null;
-                            
-                            // Generate excerpt with null safety
-                            $konten = $post['konten'] ?? '';
-                            $excerpt = !empty($post['cuplikan']) ? $post['cuplikan'] : (strlen($konten) > 200 ? substr($konten, 0, 200) . '...' : $konten);
-                            $excerpt = htmlspecialchars($excerpt);
-                            
-                            $kategoriNama = isset($post['kategori_id'], $kategoriMap[$post['kategori_id']]) ? htmlspecialchars($kategoriMap[$post['kategori_id']]) : (isset($post['kategori_nama']) ? htmlspecialchars($post['kategori_nama']) : 'Uncategorized');
-                            $postUrl = '/blog/' . $slug;
-                        ?>
-                            <div class="col-md-6">
-                                <div class="blog-card">
-                                    <div class="blog-image">
-                                        <?php if ($img): ?>
-                                            <img src="<?php echo $img; ?>" alt="<?php echo $title; ?>">
-                                        <?php else: ?>
-                                            <div class="blog-image-placeholder">
-                                                <i class="bi bi-file-earmark-text"></i>
-                                            </div>
-                                        <?php endif; ?>
+                            <?php
+                            // optional: kalau kamu juga mengirim map kategori id->nama, pakai itu.
+                            $kategoriMap = $data['kategori_map'] ?? [];
+                            foreach ($blogsToShow as $post):
+                                $slug = htmlspecialchars($post['slug']);
+                                $title = htmlspecialchars($post['judul']);
+                                $author = htmlspecialchars($post['penulis_nama']);
+                                $dateRaw = $post['tanggal_publish'] ?? $post['created_at'] ?? null;
+                                $dateFmt = $dateRaw ? date('d F Y', strtotime($dateRaw)) : '';
+                                $img = !empty($post['featured_image_url']) ? htmlspecialchars($post['featured_image_url']) : null;
 
-                                        <div class="blog-category">
-                                            <?php echo $kategoriNama; ?>
+                                // Generate excerpt with null safety
+                                $konten = $post['konten'] ?? '';
+                                $excerpt = !empty($post['cuplikan']) ? $post['cuplikan'] : (strlen($konten) > 200 ? substr($konten, 0, 200) . '...' : $konten);
+                                $excerpt = htmlspecialchars($excerpt);
+
+                                $kategoriNama = isset($post['kategori_id'], $kategoriMap[$post['kategori_id']]) ? htmlspecialchars($kategoriMap[$post['kategori_id']]) : (isset($post['kategori_nama']) ? htmlspecialchars($post['kategori_nama']) : 'Uncategorized');
+                                $postUrl = '/blog/' . $slug;
+                                ?>
+                                    <div class="col-md-6">
+                                        <div class="blog-card">
+                                            <div class="blog-image">
+                                                <?php if ($img): ?>
+                                                        <img src="<?php echo $img; ?>" alt="<?php echo $title; ?>">
+                                                <?php else: ?>
+                                                        <div class="blog-image-placeholder">
+                                                            <i class="bi bi-file-earmark-text"></i>
+                                                        </div>
+                                                <?php endif; ?>
+
+                                                <div class="blog-category">
+                                                    <?php echo $kategoriNama; ?>
+                                                </div>
+                                            </div>
+
+                                            <div class="blog-content">
+                                                <div class="blog-meta">
+                                                    <div class="blog-meta-item">
+                                                        <i class="bi bi-calendar"></i>
+                                                        <span><?php echo $dateFmt; ?></span>
+                                                    </div>
+                                                    <div class="blog-meta-item">
+                                                        <i class="bi bi-person"></i>
+                                                        <span><?php echo $author; ?></span>
+                                                    </div>
+                                                </div>
+
+                                                <h3 class="blog-title">
+                                                    <a href="<?php echo $postUrl; ?>">
+                                                        <?php echo $title; ?>
+                                                    </a>
+                                                </h3>
+
+                                                <p class="blog-excerpt">
+                                                    <?php echo $excerpt; ?>
+                                                </p>
+
+                                                <a class="blog-read-more" href="<?php echo $postUrl; ?>">
+                                                    Baca Selengkapnya
+                                                    <i class="bi bi-arrow-right"></i>
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
-
-                                    <div class="blog-content">
-                                        <div class="blog-meta">
-                                            <div class="blog-meta-item">
-                                                <i class="bi bi-calendar"></i>
-                                                <span><?php echo $dateFmt; ?></span>
-                                            </div>
-                                            <div class="blog-meta-item">
-                                                <i class="bi bi-person"></i>
-                                                <span><?php echo $author; ?></span>
-                                            </div>
-                                        </div>
-
-                                        <h3 class="blog-title">
-                                            <a href="<?php echo $postUrl; ?>">
-                                                <?php echo $title; ?>
-                                            </a>
-                                        </h3>
-
-                                        <p class="blog-excerpt">
-                                            <?php echo $excerpt; ?>
-                                        </p>
-
-                                        <a class="blog-read-more" href="<?php echo $postUrl; ?>">
-                                            Baca Selengkapnya
-                                            <i class="bi bi-arrow-right"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
+                            <?php endforeach; ?>
                     <?php else: ?>
-                        <div class="col-12">
-                            <p class="text-center text-muted">Belum ada artikel tersedia.</p>
-                        </div>
+                            <div class="col-12">
+                                <p class="text-center text-muted">Belum ada artikel tersedia.</p>
+                            </div>
                     <?php endif; ?>
                 </div>
 
                 <!-- Pagination -->
                 <?php if ($totalPages > 1): ?>
-                    <div class="pagination-wrapper">
-                        <nav aria-label="Blog pagination">
-                            <ul class="pagination justify-content-center">
-                                <!-- Previous Button -->
-                                <li class="page-item <?php echo ($currentPage <= 1) ? 'disabled' : ''; ?>">
-                                    <a class="page-link" href="?page=<?php echo $currentPage - 1; ?>" style="border-radius: 10px 0 0 10px;">
-                                        <i class="bi bi-chevron-left"></i>
-                                    </a>
-                                </li>
-
-                                <?php
-                                // Tampilkan maksimal 5 halaman di pagination
-                                $startPage = max(1, $currentPage - 2);
-                                $endPage = min($totalPages, $currentPage + 2);
-
-                                // Tampilkan halaman pertama jika tidak di range
-                                if ($startPage > 1): ?>
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page=1">1</a>
-                                    </li>
-                                    <?php if ($startPage > 2): ?>
-                                        <li class="page-item disabled">
-                                            <span class="page-link">...</span>
-                                        </li>
-                                    <?php endif; ?>
-                                <?php endif; ?>
-
-                                <!-- Halaman di range -->
-                                <?php for ($i = $startPage; $i <= $endPage; $i++): ?>
-                                    <li class="page-item <?php echo ($i == $currentPage) ? 'active' : ''; ?>">
-                                        <a class="page-link" href="?page=<?php echo $i; ?>"
-                                            <?php if ($i == $currentPage): ?>
-                                            style="background: var(--gold); border-color: var(--gold);"
-                                            <?php endif; ?>>
-                                            <?php echo $i; ?>
+                        <div class="pagination-wrapper">
+                            <nav aria-label="Blog pagination">
+                                <ul class="pagination justify-content-center">
+                                    <!-- Previous Button -->
+                                    <li class="page-item <?php echo ($currentPage <= 1) ? 'disabled' : ''; ?>">
+                                        <a class="page-link" href="?page=<?php echo $currentPage - 1; ?>" style="border-radius: 10px 0 0 10px;">
+                                            <i class="bi bi-chevron-left"></i>
                                         </a>
                                     </li>
-                                <?php endfor; ?>
 
-                                <!-- Tampilkan halaman terakhir jika tidak di range -->
-                                <?php if ($endPage < $totalPages): ?>
-                                    <?php if ($endPage < $totalPages - 1): ?>
-                                        <li class="page-item disabled">
-                                            <span class="page-link">...</span>
-                                        </li>
+                                    <?php
+                                    // Tampilkan maksimal 5 halaman di pagination
+                                    $startPage = max(1, $currentPage - 2);
+                                    $endPage = min($totalPages, $currentPage + 2);
+
+                                    // Tampilkan halaman pertama jika tidak di range
+                                    if ($startPage > 1): ?>
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page=1">1</a>
+                                            </li>
+                                            <?php if ($startPage > 2): ?>
+                                                    <li class="page-item disabled">
+                                                        <span class="page-link">...</span>
+                                                    </li>
+                                            <?php endif; ?>
                                     <?php endif; ?>
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page=<?php echo $totalPages; ?>"><?php echo $totalPages; ?></a>
+
+                                    <!-- Halaman di range -->
+                                    <?php for ($i = $startPage; $i <= $endPage; $i++): ?>
+                                            <li class="page-item <?php echo ($i == $currentPage) ? 'active' : ''; ?>">
+                                                <a class="page-link" href="?page=<?php echo $i; ?>"
+                                                    <?php if ($i == $currentPage): ?>
+                                                        style="background: var(--gold); border-color: var(--gold);"
+                                                    <?php endif; ?>>
+                                                    <?php echo $i; ?>
+                                                </a>
+                                            </li>
+                                    <?php endfor; ?>
+
+                                    <!-- Tampilkan halaman terakhir jika tidak di range -->
+                                    <?php if ($endPage < $totalPages): ?>
+                                            <?php if ($endPage < $totalPages - 1): ?>
+                                                    <li class="page-item disabled">
+                                                        <span class="page-link">...</span>
+                                                    </li>
+                                            <?php endif; ?>
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page=<?php echo $totalPages; ?>"><?php echo $totalPages; ?></a>
+                                            </li>
+                                    <?php endif; ?>
+
+                                    <!-- Next Button -->
+                                    <li class="page-item <?php echo ($currentPage >= $totalPages) ? 'disabled' : ''; ?>">
+                                        <a class="page-link" href="?page=<?php echo $currentPage + 1; ?>" style="border-radius: 0 10px 10px 0;">
+                                            <i class="bi bi-chevron-right"></i>
+                                        </a>
                                     </li>
-                                <?php endif; ?>
+                                </ul>
+                            </nav>
 
-                                <!-- Next Button -->
-                                <li class="page-item <?php echo ($currentPage >= $totalPages) ? 'disabled' : ''; ?>">
-                                    <a class="page-link" href="?page=<?php echo $currentPage + 1; ?>" style="border-radius: 0 10px 10px 0;">
-                                        <i class="bi bi-chevron-right"></i>
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
-
-                        <!-- Info halaman -->
-                        <div class="text-center mt-3 text-muted">
-                            <small>
-                                Menampilkan <?php echo $offset + 1; ?> - <?php echo min($offset + $perPage, $totalBlogs); ?> dari <?php echo $totalBlogs; ?> artikel
-                                (Halaman <?php echo $currentPage; ?> dari <?php echo $totalPages; ?>)
-                            </small>
+                            <!-- Info halaman -->
+                            <div class="text-center mt-3 text-muted">
+                                <small>
+                                    Menampilkan <?php echo $offset + 1; ?> - <?php echo min($offset + $perPage, $totalBlogs); ?> dari <?php echo $totalBlogs; ?> artikel
+                                    (Halaman <?php echo $currentPage; ?> dari <?php echo $totalPages; ?>)
+                                </small>
+                            </div>
                         </div>
-                    </div>
                 <?php endif; ?>
             </div>
 
@@ -201,59 +211,30 @@ $blogsToShow = !empty($data['blogs']) ? array_slice($data['blogs'], $offset, $pe
                         <h4 class="widget-title">Kategori</h4>
                         <ul class="category-list">
                             <li>
-                                <a href="#">
+                                <a href="/blog">
                                     <span>
-                                        <i class="bi bi-folder"></i>
-                                        Machine Learning
+                                        <i class="bi bi-grid"></i>
+                                        Semua Kategori
                                     </span>
-                                    <span class="category-count">12</span>
                                 </a>
                             </li>
-                            <li>
-                                <a href="#">
-                                    <span>
-                                        <i class="bi bi-folder"></i>
-                                        Cloud Computing
-                                    </span>
-                                    <span class="category-count">8</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    <span>
-                                        <i class="bi bi-folder"></i>
-                                        Mobile Development
-                                    </span>
-                                    <span class="category-count">15</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    <span>
-                                        <i class="bi bi-folder"></i>
-                                        Security
-                                    </span>
-                                    <span class="category-count">10</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    <span>
-                                        <i class="bi bi-folder"></i>
-                                        Data Science
-                                    </span>
-                                    <span class="category-count">18</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    <span>
-                                        <i class="bi bi-folder"></i>
-                                        Web Development
-                                    </span>
-                                    <span class="category-count">22</span>
-                                </a>
-                            </li>
+                            <?php if (!empty($data['categories'])): ?>
+                                    <?php foreach ($data['categories'] as $category): ?>
+                                            <li>
+                                                <a href="?kategori_id=<?php echo $category['id']; ?>">
+                                                    <span>
+                                                        <i class="bi bi-folder"></i>
+                                                        <?php echo htmlspecialchars($category['name']); ?>
+                                                    </span>
+                                                    <span class="category-count"><?php echo $category['post_count']; ?></span>
+                                                </a>
+                                            </li>
+                                    <?php endforeach; ?>
+                            <?php else: ?>
+                                    <li>
+                                        <span class="text-muted">Belum ada kategori.</span>
+                                    </li>
+                            <?php endif; ?>
                         </ul>
                     </div>
                 </div>

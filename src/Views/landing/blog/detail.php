@@ -10,9 +10,11 @@ include_once __DIR__ . "/../../layouts/header.php";
         <div class="row justify-content-center">
             <div class="col-lg-10">
                 <div class="blog-meta mb-3">
-                    <span class="badge bg-gold"><?= htmlspecialchars($blog['kategori_nama'] ?? 'Uncategorized') ?></span>
+                    <span
+                        class="badge bg-gold"><?= htmlspecialchars($blog['kategori_nama'] ?? 'Uncategorized') ?></span>
                     <span class="meta-divider">•</span>
-                    <span><i class="bi bi-calendar3"></i> <?= date('d M Y', strtotime($blog['tanggal_publish'] ?? $blog['created_at'])) ?></span>
+                    <span><i class="bi bi-calendar3"></i>
+                        <?= date('d M Y', strtotime($blog['tanggal_publish'] ?? $blog['created_at'])) ?></span>
                     <span class="meta-divider">•</span>
                     <span><i class="bi bi-clock"></i> <?= $blog['reading_time'] ?? 5 ?> min read</span>
                 </div>
@@ -38,12 +40,14 @@ include_once __DIR__ . "/../../layouts/header.php";
             <div class="col-lg-10">
                 <?php if (!empty($blog['featured_image_url'])): ?>
                     <div class="featured-image">
-                        <img src="<?= htmlspecialchars($blog['featured_image_url']) ?>" alt="<?= htmlspecialchars($blog['judul']) ?>" class="img-fluid">
+                        <img src="<?= htmlspecialchars($blog['featured_image_url']) ?>"
+                            alt="<?= htmlspecialchars($blog['judul']) ?>" class="img-fluid">
                     </div>
                 <?php endif; ?>
 
                 <div class="blog-content">
-                    <?= nl2br(htmlspecialchars($blog['konten'])) ?>
+                    <!-- Output raw HTML from Summernote. Ensure content is sanitized in backend! -->
+                    <?= $blog['konten'] ?>
                 </div>
 
                 <div class="blog-footer">
