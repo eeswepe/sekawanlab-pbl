@@ -28,11 +28,13 @@ class BlogController extends Controller
     public function index()
     {
         $blogs = $this->blogService->getAllPublishedBlogs();
-        
+        $categories = $this->blogService->getAllCategories();
+
         $data = [
-            'blogs' => $blogs
+            'blogs' => $blogs,
+            'categories' => $categories
         ];
-        
+
         $this->render("landing/blog/list", $data);
     }
 
@@ -44,16 +46,16 @@ class BlogController extends Controller
     public function showBySlug($slug)
     {
         $blog = $this->blogService->getBlogBySlug($slug);
-        
+
         if (!$blog) {
             header('Location: /blog');
             exit;
         }
-        
+
         $data = [
             'blog' => $blog
         ];
-        
+
         $this->render("landing/blog/detail", $data);
     }
 }

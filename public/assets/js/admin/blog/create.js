@@ -51,8 +51,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const readingTimeInput = document.getElementById('metaReadingTime');
     const wordsPerMinute = 200;
 
-    contentTextarea.addEventListener('input', function() {
-        const text = contentTextarea.value.trim();
+    function updateReadingTime() {
+        let text = contentTextarea.value;
+        
+        // Check if Summernote is initialized and get code from it
+        if (typeof $ !== 'undefined' && $('#blogContent').summernote('instance')) {
+            const htmlContent = $('#blogContent').summernote('code');
+            // Strip HTML tags for word count
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = htmlContent;
+            text = tempDiv.textContent || tempDiv.innerText || '';
+        }
+
+        text = text.trim();
         const wordCount = text.match(/\b\w+\b/g) ? text.match(/\b\w+\b/g).length : 0;
         
         let readingTimeEstimate;
@@ -64,7 +75,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         readingTimeInput.value = readingTimeEstimate;
-    });
+    }
+
+    contentTextarea.addEventListener('input', updateReadingTime);
+    // Also listen for summernote change events if dispatched manually
+    // (The onChange callback in create.php dispatches 'input' event)
 
     // --- Logika Tombol Cancel ---
     const cancelBtn = document.getElementById('cancelBtn');
@@ -81,6 +96,11 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         
         const formData = new FormData(form);
+        
+        // Explicitly set content from Summernote if available
+        if (typeof $ !== 'undefined' && $('#blogContent').summernote('instance')) {
+            formData.set('konten', $('#blogContent').summernote('code'));
+        }
         
         // Show loading
         const submitBtn = e.submitter;
@@ -109,6 +129,44 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Terjadi kesalahan saat menyimpan blog');
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalText;
+        }
+    });
+
+    // --- Summernote Initialization ---
+    $(document).ready(function() {
+        if (typeof $.fn.summernote !== 'undefined') {
+            $('#blogContent').summernote({
+                height: 400,
+                minHeight: 300,
+                maxHeight: 600,
+                placeholder: 'Mulai tulis konten artikel Anda di sini...',
+                toolbar: [
+                    ['style', ['style']],
+                    ['font', ['bold', 'italic', 'underline', 'clear']],
+                    ['fontname', ['fontname']],
+                    ['fontsize', ['fontsize']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['table', ['table']],
+                    ['insert', ['link', 'picture', 'video']],
+                    ['view', ['fullscreen', 'codeview', 'help']]
+                ],
+                fontNames: ['Arial', 'Courier New', 'Helvetica', 'Times New Roman', 'Verdana', 'Poppins', 'Montserrat'],
+                fontNamesIgnoreCheck: ['Poppins', 'Montserrat'],
+                callbacks: {
+                    // Update reading time when content changes
+                    onChange: function(contents) {
+                        // Trigger input event manually for the custom JS to pick up
+                        const event = new Event('input', {
+                            bubbles: true,
+                            cancelable: true,
+                        });
+                        document.getElementById('blogContent').dispatchEvent(event);
+                    }
+                }
+            });
+        } else {
+            console.error('Summernote library not found!');
         }
     });
 });

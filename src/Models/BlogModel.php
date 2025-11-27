@@ -13,7 +13,7 @@ class BlogModel extends BaseModel
     {
         $db = $db ?? Database::getConnection();
         parent::__construct($db);
-        
+
         $this->table = 'blog_post';
         $this->primaryKey = 'id';
         $this->fillable = [
@@ -45,7 +45,7 @@ class BlogModel extends BaseModel
     {
         $sql = "SELECT bp.id, bp.judul, bp.slug, bp.cuplikan, bp.featured_image_url,
                        bp.tanggal_publish, bp.reading_time, bp.penulis_nama, bp.penulis_bio,
-                       k.name AS kategori_nama
+                       bp.kategori_id, k.name AS kategori_nama
                 FROM {$this->table} bp
                 LEFT JOIN kategori k ON bp.kategori_id = k.id
                 WHERE bp.status = 'published'
@@ -184,9 +184,9 @@ class BlogModel extends BaseModel
         // whitelist kolom/order untuk mencegah SQL injection
         $allowedOrders = [
             'created_at DESC' => 'bp.created_at DESC',
-            'created_at ASC'  => 'bp.created_at ASC',
-            'judul ASC'       => 'bp.judul ASC',
-            'judul DESC'      => 'bp.judul DESC'
+            'created_at ASC' => 'bp.created_at ASC',
+            'judul ASC' => 'bp.judul ASC',
+            'judul DESC' => 'bp.judul DESC'
         ];
 
         $orderByKey = $orderBy;
@@ -246,12 +246,12 @@ class BlogModel extends BaseModel
 
         if (!empty($filters['kategori_id'])) {
             $sql .= " AND bp.kategori_id = :kategori_id";
-            $params[':kategori_id'] = (int)$filters['kategori_id'];
+            $params[':kategori_id'] = (int) $filters['kategori_id'];
         }
 
         if (!empty($filters['penulis_id'])) {
             $sql .= " AND bp.penulis_id = :penulis_id";
-            $params[':penulis_id'] = (int)$filters['penulis_id'];
+            $params[':penulis_id'] = (int) $filters['penulis_id'];
         }
 
         if (!empty($filters['status'])) {
@@ -379,9 +379,25 @@ class BlogModel extends BaseModel
 
         if (!empty($filters['kategori_id'])) {
             $sql .= " AND bp.kategori_id = :kategori_id";
-            $params[':kategori_id'] = (int)$filters['kategori_id'];
+            $params[':kategori_id'] = (int) $filters['kategori_id'];
         }
 
         return [$sql, $params];
+    }
+    /**
+     * Get all categories with published post count
+     */
+    public function getAllCategoriesWithCount(): array
+    {
+        $sql = "SELECT k.id, k.name, COUNT(bp.id) AS post_count
+                FROM kategori k
+                LEFT JOIN blog_post bp ON k.id = bp.kategori_id AND bp.status = 'published'
+                GROUP BY k.id, k.name
+                ORDER BY k.name ASC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
