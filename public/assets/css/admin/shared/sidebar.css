@@ -2,11 +2,12 @@
 /* Gunakan file ini sebagai import di semua admin CSS */
 
 :root {
-  --gold: #D4AF37;
-  --dark-gold: #B8941F;
+  --gold: #213780;
+  --dark-gold: #142e96;
   --black: #1a1a1a;
   --white: #ffffff;
   --light-gray: #f8f9fa;
+  --blue: #215280;
 }
 
 /* Layout Structure */
@@ -19,7 +20,7 @@
 /* Sidebar */
 #sidebar {
   width: 250px;
-  background-color: var(--black);
+  background-color: var(--blue);
   color: var(--white);
   position: fixed;
   top: 0;
@@ -38,14 +39,14 @@
 
 #sidebar .logo-icon {
   display: inline-block;
-  background: linear-gradient(135deg, var(--gold), var(--dark-gold));
   width: 40px;
   height: 40px;
-  border-radius: 8px;
-  line-height: 40px;
-  color: var(--white);
-  font-weight: bold;
-  margin-right: 10px;
+}
+
+.sidebar-divider {
+  height: 2px;
+  background-color: var(--light-gray);
+  margin: 1rem 0;
 }
 
 .sidebar-menu {

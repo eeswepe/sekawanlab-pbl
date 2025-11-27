@@ -14,21 +14,19 @@
 <body>
 
     <div class="wrapper">
-        <nav id="sidebar">
-            <div class="sidebar-header">
-                <a class="sidebar-brand" href="../dashboard.html">
-                    <div class="logo-icon">SE</div>
-                    <span>SE Laboratory</span>
-                </a>
-            </div>
+        <aside id="sidebar">
+            <div>
+        <div class="brand"><img class="logo-icon" src="/assets/img/mascot-head.png" alt="mascot-lab-se">SE Laboratory
+          <div class="sidebar-divider"></div>
+        </div>
 
-            <ul class="sidebar-nav">
+            <ul class="sidebar-menu">
                 <li><a href="/personil/dashboard"><i class="bi bi-grid-fill"></i> Dashboard</a></li>
                 <li><a href="/personil/profile"><i class="bi bi-person-circle"></i> My Profile</a></li>
                 <li><a href="/personil/blog" class="active"><i class="bi bi-journal-text"></i> My Blog Posts</a></li>
                 <li><a href="/logout"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
             </ul>
-        </nav>
+        </aside>
         <div id="main-content">
             <main class="content-fluid">
                 <div class="page-header d-flex justify-content-between align-items-center">

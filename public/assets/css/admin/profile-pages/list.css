@@ -1,9 +1,10 @@
 :root {
-  --gold: #d4af37;
-  --dark-gold: #b8941f;
+  --gold: #213780;
+  --dark-gold: #142e96;
   --black: #1a1a1a;
   --white: #ffffff;
   --light-gray: #f8f9fa;
+  --blue: #215280;
 }
 
 * {
@@ -70,15 +71,14 @@ a:hover {
 }
 
 #sidebar {
-  width: 260px;
-  min-height: 100vh;
-  background: var(--black);
-  color: #adb5bd;
+  width: 250px;
+  background-color: var(--blue);
+  color: var(--white);
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 1000;
-  transition: all 0.3s ease;
+  height: 100vh;
+  padding-top: 1.5rem;
 }
 
 #sidebar.toggled {
@@ -101,14 +101,14 @@ a:hover {
 
 /* Sidebar */
 #sidebar {
-    width: 250px;
-    background-color: var(--black);
-    color: var(--white);
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    padding-top: 1.5rem;
+  width: 250px;
+  background-color: var(--blue);
+  color: var(--white);
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  padding-top: 1.5rem;
 }
 
 #sidebar .brand {
@@ -120,15 +120,15 @@ a:hover {
 }
 
 #sidebar .logo-icon {
-    display: inline-block;
-    background: linear-gradient(135deg, var(--gold), var(--dark-gold));
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    line-height: 40px;
-    color: var(--white);
-    font-weight: bold;
-    margin-right: 10px;
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+}
+
+.sidebar-divider {
+  height: 2px;
+  background-color: var(--light-gray);
+  margin: 1rem 0;
 }
 
 .sidebar-menu {
@@ -387,8 +387,15 @@ a:hover {
 
 @media (max-width: 992px) {
   #sidebar {
-    margin-left: -260px;
-  }
+  width: 250px;
+  background-color: var(--blue);
+  color: var(--white);
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  padding-top: 1.5rem;
+}
   #sidebar.toggled {
     margin-left: 0;
   }

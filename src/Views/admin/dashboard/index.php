@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,8 @@
   <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500&display=swap"
+    rel="stylesheet">
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="/assets/css/admin/dashboard/index.css">
@@ -19,7 +21,9 @@
     <!-- Sidebar -->
     <aside id="sidebar">
       <div>
-        <div class="brand"><span class="logo-icon">SE</span> SE Laboratory</div>
+        <div class="brand"><img class="logo-icon" src="/assets/img/mascot-head.png" alt="mascot-lab-se">SE Laboratory
+          <div class="sidebar-divider"></div>
+        </div>
         <ul class="sidebar-menu">
           <li><a href="/admin" class="active"><i class="bi bi-grid-fill"></i> Dashboard</a></li>
           <li><a href="/admin/blog-list"><i class="bi bi-pencil-square"></i> Blog Management</a></li>
@@ -99,11 +103,11 @@
                           $statusClass = 'secondary';
                           $statusText = ucfirst($activity['status']);
                           if ($activity['status'] === 'published') {
-                              $statusClass = 'success';
-                              $statusText = 'Published';
+                            $statusClass = 'success';
+                            $statusText = 'Published';
                           } elseif ($activity['status'] === 'draft') {
-                              $statusClass = 'warning text-dark';
-                              $statusText = 'Draft';
+                            $statusClass = 'warning text-dark';
+                            $statusText = 'Draft';
                           }
                           ?>
                           <span class="badge bg-<?= $statusClass ?>"><?= $statusText ?></span>
@@ -121,9 +125,12 @@
         <div class="card">
           <div class="card-header fw-semibold">Aksi Cepat</div>
           <div class="card-body d-flex gap-3 flex-wrap">
-            <a href="/admin/blog/create" class="btn btn-primary-custom"><i class="bi bi-plus-circle me-2"></i>Tambah Blog Post</a>
-            <a href="/admin/personil/create" class="btn btn-primary-custom"><i class="bi bi-person-plus me-2"></i>Tambah Personil</a>
-            <a href="/admin/join-applications" class="btn btn-outline-secondary"><i class="bi bi-file-earmark-check me-2"></i>Lihat Aplikasi</a>
+            <a href="/admin/blog/create" class="btn btn-primary-custom"><i class="bi bi-plus-circle me-2"></i>Tambah
+              Blog Post</a>
+            <a href="/admin/personil/create" class="btn btn-primary-custom"><i class="bi bi-person-plus me-2"></i>Tambah
+              Personil</a>
+            <a href="/admin/join-applications" class="btn btn-outline-secondary"><i
+                class="bi bi-file-earmark-check me-2"></i>Lihat Aplikasi</a>
           </div>
         </div>
       </div>
@@ -138,4 +145,5 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/assets/js/admin/dashboard/index.js"></script>
 </body>
+
 </html>

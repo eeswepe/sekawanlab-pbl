@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,24 +8,32 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
 
     <link rel="stylesheet" href="/assets/css/admin/profile-pages/edit.css">
 
 </head>
+
 <body>
 
     <div class="wrapper">
         <!-- Sidebar -->
         <aside id="sidebar">
             <div>
-                <div class="brand"><span class="logo-icon">SE</span> SE Laboratory</div>
+                <div class="brand"><img class="logo-icon" src="/assets/img/mascot-head.png" alt="mascot-lab-se">SE
+                    Laboratory
+                    <div class="sidebar-divider"></div>
+                </div>
                 <ul class="sidebar-menu">
                     <li><a href="/admin"><i class="bi bi-grid-fill"></i> Dashboard</a></li>
                     <li><a href="/admin/blog-list"><i class="bi bi-pencil-square"></i> Blog Management</a></li>
                     <li><a href="/admin/personil"><i class="bi bi-people-fill"></i> Personil Management</a></li>
-                    <li><a href="/admin/profil-pages"><i class="bi bi-person-badge"></i> Profile Pages</a></li>
-                    <li><a href="/admin/join-applications"><i class="bi bi-file-earmark-text"></i> Join Applications</a></li>
+                    <li><a href="/admin/profil-pages" class="active"><i class="bi bi-person-badge"></i> Profile
+                            Pages</a></li>
+                    <li><a href="/admin/join-applications"><i class="bi bi-file-earmark-text"></i> Join Applications</a>
+                    </li>
                     <li><a href="/logout"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
                 </ul>
             </div>
@@ -42,7 +51,7 @@
                 </div>
 
                 <form id="profilePageCreateForm" method="POST" enctype="multipart/form-data">
-                    
+
                     <div class="card">
                         <div class="card-header">
                             <h5 class="card-title">1. Data Hero Section (Bagian Atas Halaman)</h5>
@@ -50,25 +59,34 @@
                         <div class="card-body">
                             <div class="mb-3">
                                 <label for="slug" class="form-label">Slug</label>
-                                <input type="text" class="form-control" id="slug" name="slug" placeholder="tentang-kami" required>
-                                <small class="form-text text-muted">URL-friendly identifier (contoh: tentang-kami, visi-misi).</small>
+                                <input type="text" class="form-control" id="slug" name="slug" placeholder="tentang-kami"
+                                    required>
+                                <small class="form-text text-muted">URL-friendly identifier (contoh: tentang-kami,
+                                    visi-misi).</small>
                             </div>
                             <div class="mb-3">
                                 <label for="pageTitle" class="form-label">Page Title (Judul Utama/Hero)</label>
-                                <input type="text" class="form-control" id="pageTitle" name="page_title" placeholder="Mengenal Lebih Dekat Software Engineering Laboratory" required>
-                                <small class="form-text text-muted">Judul ini muncul paling besar di bagian atas (hero section).</small>
+                                <input type="text" class="form-control" id="pageTitle" name="page_title"
+                                    placeholder="Mengenal Lebih Dekat Software Engineering Laboratory" required>
+                                <small class="form-text text-muted">Judul ini muncul paling besar di bagian atas (hero
+                                    section).</small>
                             </div>
                             <div class="mb-3">
                                 <label for="pageSubtitle" class="form-label">Page Subtitle (Deskripsi Hero)</label>
-                                <textarea class="form-control" id="pageSubtitle" name="page_subtitle" rows="2" placeholder="Deskripsi singkat halaman..." required></textarea>
+                                <textarea class="form-control" id="pageSubtitle" name="page_subtitle" rows="2"
+                                    placeholder="Deskripsi singkat halaman..." required></textarea>
                                 <small class="form-text text-muted">Sub-judul pendukung di bawah judul utama.</small>
                             </div>
                             <div class="mb-3">
                                 <label for="featuredImage" class="form-label">Featured Image (Gambar Utama)</label>
                                 <div class="d-flex flex-column">
-                                    <img id="featured-image-preview" src="https://via.placeholder.com/800x250/1a1a1a/D4AF37?text=No+Image" alt="No Image">
-                                    <input class="form-control" type="file" id="featuredImage" name="featured_image" accept="image/*">
-                                    <small class="form-text text-muted">Unggah gambar utama (rasio ideal 16:5 atau 16:6).</small>
+                                    <img id="featured-image-preview"
+                                        src="https://via.placeholder.com/800x250/1a1a1a/D4AF37?text=No+Image"
+                                        alt="No Image">
+                                    <input class="form-control" type="file" id="featuredImage" name="featured_image"
+                                        accept="image/*">
+                                    <small class="form-text text-muted">Unggah gambar utama (rasio ideal 16:5 atau
+                                        16:6).</small>
                                 </div>
                             </div>
                         </div>
@@ -81,13 +99,17 @@
                         <div class="card-body">
                             <div class="mb-3">
                                 <label for="contentTitle" class="form-label">Content Title (Judul Konten)</label>
-                                <input type="text" class="form-control" id="contentTitle" name="content_title" placeholder="Apa Itu SE Laboratory?" required>
-                                <small class="form-text text-muted">Judul utama konten yang muncul setelah hero section.</small>
+                                <input type="text" class="form-control" id="contentTitle" name="content_title"
+                                    placeholder="Apa Itu SE Laboratory?" required>
+                                <small class="form-text text-muted">Judul utama konten yang muncul setelah hero
+                                    section.</small>
                             </div>
                             <div class="mb-3">
                                 <label for="contentSubtitle" class="form-label">Content Subtitle (Isi Konten)</label>
-                                <textarea class="form-control" id="contentSubtitle" name="content_subtitle" rows="15" placeholder="Tulis konten lengkap di sini..." required></textarea>
-                                <small class="form-text text-muted">Isi lengkap konten halaman. Gunakan format plain text atau markdown.</small>
+                                <textarea class="form-control" id="contentSubtitle" name="content_subtitle" rows="15"
+                                    placeholder="Tulis konten lengkap di sini..." required></textarea>
+                                <small class="form-text text-muted">Isi lengkap konten halaman. Gunakan format plain
+                                    text atau markdown.</small>
                             </div>
                         </div>
                     </div>
@@ -122,4 +144,5 @@
     <script src="/assets/js/admin/profile-pages/create.js"></script>
 
 </body>
+
 </html>

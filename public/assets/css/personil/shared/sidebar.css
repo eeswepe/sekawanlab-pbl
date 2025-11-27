@@ -1,10 +1,11 @@
 /* Personil Sidebar Shared Styles */
 :root {
-  --gold: #D4AF37;
-  --dark-gold: #B8941F;
+  --gold: #213780;
+  --dark-gold: #142e96;
   --black: #1a1a1a;
   --white: #ffffff;
   --light-gray: #f8f9fa;
+  --blue: #215280;
 }
 
 /* Wrapper */
@@ -16,13 +17,14 @@
 
 /* Sidebar */
 #sidebar {
-  width: 230px;
-  background-color: var(--black);
-  color: #adb5bd;
+  width: 250px;
+  background-color: var(--blue);
+  color: var(--white);
   position: fixed;
+  top: 0;
+  left: 0;
   height: 100vh;
-  padding: 1.5rem 0;
-  overflow-y: auto;
+  padding-top: 1.5rem;
 }
 
 #sidebar > div {
@@ -106,9 +108,15 @@
 /* Responsive */
 @media (max-width: 768px) {
   #sidebar {
-    margin-left: -230px;
-    transition: margin-left 0.3s ease;
-  }
+  width: 250px;
+  background-color: var(--blue);
+  color: var(--white);
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  padding-top: 1.5rem;
+}
 
   #sidebar.active {
     margin-left: 0;
