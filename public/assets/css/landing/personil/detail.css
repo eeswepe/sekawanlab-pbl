@@ -1,15 +1,5 @@
 /* Personil Detail Page Styles */
 
-/* Variables - consistent with blog detail */
-:root {
-  --gold: #213780;
-  --dark-gold: #142e96;
-  --black: #1a1a1a;
-  --white: #ffffff;
-  --light-gray: #f8f9fa;
-  --blue: #215280;
-}
-
 .personil-detail-header {
     position: relative;
     background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
