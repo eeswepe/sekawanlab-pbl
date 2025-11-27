@@ -1,10 +1,11 @@
 /* Variables - consistent with index.css */
 :root {
-    --gold: #d4af37;
-    --dark-gold: #b8941f;
-    --black: #1a1a1a;
-    --white: #ffffff;
-    --light-gray: #f8f9fa;
+  --gold: #213780;
+  --dark-gold: #142e96;
+  --black: #1a1a1a;
+  --white: #ffffff;
+  --light-gray: #f8f9fa;
+  --blue: #215280;
 }
 
 * {

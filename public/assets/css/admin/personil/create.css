@@ -1,9 +1,10 @@
 :root {
-  --gold: #d4af37;
-  --dark-gold: #b8941f;
+  --gold: #213780;
+  --dark-gold: #142e96;
   --black: #1a1a1a;
   --white: #ffffff;
   --light-gray: #f8f9fa;
+  --blue: #215280;
 }
 
 * {
@@ -72,7 +73,7 @@ a:hover {
 /* Sidebar */
 #sidebar {
   width: 250px;
-  background-color: var(--black);
+  background-color: var(--blue);
   color: var(--white);
   position: fixed;
   top: 0;
@@ -91,14 +92,14 @@ a:hover {
 
 #sidebar .logo-icon {
   display: inline-block;
-  background: linear-gradient(135deg, var(--gold), var(--dark-gold));
   width: 40px;
   height: 40px;
-  border-radius: 8px;
-  line-height: 40px;
-  color: var(--white);
-  font-weight: bold;
-  margin-right: 10px;
+}
+
+.sidebar-divider {
+  height: 2px;
+  background-color: var(--light-gray);
+  margin: 1rem 0;
 }
 
 .sidebar-menu {
@@ -379,8 +380,15 @@ a:hover {
 
 @media (max-width: 992px) {
   #sidebar {
-    margin-left: -260px;
-  }
+  width: 250px;
+  background-color: var(--blue);
+  color: var(--white);
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  padding-top: 1.5rem;
+}
   #sidebar.toggled {
     margin-left: 0;
   }

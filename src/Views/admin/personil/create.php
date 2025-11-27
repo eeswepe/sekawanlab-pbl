@@ -18,7 +18,9 @@
         <!-- Sidebar -->
         <aside id="sidebar">
             <div>
-                <div class="brand"><span class="logo-icon">SE</span> SE Laboratory</div>
+                <div class="brand"><img class="logo-icon" src="/assets/img/mascot-head.png" alt="mascot-lab-se">SE Laboratory
+          <div class="sidebar-divider"></div>
+        </div>
                 <ul class="sidebar-menu">
                     <li><a href="/admin"><i class="bi bi-grid-fill"></i> Dashboard</a></li>
                     <li><a href="/admin/blog-list"><i class="bi bi-pencil-square"></i> Blog Management</a></li>
