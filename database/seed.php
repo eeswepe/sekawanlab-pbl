@@ -407,20 +407,18 @@ try {
         [
             'personil_id' => $personilIds['talent'],
             'secret_key' => bin2hex(random_bytes(32)),
-            'expires_at' => date('Y-m-d H:i:s', strtotime('+7 days')),
-            'is_used' => false
+            'expires_at' => date('Y-m-d H:i:s', strtotime('+7 days'))
         ],
         [
             'personil_id' => $personilIds['dosen'],
             'secret_key' => bin2hex(random_bytes(32)),
-            'expires_at' => date('Y-m-d H:i:s', strtotime('+30 days')),
-            'is_used' => false
+            'expires_at' => date('Y-m-d H:i:s', strtotime('+30 days'))
         ]
     ];
     
     $stmt = $pdo->prepare("
         INSERT INTO personil_invitation (personil_id, secret_key, expires_at, is_used)
-        VALUES (:personil_id, :secret_key, :expires_at, :is_used)
+        VALUES (:personil_id, :secret_key, :expires_at, FALSE)
     ");
     
     foreach ($invitationData as $invitation) {
