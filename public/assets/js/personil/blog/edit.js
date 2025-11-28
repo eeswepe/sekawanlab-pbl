@@ -1,3 +1,23 @@
+// Summernote Initialization
+$(document).ready(function() {
+    $('#postContent').summernote({
+        height: 400,
+        placeholder: 'Mulai tulis konten artikel Anda di sini...',
+        toolbar: [
+            ['style', ['style']],
+            ['font', ['bold', 'italic', 'underline', 'clear']],
+            ['fontname', ['fontname']],
+            ['fontsize', ['fontsize']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['height', ['height']],
+            ['table', ['table']],
+            ['insert', ['link', 'picture', 'video']],
+            ['view', ['fullscreen', 'codeview', 'help']]
+        ]
+    });
+});
+
 // Sidebar Toggle
 document.addEventListener('DOMContentLoaded', function() {
     const sidebar = document.getElementById('sidebar');
@@ -35,6 +55,11 @@ document.getElementById('featuredImage')?.addEventListener('change', function(e)
     const file = e.target.files[0];
 
     if (file) {
+        if (!file.type.startsWith('image/')) {
+            alert('File bukan gambar.');
+            this.value = '';
+            return;
+        }
         const reader = new FileReader();
         reader.onload = function(e) {
             preview.src = e.target.result;
