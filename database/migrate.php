@@ -17,23 +17,23 @@ try {
         $config['port'],
         $config['database']
     );
-    
+
     $pdo = new PDO($dsn, $config['username'], $config['password'], [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     ]);
-    
+
     echo "🔗 Connected to database: {$config['database']}\n";
     echo "🚀 Starting migration...\n\n";
-    
+
     // Start transaction
     $pdo->beginTransaction();
-    
+
     // ============================================
     // 1. DROP EXISTING TABLES
     // ============================================
     echo "📦 Dropping existing tables...\n";
-    
+
     $pdo->exec("DROP TABLE IF EXISTS personil_invitation CASCADE");
     $pdo->exec("DROP TABLE IF EXISTS join_application CASCADE");
     $pdo->exec("DROP TABLE IF EXISTS profil_page CASCADE");
@@ -41,14 +41,14 @@ try {
     $pdo->exec("DROP TABLE IF EXISTS kategori CASCADE");
     $pdo->exec("DROP TABLE IF EXISTS project CASCADE");
     $pdo->exec("DROP TABLE IF EXISTS personil CASCADE");
-    
+
     echo "   ✓ Tables dropped successfully\n\n";
-    
+
     // ============================================
     // 2. CREATE PERSONIL TABLE
     // ============================================
     echo "📋 Creating personil table...\n";
-    
+
     $pdo->exec("
         CREATE TABLE personil(
             id SERIAL PRIMARY KEY,
@@ -71,19 +71,19 @@ try {
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ");
-    
+
     $pdo->exec("COMMENT ON COLUMN personil.role IS 'Role personil: admin (full access), dosen (privilege sama dengan admin), talent (personil biasa)'");
     $pdo->exec("CREATE INDEX idx_personil_nim_nip ON personil(nim_nip)");
     $pdo->exec("CREATE INDEX idx_personil_role ON personil(role)");
     $pdo->exec("CREATE INDEX idx_personil_email ON personil(email)");
-    
+
     echo "   ✓ Personil table created\n\n";
-    
+
     // ============================================
     // 3. CREATE PROJECT TABLE
     // ============================================
     echo "📋 Creating project table...\n";
-    
+
     $pdo->exec("
         CREATE TABLE project(
             id SERIAL PRIMARY KEY,
@@ -94,16 +94,16 @@ try {
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ");
-    
+
     $pdo->exec("CREATE INDEX idx_project_personil_id ON project(personil_id)");
-    
+
     echo "   ✓ Project table created\n\n";
-    
+
     // ============================================
     // 4. CREATE KATEGORI TABLE
     // ============================================
     echo "📋 Creating kategori table...\n";
-    
+
     $pdo->exec("
         CREATE TABLE kategori (
             id SERIAL PRIMARY KEY,
@@ -111,14 +111,14 @@ try {
             post_count INTEGER DEFAULT 0
         )
     ");
-    
+
     echo "   ✓ Kategori table created\n\n";
-    
+
     // ============================================
     // 5. CREATE BLOG_POST TABLE
     // ============================================
     echo "📋 Creating blog_post table...\n";
-    
+
     $pdo->exec("
         CREATE TABLE blog_post(
             id SERIAL PRIMARY KEY,
@@ -138,19 +138,19 @@ try {
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ");
-    
+
     $pdo->exec("CREATE INDEX idx_blog_post_penulis_id ON blog_post(penulis_id)");
     $pdo->exec("CREATE INDEX idx_blog_post_kategori_id ON blog_post(kategori_id)");
     $pdo->exec("CREATE INDEX idx_blog_post_slug ON blog_post(slug)");
     $pdo->exec("CREATE INDEX idx_blog_post_status ON blog_post(status)");
-    
+
     echo "   ✓ Blog_post table created\n\n";
-    
+
     // ============================================
     // 6. CREATE PROFIL_PAGE TABLE
     // ============================================
     echo "📋 Creating profil_page table...\n";
-    
+
     $pdo->exec("
         CREATE TABLE profil_page(
             id SERIAL PRIMARY KEY,
@@ -163,43 +163,42 @@ try {
             last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ");
-    
+
     echo "   ✓ Profil_page table created\n\n";
-    
+
     // ============================================
     // 7. CREATE JOIN_APPLICATION TABLE
     // ============================================
     echo "📋 Creating join_application table...\n";
-    
+
     $pdo->exec("
         CREATE TABLE join_application (
             id                SERIAL PRIMARY KEY,
-            nama_lengkap      VARCHAR(255)           NOT NULL,
-            email             VARCHAR(255)           NOT NULL,
-            phone             VARCHAR(20)            NOT NULL,
-            nim               VARCHAR(50)            NOT NULL,
-            prodi             VARCHAR(10)            NOT NULL,
-            semester          INTEGER                NOT NULL,
-            alasan_bergabung  TEXT                   NOT NULL,
+            nama_lengkap      VARCHAR(255)      NOT NULL,
+            email             VARCHAR(255)      NOT NULL,
+            phone             VARCHAR(20)       NOT NULL,
+            nim               VARCHAR(50)       NOT NULL,
+            prodi             VARCHAR(10)       NOT NULL,
+            semester          INTEGER           NOT NULL,
+            alasan_bergabung  TEXT              NOT NULL,
             github_url        VARCHAR(500),
             cv_file_path      VARCHAR(500),
-            tanggal_apply     TIMESTAMP,
-            status            VARCHAR(20),
-            catatan_admin     TEXT,
+            tanggal_apply     TIMESTAMP         NOT NULL DEFAULT NOW(),
+            status            VARCHAR(20)       NOT NULL DEFAULT 'pending',
             assessor_summary  TEXT
-        )
+        );
     ");
-    
+
     $pdo->exec("CREATE INDEX idx_join_application_status ON join_application(status)");
     $pdo->exec("CREATE INDEX idx_join_application_email ON join_application(email)");
-    
+
     echo "   ✓ Join_application table created\n\n";
-    
+
     // ============================================
     // 8. CREATE PERSONIL_INVITATION TABLE
     // ============================================
     echo "📋 Creating personil_invitation table...\n";
-    
+
     $pdo->exec("
         CREATE TABLE personil_invitation (
             id SERIAL PRIMARY KEY,
@@ -210,17 +209,17 @@ try {
             is_used BOOLEAN DEFAULT FALSE
         )
     ");
-    
+
     $pdo->exec("CREATE INDEX idx_personil_invitation_secret_key ON personil_invitation(secret_key)");
     $pdo->exec("CREATE INDEX idx_personil_invitation_personil_id ON personil_invitation(personil_id)");
-    
+
     echo "   ✓ Personil_invitation table created\n\n";
-    
+
     // ============================================
     // 9. CREATE TRIGGERS
     // ============================================
     echo "⚙️  Creating triggers...\n";
-    
+
     // Function untuk update timestamp
     $pdo->exec("
         CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -231,7 +230,7 @@ try {
         END;
         \$\$ language 'plpgsql'
     ");
-    
+
     // Trigger untuk personil
     $pdo->exec("
         CREATE TRIGGER update_personil_updated_at
@@ -239,7 +238,7 @@ try {
             FOR EACH ROW
             EXECUTE FUNCTION update_updated_at_column()
     ");
-    
+
     // Trigger untuk project
     $pdo->exec("
         CREATE TRIGGER update_project_updated_at
@@ -247,7 +246,7 @@ try {
             FOR EACH ROW
             EXECUTE FUNCTION update_updated_at_column()
     ");
-    
+
     // Trigger untuk blog_post
     $pdo->exec("
         CREATE TRIGGER update_blog_post_updated_at
@@ -255,12 +254,12 @@ try {
             FOR EACH ROW
             EXECUTE FUNCTION update_updated_at_column()
     ");
-    
+
     echo "   ✓ Triggers created\n\n";
-    
+
     // Commit transaction
     $pdo->commit();
-    
+
     echo "✅ Migration completed successfully!\n";
     echo "\n📊 Summary:\n";
     echo "   - personil\n";
@@ -271,7 +270,6 @@ try {
     echo "   - join_application\n";
     echo "   - personil_invitation\n";
     echo "\n💡 Next step: Run seeder with 'php database/seed.php'\n";
-    
 } catch (PDOException $e) {
     if (isset($pdo) && $pdo->inTransaction()) {
         $pdo->rollBack();

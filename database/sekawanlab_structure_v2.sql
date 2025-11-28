@@ -115,18 +115,17 @@ DROP TABLE IF EXISTS join_application CASCADE;
 
 CREATE TABLE join_application (
     id                SERIAL PRIMARY KEY,
-    nama_lengkap      VARCHAR(255)           NOT NULL,
-    email             VARCHAR(255)           NOT NULL,
-    phone             VARCHAR(20)            NOT NULL,
-    nim               VARCHAR(50)            NOT NULL,
-    prodi             VARCHAR(10)            NOT NULL,
-    semester          INTEGER                NOT NULL,
-    alasan_bergabung  TEXT                   NOT NULL,
+    nama_lengkap      VARCHAR(255)      NOT NULL,
+    email             VARCHAR(255)      NOT NULL,
+    phone             VARCHAR(20)       NOT NULL,
+    nim               VARCHAR(50)       NOT NULL,
+    prodi             VARCHAR(10)       NOT NULL,
+    semester          INTEGER           NOT NULL,
+    alasan_bergabung  TEXT              NOT NULL,
     github_url        VARCHAR(500),
     cv_file_path      VARCHAR(500),
-    tanggal_apply     TIMESTAMP,
-    status            VARCHAR(20),
-    catatan_admin     TEXT,
+    tanggal_apply     TIMESTAMP         NOT NULL DEFAULT NOW(),
+    status            VARCHAR(20)       NOT NULL DEFAULT 'pending',
     assessor_summary  TEXT
 );
 
