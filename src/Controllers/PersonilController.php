@@ -31,7 +31,7 @@ class PersonilController extends Controller
     }
 
     // ===== PUBLIC AREA =====
-    
+
     /**
      * Display all personils (public)
      * 
@@ -40,11 +40,11 @@ class PersonilController extends Controller
     public function index()
     {
         $personils = $this->publicService->getAllPersonils();
-        
+
         $data = [
             'personils' => $personils
         ];
-        
+
         $this->render("landing/personil/list", $data);
     }
 
@@ -57,16 +57,16 @@ class PersonilController extends Controller
     {
         try {
             $personil = $this->publicService->getPersonilWithDetails($id);
-            
+
             if (!$personil) {
                 header('Location: /personil');
                 exit;
             }
-            
+
             $data = [
                 'personil' => $personil
             ];
-            
+
             $this->render("landing/personil/detail", $data);
         } catch (\Exception $e) {
             header('Location: /personil');
@@ -75,7 +75,7 @@ class PersonilController extends Controller
     }
 
     // ===== PERSONIL DASHBOARD =====
-    
+
     /**
      * Personil dashboard
      * 
@@ -84,13 +84,13 @@ class PersonilController extends Controller
     public function dashboard()
     {
         $personil_id = SessionHelper::getPersonilId();
-        
+
         if (!$personil_id) {
             SessionHelper::setFlash('error', 'Session tidak valid. Silakan login kembali.');
             header('Location: /login');
             exit;
         }
-        
+
         try {
             $data = $this->dashboardService->getDashboardData($personil_id);
             $this->render("personil/dashboard/index", $data);
@@ -102,7 +102,7 @@ class PersonilController extends Controller
     }
 
     // ===== BLOG MANAGEMENT =====
-    
+
     /**
      * Render blog create form
      * 
@@ -111,22 +111,22 @@ class PersonilController extends Controller
     public function renderBlogCreate()
     {
         $personil_id = SessionHelper::getPersonilId();
-        
+
         if (!$personil_id) {
             SessionHelper::setFlash('error', 'Session tidak valid. Silakan login kembali.');
             header('Location: /login');
             exit;
         }
-        
+
         try {
             $personil = $this->publicService->getPersonilById($personil_id);
             $categories = $this->blogService->getAllCategories();
-            
+
             $data = [
                 'personil' => $personil,
                 'categories' => $categories
             ];
-            
+
             $this->render("personil/blog/create", $data);
         } catch (\Exception $e) {
             SessionHelper::setFlash('error', $e->getMessage());
@@ -143,21 +143,21 @@ class PersonilController extends Controller
     public function renderBlogList()
     {
         $personil_id = SessionHelper::getPersonilId();
-        
+
         if (!$personil_id) {
             SessionHelper::setFlash('error', 'Session tidak valid. Silakan login kembali.');
             header('Location: /login');
             exit;
         }
-        
-        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-        
+
+        $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+
         try {
             $result = $this->blogService->getBlogsByPersonil($personil_id, $page);
             $personil = $this->publicService->getPersonilById($personil_id);
-            
+
             $data = array_merge($result, ['personil' => $personil]);
-            
+
             $this->render("personil/blog/list", $data);
         } catch (\Exception $e) {
             SessionHelper::setFlash('error', $e->getMessage());
@@ -174,23 +174,23 @@ class PersonilController extends Controller
     public function renderBlogEdit($id)
     {
         $personil_id = SessionHelper::getPersonilId();
-        
+
         if (!$personil_id) {
             header('Location: /login');
             exit;
         }
-        
+
         try {
             $blog = $this->blogService->getBlogForEdit($id, $personil_id);
-            
+
             if (!$blog) {
                 header('Location: /personil/blog');
                 exit;
             }
-            
+
             $personil = $this->publicService->getPersonilById($personil_id);
             $categories = $this->blogService->getAllCategories();
-            
+
             $data = [
                 'blog' => $blog,
                 'personil' => $personil,
@@ -213,23 +213,20 @@ class PersonilController extends Controller
     public function createBlog()
     {
         header('Content-Type: application/json');
-        
+
         $personil_id = SessionHelper::getPersonilId();
-        
+
         if (!$personil_id) {
             echo json_encode(['success' => false, 'message' => 'Unauthorized']);
             exit;
         }
-        
+
         try {
             $blog_id = $this->blogService->createBlog($_POST, $_FILES, $personil_id);
-            
-            echo json_encode([
-                'success' => true, 
-                'message' => 'Blog berhasil dibuat',
-                'blog_id' => $blog_id,
-                'redirect' => '/personil/blog'
-            ]);
+            // Set flash message and redirect to blog list
+            SessionHelper::setFlash('success', 'Blog berhasil dibuat');
+            header('Location: /personil/blog');
+            exit;
         } catch (\Exception $e) {
             echo json_encode(['success' => false, 'message' => $e->getMessage()]);
         }
@@ -244,19 +241,19 @@ class PersonilController extends Controller
     public function updateBlog($id)
     {
         header('Content-Type: application/json');
-        
+
         $personil_id = SessionHelper::getPersonilId();
-        
+
         if (!$personil_id) {
             echo json_encode(['success' => false, 'message' => 'Unauthorized']);
             exit;
         }
-        
+
         try {
             $this->blogService->updateBlog($id, $_POST, $_FILES, $personil_id);
-            
+
             echo json_encode([
-                'success' => true, 
+                'success' => true,
                 'message' => 'Blog berhasil diupdate',
                 'redirect' => '/personil/blog'
             ]);
@@ -274,14 +271,14 @@ class PersonilController extends Controller
     public function deleteBlog($id)
     {
         header('Content-Type: application/json');
-        
+
         $personil_id = SessionHelper::getPersonilId();
-        
+
         if (!$personil_id) {
             echo json_encode(['success' => false, 'message' => 'Unauthorized']);
             exit;
         }
-        
+
         try {
             $this->blogService->deleteBlog($id, $personil_id);
             echo json_encode(['success' => true, 'message' => 'Blog deleted successfully']);
@@ -292,7 +289,7 @@ class PersonilController extends Controller
     }
 
     // ===== PROFILE MANAGEMENT =====
-    
+
     /**
      * Render profile
      * 
@@ -301,26 +298,26 @@ class PersonilController extends Controller
     public function renderProfile()
     {
         $personil_id = SessionHelper::getPersonilId();
-        
+
         if (!$personil_id) {
             SessionHelper::setFlash('error', 'Session tidak valid. Silakan login kembali.');
             header('Location: /login');
             exit;
         }
-        
+
         try {
             $personil = $this->profileService->getProfileWithProjects($personil_id);
-            
+
             if (!$personil) {
                 SessionHelper::setFlash('error', 'Data personil tidak ditemukan.');
                 header('Location: /personil/dashboard');
                 exit;
             }
-            
+
             $data = [
                 'personil' => $personil
             ];
-            
+
             $this->render("personil/profile/index", $data);
         } catch (\Exception $e) {
             SessionHelper::setFlash('error', $e->getMessage());
@@ -337,20 +334,20 @@ class PersonilController extends Controller
     public function renderProfileEdit()
     {
         $personil_id = SessionHelper::getPersonilId();
-        
+
         if (!$personil_id) {
             header('Location: /login');
             exit;
         }
-        
+
         try {
             $personil = $this->profileService->getProfileWithProjects($personil_id);
-            
+
             $data = [
                 'personil' => $personil,
                 'projects' => $personil['projects']
             ];
-            
+
             $this->render("personil/profile/edit", $data);
         } catch (\Exception $e) {
             SessionHelper::setFlash('error', $e->getMessage());
@@ -367,26 +364,26 @@ class PersonilController extends Controller
     public function updateProfile()
     {
         header('Content-Type: application/json');
-        
+
         $personil_id = SessionHelper::getPersonilId();
-        
+
         if (!$personil_id) {
             echo json_encode(['success' => false, 'message' => 'Unauthorized']);
             exit;
         }
-        
+
         try {
             // Update profile
             $this->profileService->updateProfile($personil_id, $_POST, $_FILES);
-            
+
             // Update projects if provided
             if (isset($_POST['projects'])) {
                 $projects = json_decode($_POST['projects'], true);
                 $this->profileService->updateProjects($personil_id, $projects);
             }
-            
+
             echo json_encode([
-                'success' => true, 
+                'success' => true,
                 'message' => 'Profile berhasil diupdate',
                 'redirect' => '/personil/profile'
             ]);
