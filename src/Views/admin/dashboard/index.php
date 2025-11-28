@@ -39,7 +39,7 @@
     <div id="main-content">
       <!-- Dashboard Content -->
       <div class="content">
-        <h1 class="page-title">Selamat Datang, Admin!</h1>
+        <h1 class="page-title">Selamat Datang <?= isset($currentUserName) && $currentUserName !== null ? htmlspecialchars($currentUserName) : '' ?></h1>
         <p class="mb-4 text-muted">Berikut ringkasan aktivitas hari ini.</p>
 
         <!-- Statistic Cards -->

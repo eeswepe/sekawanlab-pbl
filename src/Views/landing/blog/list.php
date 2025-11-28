@@ -14,7 +14,7 @@ if (isset($_GET['kategori_id']) && !empty($data['blogs'])) {
 }
 
 // Pagination settings
-$perPage = 2; // 2 artikel per halaman untuk testing
+$perPage = 4; // 2 artikel per halaman untuk testing
 $currentPage = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
 
 // Hitung total blogs dan total pages

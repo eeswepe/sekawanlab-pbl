@@ -170,7 +170,7 @@ textarea.form-control {
 
 /* Submit Button */
 .btn-submit {
-    background: linear-gradient(135deg, var(--gold), var(--dark-gold));
+    background: linear-gradient(135deg, var(--dusk-blue), var(--dark-blue));
     color: var(--white);
     padding: 1rem 3rem;
     border: none;

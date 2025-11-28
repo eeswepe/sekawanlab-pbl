@@ -12,17 +12,16 @@ include_once __DIR__ . "/../../layouts/header.php";
             <div class="col-lg-6 animate-fadeInUp">
                 <div class="hero-badge">Politeknik Negeri Malang</div>
                 <h1>
-                    <span class="line-1">Custom</span>
-                    <span class="line-2">Character</span>
-                    <span class="line-3">Software Engineering</span>
+                    <span class="line-1">Bangun</span>
+                    <span class="line-2">Teknologi</span>
+                    <span class="line-3">untuk Dunia yang Terus Bergerak</span>
                 </h1>
                 <p>
-                    Grab your very own software engineering expertise and start creating innovative solutions right now!
-                    FUN, FAST and EASY to work with, your projects will be delivered fully prepared and 100% ready to
-                    launch.
+                    Selamat datang di SE Laboratory! Tempat di mana ide-liar kamu bertemu teknologi, dibentuk, dan diwujudkan menjadi solusi nyata.
                 </p>
+
                 <div class="hero-buttons">
-                    <a href="#about" class="btn btn-hero-primary">Get Started</a>
+                    <a href="#about" class="btn btn-hero-primary">Lets Explore</a>
                 </div>
             </div>
             <div class="col-lg-6">
@@ -38,41 +37,32 @@ include_once __DIR__ . "/../../layouts/header.php";
 <!-- Stats Section -->
 <section class="stats-section">
     <div class="container">
-        <div class="row g-4">
-            <div class="col-lg-3 col-md-6">
+        <div class="row g-3">
+            <div class="col-lg-4 col-md-6">
                 <div class="stat-card">
                     <div class="stat-icon">
                         <i class="bi bi-people-fill"></i>
                     </div>
-                    <div class="stat-number" data-target="500">0</div>
+                    <div class="stat-number" data-target="<?= isset($studentsCount) ? (int)$studentsCount : 0 ?>">0</div>
                     <div class="stat-label">Students</div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6">
+            <div class="col-lg-4 col-md-6">
                 <div class="stat-card">
                     <div class="stat-icon">
                         <i class="bi bi-rocket-takeoff-fill"></i>
                     </div>
-                    <div class="stat-number" data-target="50">0</div>
+                    <div class="stat-number" data-target="<?= isset($projectsCount) ? (int)$projectsCount : 0 ?>">0</div>
                     <div class="stat-label">Projects</div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6">
+            <div class="col-lg-4 col-md-6">
                 <div class="stat-card">
                     <div class="stat-icon">
                         <i class="bi bi-lightbulb-fill"></i>
                     </div>
-                    <div class="stat-number" data-target="25">0</div>
+                    <div class="stat-number" data-target="<?= isset($researchersCount) ? (int)$researchersCount : 0 ?>">0</div>
                     <div class="stat-label">Researchers</div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="bi bi-journal-bookmark-fill"></i>
-                    </div>
-                    <div class="stat-number" data-target="100">0</div>
-                    <div class="stat-label">Publications</div>
                 </div>
             </div>
         </div>
@@ -173,36 +163,6 @@ include_once __DIR__ . "/../../layouts/header.php";
                         teknologi terkemuka.</p>
                 </div>
             </div>
-            <div class="col-lg-4 col-md-6">
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="bi bi-journal-code"></i>
-                    </div>
-                    <h3>Publications</h3>
-                    <p>Mendorong publikasi ilmiah di jurnal dan konferensi internasional untuk berkontribusi pada
-                        komunitas akademik global.</p>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6">
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="bi bi-diagram-3"></i>
-                    </div>
-                    <h3>Workshops & Seminars</h3>
-                    <p>Menyelenggarakan workshop dan seminar dengan expert dari industri dan akademisi untuk
-                        pengembangan kompetensi.</p>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6">
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="bi bi-gear"></i>
-                    </div>
-                    <h3>Consulting Services</h3>
-                    <p>Layanan konsultasi pengembangan perangkat lunak untuk membantu organisasi mencapai tujuan
-                        teknologi mereka.</p>
-                </div>
-            </div>
         </div>
     </div>
 </section>
@@ -219,54 +179,18 @@ include_once __DIR__ . "/../../layouts/header.php";
             </p>
         </div>
         <div class="research-grid">
-            <div class="research-card">
-                <h4>
-                    <i class="bi bi-cpu"></i>
-                    Artificial Intelligence & Machine Learning
-                </h4>
-                <p>Pengembangan sistem cerdas dan algoritma machine learning untuk berbagai aplikasi industri dan
-                    penelitian.</p>
-            </div>
-            <div class="research-card">
-                <h4>
-                    <i class="bi bi-cloud"></i>
-                    Cloud Computing & DevOps
-                </h4>
-                <p>Riset dalam arsitektur cloud, containerization, dan praktik DevOps modern untuk pengembangan aplikasi
-                    yang scalable.</p>
-            </div>
-            <div class="research-card">
-                <h4>
-                    <i class="bi bi-phone"></i>
-                    Mobile Application Development
-                </h4>
-                <p>Pengembangan aplikasi mobile cross-platform dengan fokus pada user experience dan performance
-                    optimization.</p>
-            </div>
-            <div class="research-card">
-                <h4>
-                    <i class="bi bi-shield-check"></i>
-                    Software Security & Testing
-                </h4>
-                <p>Penelitian dalam keamanan perangkat lunak, testing automation, dan quality assurance methodologies.
-                </p>
-            </div>
-            <div class="research-card">
-                <h4>
-                    <i class="bi bi-bar-chart"></i>
-                    Data Science & Analytics
-                </h4>
-                <p>Analisis data besar, visualisasi data, dan pengembangan sistem business intelligence yang powerful.
-                </p>
-            </div>
-            <div class="research-card">
-                <h4>
-                    <i class="bi bi-globe"></i>
-                    Web Technologies
-                </h4>
-                <p>Riset dalam framework web modern, progressive web apps, dan teknologi web terkini untuk aplikasi
-                    enterprise.</p>
-            </div>
+            <?php if (!empty($categories)): ?>
+                <?php foreach ($categories as $cat): ?>
+                    <div class="research-card">
+                        <h4>
+                            <i class="bi bi-folder"></i>
+                            <?= htmlspecialchars($cat['name']) ?>
+                        </h4>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="text-center text-muted py-4">Belum ada kategori blog.</div>
+            <?php endif; ?>
         </div>
     </div>
 </section>
@@ -280,7 +204,7 @@ include_once __DIR__ . "/../../layouts/header.php";
                 Jadilah bagian dari komunitas software engineering yang inovatif dan berkembang. Mari bersama-sama
                 menciptakan solusi teknologi untuk masa depan yang lebih baik.
             </p>
-            <a href="#" class="btn-cta">Apply Now <i class="bi bi-arrow-right ms-2"></i></a>
+            <a href="/join" class="btn-cta">Apply Now <i class="bi bi-arrow-right ms-2"></i></a>
         </div>
     </div>
 </section>
