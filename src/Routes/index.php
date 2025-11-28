@@ -71,6 +71,8 @@ $router->get("/admin/join-applications", AdminApplicationController::class, "ind
 $router->get("/admin/join-application/{id}", AdminApplicationController::class, "show")->middleware(AdminMiddleware::class);
 $router->delete("/admin/join-application/delete/{id}", AdminApplicationController::class, "delete")->middleware(AdminMiddleware::class);
 $router->post("/admin/join-application/update-status/{id}", AdminApplicationController::class, "updateStatus")->middleware(AdminMiddleware::class);
+// Generate or fetch assessment summary
+$router->post("/admin/join-application/generate-summary/{id}", AdminApplicationController::class, "generateSummary")->middleware(AdminMiddleware::class);
 
 // ===== PERSONIL ROUTES =====
 $router->get("/personil/dashboard", PersonilController::class, "dashboard")->middleware(PersonilMiddleware::class);

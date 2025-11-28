@@ -124,4 +124,30 @@ class ApplicationController extends Controller
             ], 400);
         }
     }
+
+    /**
+     * Generate or fetch assessment summary for an application
+     * 
+     * POST /admin/join-application/generate-summary/{id}
+     */
+    public function generateSummary($id)
+    {
+        try {
+            $payload = json_decode(file_get_contents('php://input'), true) ?? [];
+            $githubUrl = $payload['github_url'] ?? null;
+            $cvPath = $payload['cv_path'] ?? null;
+
+            $result = $this->applicationService->generateOrGetSummary((int)$id, $githubUrl, $cvPath);
+
+            $this->jsonResponse([
+                'success' => true,
+                'data' => $result
+            ]);
+        } catch (Exception $e) {
+            $this->jsonResponse([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 400);
+        }
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Services\Admin;
 use App\Models\JoinApplicationModel;
 use App\Models\PersonilModel;
 use App\Services\Shared\FileUploadService;
+use App\Services\External\AssessorService;
 use PDO;
 
 /**
@@ -17,12 +18,14 @@ class ApplicationService
     private $applicationModel;
     private $personilModel;
     private $fileService;
+    private $assessorService;
     
     public function __construct()
     {
         $this->applicationModel = new JoinApplicationModel();
         $this->personilModel = new PersonilModel();
         $this->fileService = new FileUploadService();
+        $this->assessorService = new AssessorService();
     }
     
     /**
@@ -194,5 +197,76 @@ class ApplicationService
         }
         
         return $this->applicationModel->deleteApplication($id);
+    }
+
+    /**
+     * Generate or fetch assessment summary
+     * Returns associative array with 'summary' (array) and 'source' (string: 'cached'|'generated')
+     */
+    public function generateOrGetSummary(int $id, ?string $githubUrl, ?string $cvPath): array
+    {
+        $application = $this->applicationModel->getApplicationById($id);
+        if (!$application) {
+            throw new \Exception('Application tidak ditemukan');
+        }
+
+        // If summary already exists, return it
+        if (!empty($application['assessor_summary'])) {
+            $decoded = json_decode($application['assessor_summary'], true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                return [
+                    'summary' => $decoded,
+                    'source' => 'cached'
+                ];
+            }
+        }
+
+        // Validate inputs for generation
+        $username = $this->extractGithubUsername($githubUrl ?? '');
+        if ($username === '') {
+            throw new \Exception('Github username/url tidak valid atau kosong');
+        }
+        if (empty($cvPath)) {
+            throw new \Exception('CV path tidak tersedia');
+        }
+        // Ensure leading slash for server path concat
+        if ($cvPath[0] !== '/') {
+            $cvPath = '/' . $cvPath;
+        }
+
+        // Call external service
+        $raw = (string) $this->assessorService->analyzeApplication($username, $cvPath);
+        $summary = json_decode($raw, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \Exception('Gagal mendekode hasil assessor: ' . json_last_error_msg());
+        }
+
+        // Persist summary JSON
+        $this->applicationModel->update($id, [
+            'assessor_summary' => json_encode($summary, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
+        ]);
+
+        return [
+            'summary' => $summary,
+            'source' => 'generated'
+        ];
+    }
+
+    private function extractGithubUsername(string $input): string
+    {
+        $input = trim($input);
+        if ($input === '') return '';
+        // If it's a full URL, parse path
+        if (stripos($input, 'http://') === 0 || stripos($input, 'https://') === 0) {
+            $parts = parse_url($input);
+            $path = $parts['path'] ?? '';
+            $segs = array_values(array_filter(explode('/', $path)));
+            return $segs[0] ?? '';
+        }
+        // Otherwise assume it's a username
+        // Strip leading @ if present
+        if ($input[0] === '@') $input = substr($input, 1);
+        // Basic whitelist: alnum and hyphen
+        return preg_replace('/[^A-Za-z0-9-]/', '', $input) ?? '';
     }
 }
