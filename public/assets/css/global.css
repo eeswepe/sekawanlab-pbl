@@ -43,6 +43,9 @@
     --transition-fast: 0.2s ease;
     --transition-normal: 0.3s ease;
     --transition-slow: 0.4s ease;
+
+    /* Layout helpers */
+    --fixed-header-height: 72px; /* default height for fixed navbars */
 }
 
 /* ============ RESET & BASE ============ */
@@ -58,6 +61,22 @@ body {
     background-color: var(--white);
     overflow-x: hidden;
     line-height: 1.6;
+}
+
+/* ================= FIXED HEADER OFFSET (CSS-only) =================
+   Apply top padding to main containers only when a fixed header/nav exists.
+   Uses :has() which is widely supported in modern browsers. */
+body:has(.navbar.fixed-top),
+body:has(header.fixed-top),
+html:has(.navbar.fixed-top) body,
+html:has(header.fixed-top) body {
+    padding-top: var(--fixed-header-height);
+}
+
+/* If your layout wraps content in a main container and you prefer
+   container-only padding instead of body-level padding, uncomment below:
+main, #main-content, .page-wrapper, .content, .content-fluid {
+    /* padding-top: var(--fixed-header-height); */
 }
 
 h1, h2, h3, h4, h5, h6 {

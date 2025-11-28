@@ -622,6 +622,7 @@
     font-size: 3.5rem;
     margin-bottom: 1.5rem;
     font-weight: 800;
+    color: var(--bright-amber);
 }
 
 .cta-section p {

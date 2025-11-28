@@ -1,301 +1,195 @@
-/* Personil Detail Page Styles */
 
+:root {
+  --pd-primary: var(--dusk-blue, #213780);
+  --pd-accent: var(--bright-amber, #ffd66b);
+  --pd-dark: var(--primary-2, #142e96);
+  --pd-bg: var(--bg, #f8f9fa);
+  --pd-card: var(--card, #ffffff);
+  --pd-text: var(--text, #1a1a1a);
+  --pd-muted: var(--muted, #6c757d);
+  --pd-danger: var(--danger, #dc3545);
+
+  --radius-lg: 14px;
+  --radius-md: 10px;
+  --shadow-strong: 0 15px 50px rgba(33,55,128,0.08);
+  --transition-fast: 180ms ease;
+}
+
+/* Base adjustments (keeps page consistent with admin theme) */
 .personil-detail-header {
-    position: relative;
-    background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
-        url("https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80");
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    padding: 100px 0;
-    color: var(--white);
+  position: relative;
+  --hero-image: url("https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1600&q=60");
+  background-image: var(--hero-image);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  padding: 72px 0;
+  color: #fff;
+  overflow: hidden;
 }
 
-.personil-detail-header::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(
-        135deg,
-        rgba(26, 26, 26, 0.8),
-        rgba(212, 175, 55, 0.2)
-    );
+/* subtle overlay to blend with header/footer palette */
+.personil-detail-header::before{
+  content:"";
+  position:absolute; inset:0;
+  background: linear-gradient(120deg, rgba(33,55,128,0.35), rgba(212,175,55,0.06));
+  pointer-events: none;
 }
 
+/* container inside header */
 .personil-detail-header .container {
-    position: relative;
-    z-index: 2;
+  position: relative;
+  z-index: 2;
 }
 
-.personil-photo {
-    width: 250px;
-    height: 250px;
-    object-fit: cover;
-    border: 5px solid var(--gold);
-    box-shadow: 0 15px 50px rgba(212, 175, 55, 0.4);
-}
-
+/* photo / avatar */
+.personil-photo,
 .personil-avatar-large {
-    width: 250px;
-    height: 250px;
-    background: linear-gradient(135deg, var(--gold), var(--dark-gold));
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 5rem;
-    font-weight: bold;
-    color: var(--white);
-    margin: 0 auto;
-    border: 5px solid rgba(212, 175, 55, 0.3);
-    box-shadow: 0 15px 50px rgba(212, 175, 55, 0.4);
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 6px solid rgba(255,255,255,0.95);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+  background: linear-gradient(135deg, var(--pd-accent), var(--pd-dark));
+  display: block;
+  margin: 0 auto;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
-.personil-info {
-    color: var(--white);
+.personil-photo:hover,
+.personil-avatar-large:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: var(--shadow-strong);
 }
 
-.personil-meta {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
+/* info column */
+.personil-info { color: #fff; text-align: center; margin-top: 1rem; }
+.personil-meta { display:flex; justify-content:center; gap:1rem; align-items:center; margin-top:.6rem; flex-wrap:wrap; }
 
-.badge.bg-gold {
-    background: linear-gradient(135deg, var(--gold), var(--dark-gold));
-    color: var(--black);
-    font-weight: 600;
-    padding: 8px 16px;
-    font-size: 0.85rem;
-    border-radius: 20px;
-    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
-}
-
+/* name / role */
 .personil-name {
-    font-family: "Montserrat", sans-serif;
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  font-family: "Montserrat", sans-serif;
+  font-size: 2.25rem;
+  font-weight: 800;
+  margin: .25rem 0;
+  letter-spacing: -0.02em;
+  text-shadow: 0 4px 18px rgba(0,0,0,0.35);
 }
 
 .personil-role {
-    font-size: 1.5rem;
-    font-weight: 500;
-    color: var(--gold);
-    margin-bottom: 1rem;
+  font-size: 1.05rem;
+  color: rgba(255,255,255,0.95);
+  font-weight: 600;
+  background: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+  padding: .35rem .85rem;
+  border-radius: 999px;
+  display:inline-block;
+  margin-bottom: .5rem;
 }
 
+/* bio */
 .personil-bio {
-    font-size: 1.1rem;
-    line-height: 1.8;
-    color: rgba(255, 255, 255, 0.9);
+  max-width: 980px;
+  margin: .75rem auto 0;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.92);
+  text-align: center;
 }
 
-.personil-contact {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-}
+/* contact small items */
+.personil-contact { display:flex; justify-content:center; gap:1rem; margin-top:1rem; flex-wrap:wrap; }
+.contact-item { display:flex; gap:.5rem; align-items:center; color: rgba(255,255,255,0.95); font-weight:600; font-size:.95rem; }
+.contact-item a { color: inherit; text-decoration:none; opacity:.95; transition: opacity var(--transition-fast), transform var(--transition-fast); }
+.contact-item a:hover { opacity:1; transform: translateY(-2px); color: var(--pd-accent); }
 
-.contact-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 1rem;
-}
+/* Main sections spacing */
+.personil-section { padding: 48px 0; }
+.personil-skills { background: var(--pd-bg); padding-top: 48px; padding-bottom: 48px; }
+.personil-projects { background: var(--pd-card); padding-top: 48px; padding-bottom: 48px; }
 
-.contact-item i {
-    font-size: 1.2rem;
-}
-
-.contact-item a {
-    color: var(--white);
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.contact-item a:hover {
-    color: var(--gold);
-}
-
-/* Skills Section */
-.personil-skills {
-    padding: 60px 0;
-    background-color: var(--light-gray);
-}
-
+/* section title */
 .section-title {
-    font-family: "Montserrat", sans-serif;
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 2rem;
-    color: var(--black);
+  font-family: "Montserrat", sans-serif;
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  color: var(--pd-primary);
+  text-align: left;
 }
 
-.skills-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
+/* Skills list */
+.skills-list { display:flex; flex-wrap:wrap; gap:.8rem; margin-top: .8rem; }
 .skill-badge {
-    display: inline-block;
-    padding: 0.75rem 1.5rem;
-    background: linear-gradient(135deg, var(--gold), var(--dark-gold));
-    color: var(--white);
-    border-radius: 50px;
-    font-size: 0.95rem;
-    font-weight: 500;
-    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  padding: .55rem 1rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(33,55,128,0.06), rgba(33,55,128,0.02));
+  color: var(--pd-primary);
+  font-weight:700;
+  box-shadow: 0 6px 18px rgba(33,55,128,0.03);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
-
-.skill-badge:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+.skill-badge.primary {
+  background: linear-gradient(90deg, var(--pd-accent), var(--pd-dark));
+  color: #fff;
+  box-shadow: 0 8px 30px rgba(33,55,128,0.08);
 }
+.skill-badge:hover { transform: translateY(-4px); }
 
-/* Projects Section */
-.personil-projects {
-    padding: 60px 0;
-    background-color: var(--white);
-}
-
+/* Projects grid */
+.projects-grid { display:grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; margin-top:1rem; }
 .project-card {
-    background: var(--white);
-    border-radius: 15px;
-    padding: 2rem;
-    height: 100%;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border-top: 4px solid var(--gold);
+  border-radius: 12px;
+  padding: 1.25rem;
+  background: var(--pd-card);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.06);
+  border-top: 4px solid var(--pd-accent);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
-
 .project-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+  transform: translateY(-6px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.08);
 }
-
 .project-title {
-    font-family: "Montserrat", sans-serif;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--black);
-    margin-bottom: 1rem;
+  font-family: "Montserrat", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--pd-primary);
+  margin-bottom: .45rem;
 }
+.project-description { color: var(--pd-muted); line-height:1.6; margin-bottom:.8rem; }
+.project-meta { display:flex; gap:.6rem; flex-wrap:wrap; align-items:center; }
 
-.project-description {
-    color: #555;
-    line-height: 1.8;
-    margin-bottom: 1.5rem;
-}
+/* project link */
+.project-link { color: var(--pd-accent); font-weight:700; text-decoration:none; display:inline-flex; gap:.5rem; align-items:center; }
+.project-link:hover { color: var(--pd-dark); transform: translateX(4px); }
 
-.project-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--gold);
-    text-decoration: none;
-    font-weight: 600;
-    transition: gap 0.3s ease, color 0.3s ease;
-}
-
-.project-link:hover {
-    gap: 0.75rem;
-    color: var(--dark-gold);
-}
-
-.project-link i {
-    transition: transform 0.3s ease;
-}
-
-.project-link:hover i {
-    transform: translateX(4px);
-}
-
-/* Back Section */
-.back-section {
-    padding: 40px 0 60px;
-    background-color: var(--light-gray);
-}
-
+/* back / action area */
+.back-section { padding: 36px 0; background: var(--pd-bg); text-align: center; }
 .btn-outline-primary {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 2rem;
-    border: 2px solid var(--gold);
-    color: var(--gold);
-    background-color: transparent;
-    border-radius: 50px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: all 0.3s ease;
+  display:inline-flex; align-items:center; gap:.5rem;
+  padding:.75rem 1.25rem; border-radius: 999px; border:2px solid var(--pd-accent);
+  color: var(--pd-accent); background: transparent; font-weight:700; transition: all var(--transition-fast);
 }
-
 .btn-outline-primary:hover {
-    background: linear-gradient(135deg, var(--gold), var(--dark-gold));
-    color: var(--white);
-    border-color: transparent;
-    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+  background: linear-gradient(90deg, var(--pd-accent), var(--pd-dark));
+  color: #fff; border-color: transparent; transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(33,55,128,0.08);
 }
 
-/* Responsive Design */
+/* Responsive adjustments */
 @media (max-width: 991px) {
-    .personil-name {
-        font-size: 2rem;
-    }
-
-    .personil-role {
-        font-size: 1.25rem;
-    }
-
-    .personil-photo,
-    .personil-avatar-large {
-        width: 200px;
-        height: 200px;
-    }
-
-    .personil-avatar-large {
-        font-size: 4rem;
-    }
+  .personil-detail-header { padding: 48px 0; background-attachment: scroll; }
+  .personil-photo, .personil-avatar-large { width: 180px; height: 180px; }
+  .personil-name { font-size: 1.8rem; }
+  .projects-grid { grid-template-columns: 1fr; }
 }
 
-@media (max-width: 767px) {
-    .personil-detail-header {
-        padding: 40px 0;
-    }
-
-    .personil-name {
-        font-size: 1.75rem;
-        text-align: center;
-    }
-
-    .personil-role {
-        font-size: 1.1rem;
-        text-align: center;
-    }
-
-    .personil-bio {
-        font-size: 1rem;
-        text-align: center;
-    }
-
-    .personil-contact {
-        justify-content: center;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .section-title {
-        font-size: 1.75rem;
-    }
-
-    .project-title {
-        font-size: 1.25rem;
-    }
+@media (max-width: 575px) {
+  .personil-detail-header { padding: 32px 0; }
+  .personil-photo, .personil-avatar-large { width: 140px; height: 140px; }
+  .personil-name { font-size: 1.4rem; text-align:center; }
+  .personil-bio { font-size: .95rem; padding: 0 1rem; }
+  .skills-list { justify-content: center; }
 }
