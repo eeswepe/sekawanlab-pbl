@@ -32,7 +32,7 @@ include_once __DIR__ . "/../../layouts/header.php";
             <div class="col-lg-8">
                 <div class="personil-info">
                     <div class="personil-meta mb-3">
-                        <span class="badge bg-gold">
+                        <span class="badge bg-secondary">
                             <?php echo htmlspecialchars($data["personil"]["role"] === "dosen" ? "Dosen Pembimbing" : "Talent & Geeks"); ?>
                         </span>
                     </div>

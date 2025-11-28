@@ -1,22 +1,32 @@
-/* Page Header */
+/* Unified Page Header (landing standard) */
 .page-header {
-    padding: 150px 0 50px;
-    background: linear-gradient(135deg, var(--black), var(--dark-gold));
-    color: var(--white);
+    padding: 100px 0 40px;
+    background: linear-gradient(135deg, rgba(33,47,77,0.9), rgba(33,47,77,0.6));
+    color: var(--card, #ffffff);
     text-align: center;
+    position: relative;
+    overflow: hidden;
 }
-
+.page-header::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
+    pointer-events: none;
+}
 .page-header h1 {
-    font-size: 3.5rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
+    font-size: clamp(2rem, 4.2vw, 3.2rem);
+    font-weight: 800;
+    margin: 0 0 .6rem;
+    letter-spacing: -0.02em;
+    color: #fff;
 }
-
 .page-header p {
-    font-size: 1.2rem;
-    max-width: 600px;
+    font-size: clamp(.95rem, 1.25vw, 1.15rem);
+    max-width: 720px;
     margin: 0 auto;
-    opacity: 0.9;
+    opacity: .92;
+    color: rgba(255,255,255,0.92);
 }
 
 /* Section Styling */
