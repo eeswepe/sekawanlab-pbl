@@ -71,4 +71,21 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Terjadi kesalahan: ' + error.message);
         }
     });
+
+    // ===================================
+    // 4. Init Summernote for contentSubtitle
+    // ===================================
+    if (window.jQuery && typeof jQuery.fn.summernote === 'function') {
+        jQuery('#contentSubtitle').summernote({
+            height: 300,
+            placeholder: 'Tulis konten lengkap di sini...',
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'italic', 'underline', 'clear']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['insert', ['link', 'picture', 'video']],
+                ['view', ['fullscreen', 'codeview', 'help']]
+            ]
+        });
+    }
 });
