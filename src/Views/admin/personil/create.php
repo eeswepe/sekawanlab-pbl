@@ -188,15 +188,6 @@
                                         <label class="form-label">Deskripsi</label>
                                         <textarea class="form-control project-description" rows="2" placeholder="Deskripsi singkat proyek"></textarea>
                                     </div>
-                                    <div class="mb-1 tag-input-group">
-                                        <label class="form-label">Tech Stack (Tags)</label>
-                                        <div class="input-group">
-                                            <input type="text" class="form-control project-tech-stack-input" placeholder="Masukkan teknologi (contoh: PHP, Vue.js)">
-                                            <button class="btn btn-secondary" type="button">Tambah</button>
-                                        </div>
-                                    </div>
-                                    <div class="tag-list mt-2">
-                                        </div>
                                 </div>
                             </div>
                             <button class="btn btn-outline-secondary btn-sm" type="button" id="addProjectBtn">
