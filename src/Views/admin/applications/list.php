@@ -37,7 +37,7 @@
                     <p>Manage and review all incoming applications to the laboratory.</p>
                 </div>
 
-                <div class="row g-3">
+                <div class="row g-4 mb-3">
                     <div class="col-lg-3 col-md-6">
                         <div class="stat-card">
                             <div class="stat-info">

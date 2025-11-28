@@ -47,7 +47,7 @@
                         <h1>Blog Management</h1>
                     </div>
                     <div>
-                        <a href="/admin/blog/create" class="btn btn-primary-custom">
+                        <a href="/admin/blog/create" class="btn btn-add-blog">
                             <i class="bi bi-plus-circle me-2"></i> Tambah Blog Post
                         </a>
                     </div>
@@ -159,7 +159,7 @@
                                                 </td>
                                                 <td>
                                                     <div class="action-btn-group d-flex">
-                                                        <a href="/admin/blog/edit/<?= $blog['id'] ?>" class="btn btn-sm btn-info text-white" title="Edit"><i class="bi bi-pencil"></i></a>
+                                                        <a href="/admin/blog/edit/<?= $blog['id'] ?>" class="btn btn-sm btn-primary text-white" title="Edit"><i class="bi bi-pencil"></i></a>
                                                         <button class="btn btn-sm btn-danger delete-blog" data-id="<?= $blog['id'] ?>" title="Delete"><i class="bi bi-trash"></i></button>
                                                     </div>
                                                 </td>

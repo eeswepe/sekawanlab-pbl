@@ -1,3 +1,32 @@
+// Summernote Initialization
+$(document).ready(function() {
+    $('#blogContent').summernote({
+        height: 400,
+        placeholder: 'Mulai tulis konten artikel Anda di sini...',
+        toolbar: [
+            ['style', ['style']],
+            ['font', ['bold', 'italic', 'underline', 'clear']],
+            ['fontname', ['fontname']],
+            ['fontsize', ['fontsize']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['height', ['height']],
+            ['table', ['table']],
+            ['insert', ['link', 'picture', 'video']],
+            ['view', ['fullscreen', 'codeview', 'help']]
+        ],
+        callbacks: {
+            onChange: function(contents, $editable) {
+                // Compute reading time based on plain text content
+                const text = $editable.text();
+                const words = text.trim().split(/\s+/).filter(Boolean).length;
+                const minutes = Math.max(1, Math.round(words / 200));
+                $('#metaReadingTime').val(minutes + ' menit');
+            }
+        }
+    });
+});
+
 document.addEventListener('DOMContentLoaded', function() {
     // Data Dummy Awal
     const initialContent = document.getElementById('blogContent').value;
@@ -47,31 +76,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // --- Logika Estimasi Waktu Baca ---
-    const contentTextarea = document.getElementById('blogContent');
-    const readingTimeInput = document.getElementById('metaReadingTime');
-    const wordsPerMinute = 200; 
-
-    function updateReadingTime(text) {
-        const wordCount = text.match(/\b\w+\b/g) ? text.match(/\b\w+\b/g).length : 0;
-        
-        let readingTimeEstimate;
-        if (wordCount === 0) {
-            readingTimeEstimate = 'Otomatis (0 menit)';
-        } else {
-            const minutes = Math.ceil(wordCount / wordsPerMinute);
-            readingTimeEstimate = `${minutes} menit`;
-        }
-        readingTimeInput.value = readingTimeEstimate;
-    }
-
-    // Inisialisasi waktu baca dengan konten yang sudah ada
-    updateReadingTime(initialContent);
+    // (Handled by Summernote callback for real-time updates)
     
-    // Update waktu baca saat konten berubah
-    contentTextarea.addEventListener('input', function() {
-        updateReadingTime(contentTextarea.value);
-    });
-
     // --- Logika Tombol Cancel ---
     const cancelBtn = document.getElementById('cancelBtn');
     cancelBtn.addEventListener('click', function() {
