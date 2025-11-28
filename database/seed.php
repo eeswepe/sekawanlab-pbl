@@ -336,7 +336,6 @@ try {
             'cv_file_path' => null,
             'tanggal_apply' => date('Y-m-d H:i:s', strtotime('-5 days')),
             'status' => 'pending',
-            'catatan_admin' => null,
             'assessor_summary' => null
         ],
         [
@@ -351,7 +350,6 @@ try {
             'cv_file_path' => null,
             'tanggal_apply' => date('Y-m-d H:i:s', strtotime('-3 days')),
             'status' => 'reviewed',
-            'catatan_admin' => 'Kandidat potensial dengan portfolio mobile development yang bagus',
             'assessor_summary' => null
         ],
         [
@@ -366,7 +364,6 @@ try {
             'cv_file_path' => null,
             'tanggal_apply' => date('Y-m-d H:i:s', strtotime('-1 day')),
             'status' => 'accepted',
-            'catatan_admin' => 'Diterima sebagai UI/UX Designer',
             'assessor_summary' => 'Strong portfolio in UI/UX design. Good communication skills.'
         ],
         [
@@ -381,14 +378,13 @@ try {
             'cv_file_path' => null,
             'tanggal_apply' => date('Y-m-d H:i:s', strtotime('-1 week')),
             'status' => 'rejected',
-            'catatan_admin' => 'Kuota untuk posisi database administrator sudah penuh',
             'assessor_summary' => null
         ]
     ];
     
     $stmt = $pdo->prepare("
-        INSERT INTO join_application (nama_lengkap, email, phone, nim, prodi, semester, alasan_bergabung, github_url, cv_file_path, tanggal_apply, status, catatan_admin, assessor_summary)
-        VALUES (:nama_lengkap, :email, :phone, :nim, :prodi, :semester, :alasan_bergabung, :github_url, :cv_file_path, :tanggal_apply, :status, :catatan_admin, :assessor_summary)
+        INSERT INTO join_application (nama_lengkap, email, phone, nim, prodi, semester, alasan_bergabung, github_url, cv_file_path, tanggal_apply, status, assessor_summary)
+        VALUES (:nama_lengkap, :email, :phone, :nim, :prodi, :semester, :alasan_bergabung, :github_url, :cv_file_path, :tanggal_apply, :status, :assessor_summary)
     ");
     
     foreach ($joinApplicationData as $application) {
