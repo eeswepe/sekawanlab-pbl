@@ -73,12 +73,6 @@ html:has(header.fixed-top) body {
     padding-top: var(--fixed-header-height);
 }
 
-/* If your layout wraps content in a main container and you prefer
-   container-only padding instead of body-level padding, uncomment below:
-main, #main-content, .page-wrapper, .content, .content-fluid {
-    /* padding-top: var(--fixed-header-height); */
-}
-
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
     font-weight: 800;

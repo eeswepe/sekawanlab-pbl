@@ -5,6 +5,7 @@
   --white: #ffffff;
   --light-gray: #f8f9fa;
   --blue: #215280;
+  --pink-mist: #EDA6BA;
 }
 
 body {
@@ -35,8 +36,8 @@ body {
 }
 
 .logo-icon {
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   background: linear-gradient(135deg, var(--gold), var(--dark-gold));
   border-radius: 10px;
   display: flex;
@@ -45,6 +46,14 @@ body {
   color: var(--white);
   font-weight: bold;
   font-size: 1.1rem;
+}
+
+.s-logo-text{
+  color: var(--dark-gold)
+}
+
+.e-logo-text{
+  color: var(--pink-mistk);
 }
 
 .logo-text {

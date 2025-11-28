@@ -137,16 +137,7 @@ CREATE INDEX idx_join_application_email ON join_application(email);
 -- ============================================
 -- 7. TABEL PERSONIL INVITATION
 -- ============================================
-DROP TABLE IF EXISTS personil_invitation CASCADE;
 
-CREATE TABLE personil_invitation (
-    id SERIAL PRIMARY KEY,
-    secret_key VARCHAR(64) UNIQUE NOT NULL,
-    personil_id INTEGER REFERENCES personil(id) ON DELETE CASCADE,
-    application_id INTEGER REFERENCES join_application(id) ON DELETE SET NULL,
-    is_used BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
 
 CREATE INDEX idx_personil_invitation_secret_key ON personil_invitation(secret_key);
 CREATE INDEX idx_personil_invitation_personil_id ON personil_invitation(personil_id);

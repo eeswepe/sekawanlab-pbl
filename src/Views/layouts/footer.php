@@ -19,20 +19,13 @@
             <div class="col-lg-2 col-md-6 mb-4 mb-lg-0">
                 <h5>Quick Links</h5>
                 <ul>
-                    <li><a href="#about">Tentang</a></li>
-                    <li><a href="personil.html">Personil</a></li>
-                    <li><a href="blog.html">Blog</a></li>
-                    <li><a href="join.html">Join Us</a></li>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/personil">Personil</a></li>
+                    <li><a href="/blog">Blog</a></li>
+                    <li><a href="/join">Join Us</a></li>
                 </ul>
             </div>
             <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
-                <h5>Research</h5>
-                <ul>
-                    <li><a href="#">Projects</a></li>
-                    <li><a href="#">Publications</a></li>
-                    <li><a href="#">Collaborations</a></li>
-                    <li><a href="#">Facilities</a></li>
-                </ul>
             </div>
             <div class="col-lg-3 col-md-6">
                 <h5>Contact</h5>
@@ -42,14 +35,14 @@
                             class="bi bi-geo-alt me-2"
                             style="color: var(--gold)"
                         ></i>
-                        Universitas, Indonesia
+                        Malang, Indonesia
                     </li>
                     <li>
                         <i
                             class="bi bi-envelope me-2"
                             style="color: var(--gold)"
                         ></i>
-                        selab@university.ac.id
+                        sekawanlab@polinema.ac.id
                     </li>
                     <li>
                         <i

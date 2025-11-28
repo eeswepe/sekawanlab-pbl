@@ -21,8 +21,8 @@
 <body>
     <div class="login-container">
         <div class="logo">
-            <div class="logo-icon">SE</div>
-            <span class="logo-text">SE Laboratory</span>
+            <img class="logo-icon" src="/assets/img/mascot-head.png" alt="">
+            <span class="logo-text"><span class="s-logo-text">S</span><span class="e-logo-text">E</span> Laboratory</span>
         </div>
 
         <h5 class="mb-4 fw-semibold">Masuk ke Akun Anda</h5>

@@ -66,11 +66,10 @@
 }
 
 .social-links a:hover {
-    background: linear-gradient(135deg, var(--dusk-blue), var(--bright-amber));
+    background: linear-gradient(135deg, var(--white), var(--dusk-blue));
     color: var(--white);
-    border-color: transparent;
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(33, 82, 128, 0.3);
+    border-color: #000;
+    transform: translateY(-3px);
 }
 
 .footer-bottom {

@@ -25,8 +25,8 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
 // Counter animation for stats
 function animateCounter(element) {
   const target = parseInt(element.getAttribute("data-target"));
-  const duration = 2000;
-  const increment = target / (duration / 16);
+  const duration = 1200; // faster animation
+  const increment = Math.max(1, Math.ceil(target / (duration / 16)));
   let current = 0;
 
   const updateCounter = () => {
