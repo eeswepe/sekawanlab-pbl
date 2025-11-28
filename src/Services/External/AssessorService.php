@@ -12,7 +12,7 @@ use Exception;
 class AssessorService
 {
     // Ganti dengan URL yang diexpose oleh microservice Python Anda
-    private const ASSESSOR_URL = 'http://localhost:5000/analyze';
+    private const ASSESSOR_URL = 'http://assessor.eeswepe.my.id/analyze';
 
     /**
      * Memanggil microservice Assessor untuk menganalisis pelamar.
