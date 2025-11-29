@@ -54,7 +54,7 @@ try {
             id SERIAL PRIMARY KEY,
             -- Authentication fields
             nim_nip VARCHAR(50) UNIQUE NOT NULL,
-            password VARCHAR(255) NOT NULL,
+            password VARCHAR(255),
             -- Profile fields
             nama_lengkap VARCHAR(255) NOT NULL,
             role VARCHAR(20) NOT NULL CHECK (role IN ('admin', 'dosen', 'talent')),
