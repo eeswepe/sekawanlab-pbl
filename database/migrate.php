@@ -215,6 +215,30 @@ try {
 
     echo "   ✓ Personil_invitation table created\n\n";
 
+    $pdo->exec(
+        "CREATE OR REPLACE VIEW view_log_aktivitas AS
+        SELECT 
+            'blog' AS type,
+            p.nama_lengkap AS nama,
+            'Menambahkan Blog Baru' AS aktivitas,
+            bp.judul AS target,
+            bp.status,
+            bp.created_at AS waktu
+        FROM blog_post bp
+        JOIN personil p ON bp.penulis_id = p.id
+
+        UNION ALL
+
+        SELECT
+            'application' AS type,
+            ja.nama_lengkap AS nama,
+            'Mengajukan Permintaan Bergabung' AS aktivitas,
+            ja.email AS target,
+            ja.status,
+            ja.tanggal_apply AS waktu
+        FROM join_application ja;
+        ");
+
     // ============================================
     // 9. CREATE TRIGGERS
     // ============================================

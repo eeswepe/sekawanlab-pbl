@@ -1,11 +1,12 @@
 <?php
+
 namespace App\Models;
 
 use App;
 use App\BaseModel;
 use App\Database;
 use PDO;
-    
+
 class AdminStatsModel extends BaseModel
 {
     public function __construct(?PDO $db = null)
@@ -59,29 +60,9 @@ class AdminStatsModel extends BaseModel
     public function getRecentActivities(int $limit = 10): array
     {
         $query = "
-            SELECT 
-                'blog' AS type,
-                p.nama_lengkap AS nama,
-                'Menambahkan Blog Baru' AS aktivitas,
-                bp.judul AS target,
-                bp.status,
-                bp.created_at AS waktu
-            FROM blog_post bp
-            JOIN personil p ON bp.penulis_id = p.id
-
-            UNION ALL
-
-            SELECT
-                'application' AS type,
-                ja.nama_lengkap AS nama,
-                'Mengajukan Permintaan Bergabung' AS aktivitas,
-                ja.email AS target,
-                ja.status,
-                ja.tanggal_apply AS waktu
-            FROM join_application ja
-
-            ORDER BY waktu DESC
-            LIMIT :limit
+            SELECT * FROM view_log_aktivitas 
+            ORDER BY waktu DESC 
+            LIMIT :limit;
         ";
 
         $stmt = $this->db->prepare($query);
